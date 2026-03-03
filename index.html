@@ -3081,7 +3081,6 @@ function renderAdmin(){
       <button class="atab ${adminTab==='trips'?'active':''}" onclick="adminTab='trips';renderAdmin()">TRIPS</button>
       <!-- CONFIG and DEV tabs hidden — accessible only via developer secret shortcut -->
     </div>
-    <script>if(devUnlocked) setTimeout(injectDevTabs, 0);</script>
 
     <!-- SHIFTS -->
     <div class="asect ${adminTab==='shifts'?'active':''}">
@@ -3395,6 +3394,8 @@ service cloud.firestore {
         </div>
       </div>`}
     </div>`;
+  // Re-inject dev tabs if developer is currently unlocked (survives re-renders)
+  if(typeof injectDevTabs === 'function' && devUnlocked) injectDevTabs();
 }
 
 
