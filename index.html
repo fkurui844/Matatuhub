@@ -1492,7 +1492,7 @@ async function flushQueue(){
   toast('SYNCING '+offlineQ.length+' QUEUED TRIPS...');
   const remaining=[];
   for(const trip of offlineQ){
-    try{await db.collection('trips').add(trip);}
+    try{await db.collection('trips').doc(tripDocId(trip)).set(trip);}
     catch(e){remaining.push(trip);}
   }
   offlineQ=remaining; save('fs_queue',offlineQ);
@@ -2212,6 +2212,17 @@ function playSuccessSound(){
 // ══════════════════════════════════════════════
 // SUBMIT
 // ══════════════════════════════════════════════
+
+// ── Human-readable Firestore document ID for trips ────────────
+function tripDocId(trip){
+  const date   = trip.date || new Date().toISOString().slice(0,10);
+  const driver = (trip.driver || 'UNKNOWN').replace(/[^a-zA-Z0-9]/g,'-').slice(0,15);
+  const plate  = (trip.carPlate || 'NOPLATE').replace(/[^a-zA-Z0-9]/g,'').slice(0,8);
+  // Short hash from timestamp to ensure uniqueness even for same driver+plate+date
+  const hash   = (trip.dateMs || Date.now()).toString(36).slice(-4).toUpperCase();
+  return `${date}_${driver}_${plate}_${hash}`;
+}
+
 async function submitToFirebase(trip){
   if(!initFirebase()){
     if(!isOnline()){offlineQ.push(trip);save('fs_queue',offlineQ);updateOfflineBadge();toast('📦 SAVED TO OFFLINE QUEUE');}
@@ -2220,7 +2231,7 @@ async function submitToFirebase(trip){
   }
   if(!isOnline()){offlineQ.push(trip);save('fs_queue',offlineQ);updateOfflineBadge();toast('📦 OFFLINE — QUEUED');return;}
   try{
-    await db.collection('trips').add(trip);
+    await db.collection('trips').doc(tripDocId(trip)).set(trip);
     toast('✅ SYNCED TO FIREBASE');
   }catch(e){offlineQ.push(trip);save('fs_queue',offlineQ);updateOfflineBadge();toast('⚠ QUEUED FOR RETRY');}
 }
