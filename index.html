@@ -1179,6 +1179,35 @@ function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;
 function save(k,v){localStorage.setItem(k,JSON.stringify(v));}
 
 // New saccos start with empty lists — no demo data
+
+// ══════════════════════════════════════════════════════════════
+// CLEAN SLATE — wipe any old demo/trial data on first run
+// Increment DATA_VERSION whenever a clean wipe is needed
+// ══════════════════════════════════════════════════════════════
+const DATA_VERSION = 'mh_v2_clean';
+const DATA_VERSION_KEY = 'fs_data_ver';
+
+(function cleanSlateReset(){
+  const storedVersion = localStorage.getItem(DATA_VERSION_KEY);
+  if(storedVersion === DATA_VERSION) return; // already clean
+
+  // ── Wipe all app data keys ─────────────────────────────────
+  const dataKeys = [
+    'fs_drivers', 'fs_cars', 'fs_trips', 'fs_queue',
+    'fs_dpins',   'fs_targets', 'fs_dtargets', 'fs_shifts',
+    'fs_active_trip', 'fs_pin', 'fs_config', 'fs_driver',
+    'fs_notes', 'fs_setup_done'
+  ];
+  dataKeys.forEach(k => localStorage.removeItem(k));
+
+  // ── Preserve only: last email (UX convenience), dark mode, dev PIN ─
+  // (fs_last_email, fs_dark, fs_devpin are intentionally kept)
+
+  // ── Mark as clean ──────────────────────────────────────────
+  localStorage.setItem(DATA_VERSION_KEY, DATA_VERSION);
+  console.log('[MatatuHub] Clean slate reset applied — all trial data cleared.');
+})();
+
 let DRIVERS    = load('fs_drivers', []);
 let CARS       = load('fs_cars', []);
 let STATIONS   = load('fs_stations', DEFAULT_STATIONS);
@@ -1494,7 +1523,7 @@ async function flushQueue(){
   toast('SYNCING '+offlineQ.length+' QUEUED TRIPS...');
   const remaining=[];
   for(const trip of offlineQ){
-    try{await db.collection('trips').doc(tripDocId(trip)).set(trip);}
+    try{await db.collection('trips').doc(tripDocId(trip)).set(tagWithSaccoId(trip));}
     catch(e){remaining.push(trip);}
   }
   offlineQ=remaining; save('fs_queue',offlineQ);
@@ -2220,9 +2249,15 @@ function tripDocId(trip){
   const date   = trip.date || new Date().toISOString().slice(0,10);
   const driver = (trip.driver || 'UNKNOWN').replace(/[^a-zA-Z0-9]/g,'-').slice(0,15);
   const plate  = (trip.carPlate || 'NOPLATE').replace(/[^a-zA-Z0-9]/g,'').slice(0,8);
-  // Short hash from timestamp to ensure uniqueness even for same driver+plate+date
   const hash   = (trip.dateMs || Date.now()).toString(36).slice(-4).toUpperCase();
   return `${date}_${driver}_${plate}_${hash}`;
+}
+
+function tagWithSaccoId(obj){
+  // Stamp every Firestore document with this sacco's unique ID
+  const sid = getSaccoId();
+  if(sid && !obj.saccoId) obj.saccoId = sid;
+  return obj;
 }
 
 async function submitToFirebase(trip){
@@ -2233,7 +2268,7 @@ async function submitToFirebase(trip){
   }
   if(!isOnline()){offlineQ.push(trip);save('fs_queue',offlineQ);updateOfflineBadge();toast('📦 OFFLINE — QUEUED');return;}
   try{
-    await db.collection('trips').doc(tripDocId(trip)).set(trip);
+    await db.collection('trips').doc(tripDocId(trip)).set(tagWithSaccoId(trip));
     toast('✅ SYNCED TO FIREBASE');
   }catch(e){offlineQ.push(trip);save('fs_queue',offlineQ);updateOfflineBadge();toast('⚠ QUEUED FOR RETRY');}
 }
@@ -2302,6 +2337,17 @@ function initFirebase(){
   }
 }
 
+
+// ── SACCO ISOLATION ────────────────────────────────────────────
+// Every Firestore document is tagged with saccoId = admin's UID.
+// All reads filter by saccoId so saccos never see each other's data.
+function getSaccoId(){
+  // For admin: their own UID
+  if(currentDriverDoc?.role === 'admin') return currentAuthUser?.uid || null;
+  // For driver: the adminUid stored when they were invited
+  return currentDriverDoc?.adminUid || currentDriverDoc?.saccoId || null;
+}
+
 async function loadFirebaseData(silent=false){
   if(!initFirebase()){if(!silent)toast('⚠ CONFIGURE FIREBASE IN ADMIN');return;}
   if(!isOnline()&&!silent){toast('OFFLINE — SHOWING CACHED DATA');return;}
@@ -2315,7 +2361,9 @@ async function loadFirebaseData(silent=false){
     else{// 'all' — load last 90 days to keep query fast
       const s=new Date();s.setDate(s.getDate()-90);s.setHours(0,0,0,0);startMs=s.getTime();}
 
-    let q=db.collection('trips').where('dateMs','>=',startMs).orderBy('dateMs','desc');
+    const sid = getSaccoId();
+    if(!sid){ if(!silent) toast('⚠ SACCO NOT IDENTIFIED — PLEASE LOG OUT AND BACK IN'); return; }
+    let q=db.collection('trips').where('saccoId','==',sid).where('dateMs','>=',startMs);
     // Extra car/driver filters pushed to Firestore where possible
     if(filterCar)q=q.where('carPlate','==',filterCar);
     const snap=await q.get();
@@ -3849,6 +3897,7 @@ async function adminRegisterDriver(){
       saccoName,
       invitedBy:    currentDriverDoc?.name || 'ADMIN',
       invitedByUid: currentAuthUser?.uid   || '',
+      saccoId:      getSaccoId() || currentAuthUser?.uid || '',
       invitedAt:    Date.now(),
       status:       'pending',
       inviteLinkSentAt: Date.now()
@@ -3984,13 +4033,19 @@ async function loadRegisteredDrivers(){
   listEl.innerHTML='<div style="text-align:center;padding:16px;font-family:var(--font-m);font-size:.54rem;color:var(--muted)">LOADING...</div>';
   try{
     // Load active drivers — no orderBy to avoid composite index requirement
-    const dSnap = await db.collection('drivers').where('role','==','driver').get();
+    const saccoId = getSaccoId();
+    const dSnap = await db.collection('drivers')
+      .where('role','==','driver')
+      .where('saccoId','==', saccoId || '')
+      .get();
     const drivers = dSnap.docs
       .map(d=>({id:d.id,...d.data(),_type:'active'}))
       .sort((a,b)=>(b.registeredAt||0)-(a.registeredAt||0)); // sort in JS
 
     // Load pending invites — no orderBy to avoid index requirement
-    const iSnap = await db.collection('pendingInvites').get();
+    const iSnap = await db.collection('pendingInvites')
+      .where('saccoId','==', saccoId || '')
+      .get();
     const pending = iSnap.docs
       .map(d=>({id:d.id,...d.data(),_type:'pending'}))
       .sort((a,b)=>(b.invitedAt||0)-(a.invitedAt||0)); // sort in JS
@@ -5098,7 +5153,7 @@ async function authSetupAdmin(){
     // Set a flag so onAuthStateChanged knows the profile is being written
     window._pendingProfileWrite = true;
     btn.innerHTML='<span class="auth-spinner"></span>STEP 2/3 — SAVING PROFILE...';
-    const profile = { uid, name, email, role:'admin', saccoName, active:true, createdAt:Date.now() };
+    const profile = { uid, name, email, role:'admin', saccoName, saccoId:uid, active:true, createdAt:Date.now() };
     await db.collection('drivers').doc(uid).set(profile);
     window._pendingProfileWrite = false;
 
@@ -5111,13 +5166,17 @@ async function authSetupAdmin(){
     localStorage.setItem('fs_setup_done','1');
     localStorage.setItem('fs_last_email', email);
     localStorage.setItem('fs_last_role', 'admin');
-    // Clear any demo data that may have been cached from a previous session
-    DRIVERS = []; save('fs_drivers', []);
-    CARS    = []; save('fs_cars', []);
-    localTrips = []; save('fs_trips', []);
-    shifts = {}; save('fs_shifts', {});
-    carTargets = {}; save('fs_targets', {});
+    // Fresh start — wipe everything for this new account
+    DRIVERS = [];       save('fs_drivers', []);
+    CARS    = [];       save('fs_cars', []);
+    localTrips = [];    save('fs_trips', []);
+    offlineQ = [];      save('fs_queue', []);
+    shifts = {};        save('fs_shifts', {});
+    carTargets = {};    save('fs_targets', {});
     driverTargets = {}; save('fs_dtargets', {});
+    driverPins = {};    save('fs_dpins', {});
+    localStorage.removeItem('fs_active_trip');
+    localStorage.removeItem('fs_pin');
     window._adminAuthCred = {email, password:pass};
 
     btn.disabled=false; btn.innerHTML='✅ ACCOUNT CREATED!';
@@ -5234,6 +5293,7 @@ async function authLogin(){
         email:         user.email,
         role:          'admin',
         saccoName:     appConfig.saccoName || 'MatatuHub',
+        saccoId:       user.uid,
         active:        true,
         createdAt:     Date.now(),
         _rulesBlocked: true  // flag so UI can show a warning
@@ -5255,6 +5315,7 @@ async function authLogin(){
           email:     user.email,
           role:      'admin',
           saccoName: appConfig.saccoName || 'MatatuHub',
+          saccoId:   user.uid,
           active:    true,
           createdAt: Date.now(),
         };
@@ -5591,6 +5652,8 @@ async function acceptInvitation(){
       active:       true,
       saccoName:    inviteData?.saccoName || appConfig.saccoName || '',
       invitedBy:    inviteData?.invitedBy || '',
+      adminUid:     inviteData?.invitedByUid || inviteData?.saccoId || '',
+      saccoId:      inviteData?.saccoId || inviteData?.invitedByUid || '',
       registeredAt: Date.now(),
       acceptedAt:   Date.now()
     };
@@ -5730,6 +5793,7 @@ async function writeSession(status, extra){
       driver:    tripState.driver,
       carPlate:  tripState.carPlate,
       status:    status,
+      saccoId:   getSaccoId() || '',
       updatedAt: Date.now(),
       date:      new Date().toLocaleDateString('en-GB'),
       ...extra
@@ -5765,7 +5829,10 @@ function startSessionListener(){
   try{
     // Only sessions updated in last 14 hours (today's shift)
     const since = Date.now() - (14*60*60*1000);
+    const sessSid = getSaccoId();
+    if(!sessSid){ return; }
     liveSessionSub = db.collection('sessions')
+      .where('saccoId','==',sessSid)
       .where('updatedAt','>=',since)
       .onSnapshot(snap=>{
         snap.forEach(doc=>{
@@ -5793,9 +5860,11 @@ function startLiveListener(){
   // Listen to trips from last 12 hours so manager sees today's activity
   const since=Date.now()-(12*60*60*1000);
   try{
+    const liveSid = getSaccoId();
+    if(!liveSid){ updateListenerStatus(false); return; }
     liveUnsubscribe=db.collection('trips')
+      .where('saccoId','==',liveSid)
       .where('dateMs','>=',since)
-      .orderBy('dateMs','desc')
       .onSnapshot(snap=>{
         snap.docChanges().forEach(change=>{
           if(change.type==='added'){
