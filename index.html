@@ -4560,25 +4560,17 @@ async function authSetupAdmin(){
 }
 
 function updateSaccoName(name){
+  // Updates the SACCO name (admin's registered fleet name).
+  // Does NOT touch the header logo — that always shows the app brand "MatatuHub".
   if(!name) return;
-  // Auth overlay logo
-  const el=document.getElementById('authLogoName');
-  if(el) el.textContent=name;
-  // Main header logo — split on first space for styling
-  const logo=document.getElementById('headerLogo');
-  if(logo){
-    const parts = name.split(' ');
-    if(parts.length > 1){
-      // Multi-word: first word plain, rest in accent span
-      logo.innerHTML = parts[0] + '<span> ' + parts.slice(1).join(' ') + '</span>';
-    } else {
-      // Single word (e.g. "MatatuHub"): split on last capital letter run
-      const m = name.match(/^([A-Za-z]+?)([A-Z][a-z].*)$/);
-      logo.innerHTML = m ? m[1] + '<span>' + m[2] + '</span>' : name;
-    }
-  }
-  // Page title
-  document.title = name + ' — Fleet Tracker';
+
+  // Auth overlay logo (login screen — shows sacco name there)
+  const el = document.getElementById('authLogoName');
+  if(el) el.textContent = name;
+
+  // Page title uses the sacco name
+  document.title = 'MatatuHub — ' + name;
+
   // Store in config
   if(appConfig.saccoName !== name){
     appConfig.saccoName = name;
