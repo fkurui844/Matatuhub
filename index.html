@@ -647,6 +647,7 @@ main{padding:13px 13px 74px}
 .about-dev-logo span{color:var(--accent2)}
 .about-dev-meta{font-family:var(--font-m);font-size:.44rem;color:var(--muted);letter-spacing:1px;line-height:1.6;margin-top:2px}
 .about-dev-badge{background:var(--accent);color:#fff;font-family:var(--font-m);font-size:.38rem;letter-spacing:1px;padding:2px 7px;display:inline-block;margin-top:4px}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 </style>
 </head>
 <body>
@@ -3313,39 +3314,10 @@ service cloud.firestore {
         </div>
       </div>` : ''}
 
-      <!-- REGISTER NEW DRIVER -->
-      <div class="card" style="border-top:4px solid var(--accent2);margin-bottom:12px">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
-          <div class="ctitle" style="color:var(--accent2);margin:0">📨 INVITE A DRIVER</div>
-        </div>
-        <div class="csub" style="margin-bottom:14px">// DRIVER RECEIVES AN EMAIL WITH A LOGIN LINK — NO PASSWORD NEEDED FROM YOU</div>
-        <div id="regDriverError" style="display:none;background:var(--rlight);border:1px solid var(--red);color:var(--red);font-family:var(--font-m);font-size:.52rem;padding:9px 11px;letter-spacing:1px;margin-bottom:10px;line-height:1.6"></div>
-        <div id="regDriverSuccess" style="display:none;margin-bottom:10px"></div>
-        <div class="field"><label>Driver's Full Name</label>
-          <input type="text" id="regDName" placeholder="e.g. JOHN KAMAU" style="text-transform:uppercase"
-            onkeydown="if(event.key==='Enter')document.getElementById('regDEmail').focus()">
-        </div>
-        <div class="field"><label>Driver's Email Address</label>
-          <input type="email" id="regDEmail" placeholder="driver@gmail.com"
-            onkeydown="if(event.key==='Enter')document.getElementById('regDPhone').focus()">
-        </div>
-        <div class="field"><label>Phone Number <span style="color:var(--muted);font-size:.44rem">(optional)</span></label>
-          <input type="tel" id="regDPhone" placeholder="e.g. 0712 345678"
-            onkeydown="if(event.key==='Enter')document.getElementById('regDCar').focus()">
-        </div>
-        <div class="field"><label>Assign Car Plate <span style="color:var(--muted);font-size:.44rem">(optional)</span></label>
-          <select id="regDCar">
-            <option value="">— Assign Car (optional) —</option>
-            ${CARS.map(c=>`<option value="${c}">${c}</option>`).join('')}
-          </select>
-        </div>
-        <button class="bb bstart" style="margin:0;background:var(--accent2);border-color:var(--accent2)" id="regDBtn" onclick="adminRegisterDriver()">
-          📨 SEND INVITATION
-        </button>
-        <div style="font-family:var(--font-m);font-size:.44rem;color:var(--muted);text-align:center;margin-top:8px;letter-spacing:1px;line-height:1.8">
-          THE DRIVER CLICKS THE LINK IN THEIR EMAIL<br>SETS THEIR OWN PASSWORD AND LOGS IN
-        </div>
-      </div>
+      <!-- INVITE DRIVER — opens modal -->
+      <button class="bb bstart" style="background:var(--accent2);border-color:var(--accent2);width:100%;margin-bottom:14px;font-size:.62rem;padding:14px;letter-spacing:2px" onclick="openInviteModal()">
+        📨 INVITE A DRIVER
+      </button>
 
       <!-- REGISTERED DRIVERS LIST -->
       <div class="card">
@@ -3742,6 +3714,48 @@ async function testFirebaseConnection(){
 // ADMIN — DRIVER REGISTRATION & MANAGEMENT
 // ══════════════════════════════════════════════
 
+
+// ── INVITE DRIVER MODAL ────────────────────────────────────────
+function openInviteModal(){
+  const modal = document.getElementById('inviteDriverModal');
+  if(!modal) return;
+
+  // Populate car dropdown from CARS array
+  const carSel = document.getElementById('regDCar');
+  if(carSel && CARS.length){
+    carSel.innerHTML = '<option value="">— Assign Car (optional) —</option>' +
+      CARS.map(p=>`<option value="${p}">${p}</option>`).join('');
+  }
+
+  // Reset form
+  ['regDName','regDEmail','regDPhone'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  if(carSel) carSel.value = '';
+  const err = document.getElementById('regDriverError');
+  const suc = document.getElementById('regDriverSuccess');
+  if(err){ err.style.display='none'; err.textContent=''; }
+  if(suc){ suc.style.display='none'; suc.innerHTML=''; }
+  const btn = document.getElementById('regDBtn');
+  if(btn){ btn.disabled=false; btn.innerHTML='📨 SEND INVITATION'; }
+
+  // Show modal
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  setTimeout(()=>document.getElementById('regDName')?.focus(), 300);
+}
+
+function closeInviteModal(){
+  const modal = document.getElementById('inviteDriverModal');
+  if(modal){
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  // Refresh driver list after closing
+  setTimeout(loadRegisteredDrivers, 200);
+}
+
 async function adminRegisterDriver(){
   const name  = (document.getElementById('regDName')?.value||'').trim().toUpperCase();
   const email = (document.getElementById('regDEmail')?.value||'').trim().toLowerCase();
@@ -3843,6 +3857,9 @@ async function adminRegisterDriver(){
     });
     const carSel = document.getElementById('regDCar');
     if(carSel) carSel.value='';
+
+    // Auto-close modal after 4 seconds so admin can review the success message
+    setTimeout(closeInviteModal, 4000);
 
     loadRegisteredDrivers();
 
@@ -6411,5 +6428,66 @@ updatePwaTheme();
   }
 })();
 </script>
+
+<!-- ════════════════════════════════════════════
+     INVITE DRIVER MODAL
+════════════════════════════════════════════ -->
+<div id="inviteDriverModal" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);align-items:flex-end;justify-content:center" onclick="if(event.target===this)closeInviteModal()">
+  <div style="background:var(--card);width:100%;max-width:480px;border-radius:16px 16px 0 0;padding:24px 20px 32px;animation:slideUp .3s ease;max-height:92vh;overflow-y:auto">
+
+    <!-- Handle bar -->
+    <div style="width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px;cursor:pointer" onclick="closeInviteModal()"></div>
+
+    <!-- Header -->
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+      <div>
+        <div style="font-family:var(--font-d);font-size:1.3rem;letter-spacing:2px;color:var(--accent2)">📨 INVITE A DRIVER</div>
+        <div style="font-family:var(--font-m);font-size:.46rem;color:var(--muted);letter-spacing:1px;margin-top:4px;line-height:1.7">
+          THEY RECEIVE AN EMAIL · SET THEIR OWN PASSWORD · LOG IN
+        </div>
+      </div>
+      <button onclick="closeInviteModal()" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted);line-height:1;padding:0 0 0 10px">✕</button>
+    </div>
+
+    <!-- Error / Success -->
+    <div id="regDriverError" style="display:none;background:var(--rlight);border:1px solid var(--red);color:var(--red);font-family:var(--font-m);font-size:.52rem;padding:9px 11px;letter-spacing:1px;margin-bottom:12px;line-height:1.6;border-radius:4px"></div>
+    <div id="regDriverSuccess" style="display:none;margin-bottom:12px"></div>
+
+    <!-- Fields -->
+    <div class="field">
+      <label>Driver's Full Name</label>
+      <input type="text" id="regDName" placeholder="e.g. JOHN KAMAU" style="text-transform:uppercase"
+        onkeydown="if(event.key==='Enter')document.getElementById('regDEmail').focus()">
+    </div>
+    <div class="field">
+      <label>Driver's Email Address</label>
+      <input type="email" id="regDEmail" placeholder="driver@gmail.com"
+        onkeydown="if(event.key==='Enter')document.getElementById('regDPhone').focus()">
+    </div>
+    <div class="field">
+      <label>Phone Number <span style="color:var(--muted);font-size:.44rem">(optional)</span></label>
+      <input type="tel" id="regDPhone" placeholder="e.g. 0712 345678"
+        onkeydown="if(event.key==='Enter')document.getElementById('regDCar').focus()">
+    </div>
+    <div class="field">
+      <label>Assign Car Plate <span style="color:var(--muted);font-size:.44rem">(optional)</span></label>
+      <select id="regDCar">
+        <option value="">— Assign Car (optional) —</option>
+      </select>
+    </div>
+
+    <!-- Send button -->
+    <button class="bb bstart" id="regDBtn"
+      style="margin:8px 0 0;background:var(--accent2);border-color:var(--accent2);width:100%;font-size:.6rem;padding:14px;letter-spacing:2px"
+      onclick="adminRegisterDriver()">
+      📨 SEND INVITATION
+    </button>
+
+    <div style="font-family:var(--font-m);font-size:.43rem;color:var(--muted);text-align:center;margin-top:10px;letter-spacing:1px;line-height:1.8">
+      THE DRIVER CLICKS THE LINK IN THEIR EMAIL<br>AND SETS THEIR OWN PASSWORD TO LOG IN
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
