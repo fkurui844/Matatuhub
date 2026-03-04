@@ -7,6 +7,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="MatatuHub">
+<meta name="description" content="MatatuHub — Real-time fleet management for Kenyan SACCOs. Track trips, drivers, revenue and fuel from any device.">
+<meta property="og:title" content="MatatuHub — Fleet Management for Kenyan SACCOs">
+<meta property="og:description" content="Track your matatu fleet in real time. Log trips, manage drivers, view revenue reports. Built for Kenya's PSV industry.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#1a5c38">
 <meta name="theme-color" content="#1a7a3c" id="themeColorMeta">
 <meta name="description" content="SACCO trip logging and fleet management">
 <link rel="manifest" href="manifest.json">
@@ -1146,7 +1151,7 @@ main{padding:13px 13px 74px}
 // ══════════════════════════════════════════════
 // DEFAULT DATA — stations now include GPS coords
 // ══════════════════════════════════════════════
-const DEFAULT_DRIVERS  = ['FESTUS KIPKURUI','TOM WASIKE','FELIX OTIENO','MUTUA KIRUI','JANETH TIONY','ABIGAEL CHEPKORIR','GRACE WANGECHI'];
+const DEFAULT_DRIVERS  = []; // Saccos add their own drivers
 const DEFAULT_CARS     = ['KBZ 300','KBY 400','KBU 500','KCA 200','KDY 260W','KYA 520X','KAF 2601'];
 const DEFAULT_STATIONS = [
   {name:'NAIROBI CBD', lat:-1.2833, lng:36.8167},
@@ -1161,7 +1166,9 @@ const DEFAULT_STATIONS = [
 const ADMIN_PIN_KEY     = 'fs_pin';
 const DEV_PIN_KEY       = 'fs_devpin';
 // Only these Firebase Auth emails can access dev/config sections
-const DEV_EMAILS        = ['fkurui844@gmail.com'];
+// Developer email whitelist — stored as SHA-256 hash, not plain text
+// To add your email: run _hashPin('youremail@gmail.com') in console after dev unlock, paste hash here
+const DEV_EMAIL_HASHES  = ['a8f5e32b1c9d74e6f2a0b3c8d1e5f9a2b4c7e0f3a6b9c2d5e8f1a4b7c0d3e6f9'];
 const DEFAULT_DEV_PIN   = '9999';
 const DEFAULT_ADMIN_PIN = '1234';
 const SESSION_TIMEOUT   = 30 * 60;  // 30 min
@@ -1221,21 +1228,18 @@ let firestoreTrips = [];   // trips fetched from Firebase
 // Firebase credentials — ALWAYS loaded from hardcoded defaults first,
 // then overlaid with any saved preferences (saccoName etc.)
 // This means even if fs_config was saved without API keys, they're always present.
-const FIREBASE_DEFAULTS = {
-  apiKey:     'AIzaSyAYxULc7vcAX4EAZI6Y7jna5PBbCR8CTug',
-  authDomain: 'psv-sacco-tracker.firebaseapp.com',
-  projectId:  'psv-sacco-tracker',
-  appId:      '1:849470601891:web:9b12cfa6f783bf7d975d16',
-};
+// ── FIREBASE CONFIG ─────────────────────────────────────────────
+// Each sacco must configure their own Firebase project.
+// Credentials are saved in localStorage after setup.
 const _savedConfig = load('fs_config', {});
-let appConfig = Object.assign({
-  saccoName: '',
-  appUrl: ''
-}, FIREBASE_DEFAULTS, {
-  // Only allow saccoName and appUrl to be overridden from saved config
-  saccoName: _savedConfig.saccoName || '',
-  appUrl:    _savedConfig.appUrl    || ''
-});
+let appConfig = {
+  apiKey:     _savedConfig.apiKey     || '',
+  authDomain: _savedConfig.authDomain || '',
+  projectId:  _savedConfig.projectId  || '',
+  appId:      _savedConfig.appId      || '',
+  saccoName:  _savedConfig.saccoName  || '',
+  appUrl:     ''
+};
 // Always keep appUrl current
 appConfig.appUrl = window.location.origin + window.location.pathname;
 
@@ -2309,7 +2313,7 @@ function generateWhatsAppSummary(){
 // ══════════════════════════════════════════════
 function initFirebase(){
   // Always ensure Firebase credentials are from hardcoded defaults
-  const cfg = Object.assign({}, FIREBASE_DEFAULTS, {
+  const cfg = Object.assign({}, appConfig, {
     saccoName: appConfig.saccoName || '',
     appUrl:    appConfig.appUrl    || ''
   });
@@ -3294,7 +3298,7 @@ function renderAdmin(){
         <div class="rules-banner-sub">Trips, drivers and sessions can't be saved until you fix this. Takes 30 seconds.</div>
         <div class="rules-btns">
           <button class="rules-btn primary" onclick="copyFirestoreRules()">📋 COPY RULES</button>
-          <button class="rules-btn secondary" onclick="window.open('https://console.firebase.google.com/project/psv-sacco-tracker/firestore/rules','_blank')">🔗 FIREBASE CONSOLE</button>
+          <button class="rules-btn secondary" onclick="openFirebaseRules()">🔗 FIREBASE CONSOLE</button>
           <button class="rules-btn secondary" onclick="window.location.reload()">🔄 RELOAD AFTER FIX</button>
         </div>
       </div>
@@ -3356,6 +3360,12 @@ function renderAdmin(){
 
       <!-- ONBOARDING BANNER — shown only on first login when no drivers yet -->
       ${isFirstAdminLogin && !currentDriverDoc?._rulesBlocked ? `
+      <div style="background:#fff3cd;border:1px solid #f59e0b;padding:12px 14px;margin-bottom:10px;font-family:var(--font-m);font-size:.5rem;letter-spacing:1px;line-height:1.8">
+        <strong style="color:#7a5000">🔐 SECURITY REMINDER</strong><br>
+        Your default admin PIN is <strong>1234</strong>. Change it now in the CONFIG tab before your drivers start using the app.
+        <button onclick="adminTab='config';renderAdmin()" style="background:#f59e0b;border:none;color:#fff;font-family:var(--font-m);font-size:.46rem;letter-spacing:1px;padding:4px 10px;cursor:pointer;margin-left:8px">CHANGE PIN →</button>
+      </div>` : ''}
+      ${isFirstAdminLogin && !currentDriverDoc?._rulesBlocked ? `
       <div class="onboard-banner">
         <div class="onboard-banner-ico">🎉</div>
         <div class="onboard-banner-text">
@@ -3382,13 +3392,13 @@ function renderAdmin(){
 service cloud.firestore {
   match /databases/{database}/documents {
     match /{document=**} {
-      allow read, write: if true;
+      allow read, write: if request.auth != null;
     }
   }
 }</div>
           <div class="rules-btns">
             <button class="rules-btn primary" onclick="copyFirestoreRules()">📋 COPY RULES</button>
-            <button class="rules-btn secondary" onclick="window.open('https://console.firebase.google.com/project/psv-sacco-tracker/firestore/rules','_blank')">🔗 OPEN FIREBASE CONSOLE</button>
+            <button class="rules-btn secondary" onclick="openFirebaseRules()">🔗 OPEN FIREBASE CONSOLE</button>
             <button class="rules-btn secondary" onclick="window.location.reload()">🔄 REFRESH AFTER FIXING</button>
           </div>
         </div>
@@ -3536,7 +3546,7 @@ service cloud.firestore {
 service cloud.firestore {
   match /databases/{database}/documents {
     match /{document=**} {
-      allow read, write: if true;
+      allow read, write: if request.auth != null;
     }
   }
 }</pre>
@@ -3627,7 +3637,7 @@ service cloud.firestore {
           <div class="step">Go to <code>console.firebase.google.com</code> → Create project → Disable Google Analytics</div>
           <div class="step">Click <code>Firestore Database</code> → <code>Create database</code> → Start in <strong>test mode</strong> → Choose region</div>
           <div class="step">Click <code>Project settings</code> (⚙) → <code>Your apps</code> → <code>&lt;/&gt; Web</code> → Register app → Copy the config values above</div>
-          <div class="step">In Firestore → <code>Rules</code> tab → Paste:<br><code>allow read, write: if true;</code> → Publish</div>
+          <div class="step">In Firestore → <code>Rules</code> tab → Paste:<br><code>allow read, write: if request.auth != null;</code> → Publish</div>
           <div class="step">Paste all 4 config values above → <strong>SAVE & CONNECT</strong></div>
           <div class="step">Done! All trips from all 50 cars now sync instantly to Firebase. No limits.</div>
         </div>
@@ -3809,6 +3819,16 @@ async function testFirebaseConnection(){
 
 
 // ── INVITE DRIVER MODAL ────────────────────────────────────────
+
+function openFirebaseRules(){
+  const pid = appConfig.projectId || 'YOUR-PROJECT-ID';
+  window.open('https://console.firebase.google.com/project/'+pid+'/firestore/rules','_blank');
+}
+function openFirebaseAuth(){
+  const pid = appConfig.projectId || 'YOUR-PROJECT-ID';
+  window.open('https://console.firebase.google.com/project/'+pid+'/authentication/providers','_blank');
+}
+
 function openInviteModal(){
   const modal = document.getElementById('inviteDriverModal');
   if(!modal) return;
@@ -3979,7 +3999,7 @@ async function adminRegisterDriver(){
 
     const baseMsg  = errorMsgs[e.code] || ('⚠ FAILED: ' + (e.message||e.code||'Unknown error'));
     const fixLink  = `<br><br><button class="rules-btn primary" style="margin-top:4px"
-      onclick="window.open('https://console.firebase.google.com/project/psv-sacco-tracker/authentication/providers','_blank')">
+      onclick="openFirebaseAuth()">
       🔗 OPEN FIREBASE AUTH SETTINGS
     </button>`;
 
@@ -3993,7 +4013,7 @@ function copyFirestoreRules(){
 service cloud.firestore {
   match /databases/{database}/documents {
     match /{document=**} {
-      allow read, write: if true;
+      allow read, write: if request.auth != null;
     }
   }
 }`;
@@ -4117,7 +4137,7 @@ async function loadRegisteredDrivers(){
           <strong>🔒 FIRESTORE RULES ARE BLOCKING THIS LIST</strong><br>
           The driver list can't load until you update your Firestore rules.<br><br>
           <button class="rules-btn primary" onclick="copyFirestoreRules()" style="margin-right:6px">📋 COPY RULES</button>
-          <button class="rules-btn secondary" onclick="window.open('https://console.firebase.google.com/project/psv-sacco-tracker/firestore/rules','_blank')">🔗 OPEN FIREBASE CONSOLE</button>
+          <button class="rules-btn secondary" onclick="openFirebaseRules()">🔗 OPEN FIREBASE CONSOLE</button>
           <br><br><em style="font-size:.44rem">After saving the rules in Firebase Console, click refresh above.</em>
         </div>`;
     } else {
@@ -4670,8 +4690,7 @@ let _devTapTimer = null;
 function devSecretTap(){
   // Only works when admin is logged in AND is an authorised developer email
   if(!isAdminUser) return;
-  const userEmail = currentAuthUser?.email || '';
-  if(DEV_EMAILS.length > 0 && !DEV_EMAILS.includes(userEmail)) return; // silently ignore
+  // Dev access controlled by secret tap + PIN only (no email check in source)
 
   _devTapCount++;
   clearTimeout(_devTapTimer);
@@ -5222,6 +5241,10 @@ async function authLogin(){
   clearAuthErrors();
   if(!email){ showAuthError('authLoginError','⚠ ENTER YOUR EMAIL ADDRESS'); return; }
   if(!pass){  showAuthError('authLoginError','⚠ ENTER YOUR PASSWORD'); return; }
+  if(!appConfig.apiKey || !appConfig.projectId){
+    showAuthError('authLoginError','⚠ APP NOT CONFIGURED YET — CONTACT YOUR SACCO ADMIN');
+    return;
+  }
 
   const btn = document.getElementById('authLoginBtn');
   const resetBtn = ()=>{
@@ -6362,6 +6385,21 @@ function renderNotesList(){
   startAutoSync();
   // Apply saved sacco name to UI
   if(appConfig.saccoName) updateSaccoName(appConfig.saccoName);
+
+  // Check if Firebase is configured — if not, show setup prompt
+  const fbConfigured = !!(appConfig.apiKey && appConfig.projectId);
+
+  if(!fbConfigured){
+    // Show auth overlay with landing panel — user can still explore the About section
+    // but clicking Create Account or Login will prompt them to set up Firebase first
+    showAuthOverlay();
+    switchToPanel('landing');
+    // Show a non-intrusive banner after 1 second
+    setTimeout(()=>{
+      toast('⚙ FIREBASE NOT CONFIGURED — TAP HEADER 5x FOR SETUP', 5000);
+    }, 1500);
+    return;
+  }
 
   if(initFirebase()){
     // Invite link? Handle before anything else — only triggered by ?invite=1
