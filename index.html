@@ -1178,8 +1178,9 @@ const PIN_LOCKOUT_SECS  = 5 * 60;   // 5-minute lockout
 function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
 function save(k,v){localStorage.setItem(k,JSON.stringify(v));}
 
-let DRIVERS    = load('fs_drivers', DEFAULT_DRIVERS);
-let CARS       = load('fs_cars', DEFAULT_CARS);
+// New saccos start with empty lists — no demo data
+let DRIVERS    = load('fs_drivers', []);
+let CARS       = load('fs_cars', []);
 let STATIONS   = load('fs_stations', DEFAULT_STATIONS);
 let localTrips = load('fs_trips', []);
 let offlineQ      = load('fs_queue', []);
@@ -2805,6 +2806,27 @@ function renderReports(){
   if(filterTo)activeTags.push({l:'TO: '+filterTo,c:"filterTo='';renderReports()"});
   if(reportFilter!=='all')activeTags.push({l:reportFilter.toUpperCase(),c:"reportFilter='all';renderReports()"});
 
+  // Show empty state for brand-new saccos with no data
+  if(!all.length){
+    el.innerHTML = `
+      <div style="text-align:center;padding:48px 20px">
+        <div style="font-size:3rem;margin-bottom:14px">📊</div>
+        <div style="font-family:var(--font-d);font-size:1.2rem;letter-spacing:3px;color:var(--accent);margin-bottom:10px">NO DATA YET</div>
+        <div style="font-family:var(--font-m);font-size:.52rem;color:var(--muted);letter-spacing:1px;line-height:2;max-width:280px;margin:0 auto">
+          Reports will appear here once your drivers start logging trips.<br><br>
+          <strong style="color:var(--text)">NEXT STEPS:</strong><br>
+          1. Add your cars in the CARS tab<br>
+          2. Invite drivers from the DRIVERS tab<br>
+          3. Open shifts in the SHIFTS tab<br>
+          4. Drivers log trips on their devices
+        </div>
+        <button class="bb bstart" style="margin-top:20px;max-width:220px" onclick="adminTab='cars';switchPage('admin');renderAdmin()">
+          🚗 SET UP YOUR FLEET →
+        </button>
+      </div>`;
+    return;
+  }
+
   el.innerHTML=`
     <div class="exprow">
       <button class="bsm bg" onclick="loadFirebaseData()">⟳</button>
@@ -3243,7 +3265,16 @@ function renderAdmin(){
       <div class="card">
         <div class="ctitle">SHIFT MANAGEMENT</div>
         <div class="csub">// OPEN OR CLOSE SHIFTS PER CAR — CLOSED CARS CANNOT LOG TRIPS</div>
-        ${CARS.map(car=>{
+        ${!CARS.length ? `
+          <div style="text-align:center;padding:28px 16px;border:2px dashed var(--border);margin-bottom:12px">
+            <div style="font-size:2rem;margin-bottom:8px">🚌</div>
+            <div style="font-family:var(--font-d);font-size:1rem;letter-spacing:2px;color:var(--muted);margin-bottom:6px">NO CARS YET</div>
+            <div style="font-family:var(--font-m);font-size:.5rem;color:var(--muted);letter-spacing:1px;line-height:1.8">
+              ADD YOUR CARS FIRST IN THE CARS TAB<br>THEN COME BACK TO MANAGE SHIFTS
+            </div>
+            <button class="bsm bg" style="margin-top:12px" onclick="adminTab='cars';renderAdmin()">GO TO CARS TAB →</button>
+          </div>` :
+        CARS.map(car=>{
           const s=shifts[car];
           const isOpen=s?.open===true;
           const isClosed=s?.open===false;
@@ -3263,6 +3294,7 @@ function renderAdmin(){
             </div>
           </div>`;
         }).join('')}
+        }
         <div class="divline"></div>
         <div style="display:flex;gap:7px">
           <button class="bsm bg" style="flex:1;padding:10px" onclick="openAllShifts()">OPEN ALL</button>
@@ -3363,7 +3395,15 @@ service cloud.firestore {
     <div class="asect ${adminTab==='cars'?'active':''}">
       <div class="card">
         <div class="ctitle">CARS <span class="pill">${CARS.length}</span></div>
-        ${CARS.map((c,i)=>`<div class="aitem">
+        ${!CARS.length ? `
+          <div style="text-align:center;padding:20px 10px;border:2px dashed var(--border);margin-bottom:12px">
+            <div style="font-size:2rem;margin-bottom:8px">🚗</div>
+            <div style="font-family:var(--font-d);font-size:1rem;letter-spacing:2px;color:var(--muted);margin-bottom:6px">NO CARS REGISTERED</div>
+            <div style="font-family:var(--font-m);font-size:.5rem;color:var(--muted);letter-spacing:1px;line-height:1.8">
+              ADD YOUR FIRST CAR PLATE BELOW<br>DRIVERS WILL SELECT IT WHEN LOGGING TRIPS
+            </div>
+          </div>` :
+        CARS.map((c,i)=>`<div class="aitem">
           <div><div class="aitem-name">${c}</div><div class="aitem-sub">Target: ${carTargets[c]?'KES '+Number(carTargets[c]).toLocaleString():'Not set'}</div></div>
           <div class="abtn-row">
             <button class="aedit" onclick="adminSetTarget('${c}')">🎯</button>
@@ -3403,6 +3443,11 @@ service cloud.firestore {
     <div class="asect ${adminTab==='trips'?'active':''}">
       <div class="card">
         <div class="ctitle">LOCAL TRIPS <span class="pill">${localTrips.length}</span></div>
+        ${!localTrips.length ? `<div style="text-align:center;padding:20px;font-family:var(--font-m);font-size:.52rem;color:var(--muted);letter-spacing:1px;line-height:1.8;border:2px dashed var(--border)">
+          <div style="font-size:1.5rem;margin-bottom:8px">📋</div>
+          NO TRIPS LOGGED YET<br>
+          <span style="font-size:.44rem">TRIPS APPEAR HERE ONCE DRIVERS START LOGGING</span>
+        </div>` : ''}
         <div class="csub">// EDIT OR DELETE LOCAL TRIP RECORDS</div>
         ${localTrips.length===0?'<div class="empty">NO LOCAL TRIPS</div>':localTrips.slice(0,30).map(t=>`
           <div class="aitem" style="margin-bottom:7px">
@@ -5066,6 +5111,13 @@ async function authSetupAdmin(){
     localStorage.setItem('fs_setup_done','1');
     localStorage.setItem('fs_last_email', email);
     localStorage.setItem('fs_last_role', 'admin');
+    // Clear any demo data that may have been cached from a previous session
+    DRIVERS = []; save('fs_drivers', []);
+    CARS    = []; save('fs_cars', []);
+    localTrips = []; save('fs_trips', []);
+    shifts = {}; save('fs_shifts', {});
+    carTargets = {}; save('fs_targets', {});
+    driverTargets = {}; save('fs_dtargets', {});
     window._adminAuthCred = {email, password:pass};
 
     btn.disabled=false; btn.innerHTML='✅ ACCOUNT CREATED!';
