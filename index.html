@@ -627,7 +627,7 @@ main{padding:13px 13px 74px}
     <!-- LOGO -->
     <div class="auth-logo">
       <div class="auth-logo-ico">🚌</div>
-      <div class="auth-logo-name" id="authLogoName">MatatuHub</div>
+      <div class="auth-logo-name" id="authLogoName">Matatu<span style="color:var(--accent2)">Hub</span></div>
       <div class="auth-logo-sub">FLEET MANAGEMENT SYSTEM</div>
     </div>
 
@@ -4560,18 +4560,14 @@ async function authSetupAdmin(){
 }
 
 function updateSaccoName(name){
-  // Updates the SACCO name (admin's registered fleet name).
-  // Does NOT touch the header logo — that always shows the app brand "MatatuHub".
+  // Stores the sacco name in config only.
+  // The app brand "MatatuHub" is always shown — never overwritten by sacco name.
   if(!name) return;
 
-  // Auth overlay logo (login screen — shows sacco name there)
-  const el = document.getElementById('authLogoName');
-  if(el) el.textContent = name;
-
-  // Page title uses the sacco name
+  // Page title
   document.title = 'MatatuHub — ' + name;
 
-  // Store in config
+  // Store in config only
   if(appConfig.saccoName !== name){
     appConfig.saccoName = name;
     save('fs_config', appConfig);
