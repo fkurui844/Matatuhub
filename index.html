@@ -914,7 +914,7 @@ main{padding:13px 13px 74px}
               <div style="font-family:var(--font-m);font-size:.4rem;color:var(--muted);margin-top:8px;line-height:1.7;letter-spacing:.5px">
                 By using MatatuHub you agree to our data practices.<br>
                 Your fleet data is stored in your own private database.<br>
-                Contact: <span style="color:var(--accent)">support@datafrica.co.ke</span>
+                Contact: <span style="color:var(--accent)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0a797f7a7a65787e4a6e6b7e6b6c7863696b24696524616f">[email&#160;protected]</a></span>
               </div>
             </div>
           </div>
@@ -1293,7 +1293,7 @@ main{padding:13px 13px 74px}
 
 <div class="toast" id="toast"></div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ══════════════════════════════════════════════
 // DEFAULT DATA — stations now include GPS coords
 // ══════════════════════════════════════════════
@@ -5235,6 +5235,13 @@ function proceedFromSplash(){
     // Now show the auth overlay (landing panel)
     showAuthOverlay();
     switchToPanel('landing');
+    // If Firebase hasn't been configured yet, prompt the admin to set it up
+    const fbConfigured = !!(appConfig.apiKey && appConfig.projectId);
+    if(!fbConfigured){
+      setTimeout(()=>{
+        toast('⚙ FIREBASE NOT CONFIGURED — TAP HEADER 5x FOR SETUP', 5000);
+      }, 600);
+    }
   }, 500);
   // Remember that user has seen the splash (don't show again this session)
   sessionStorage.setItem('_mh_splash_seen', '1');
@@ -6839,11 +6846,4 @@ updatePwaTheme();
       📨 SEND INVITATION
     </button>
 
-    <div style="font-family:var(--font-m);font-size:.43rem;color:var(--muted);text-align:center;margin-top:10px;letter-spacing:1px;line-height:1.8">
-      THE DRIVER CLICKS THE LINK IN THEIR EMAIL<br>AND SETS THEIR OWN PASSWORD TO LOG IN
-    </div>
-  </div>
-</div>
-
-</body>
-</html>
+    <div style="font-family:var(--font-m);font-s
