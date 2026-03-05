@@ -6856,4 +6856,25 @@ updatePwaTheme();
       📨 SEND INVITATION
     </button>
 
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAYxULc7vcAX4EAZI6Y7jna5PBbCR8CTug",
+    authDomain: "matatuhub.co.ke", // This is the update for your new domain
+    projectId: "psv-sacco-tracker",
+    storageBucket: "psv-sacco-tracker.firebasestorage.app",
+    messagingSenderId: "849470601891",
+    appId: "1:849470601891:web:9b12cfa6f783bf7d975d16"
+  };
+
+  // Initialize Firebase using the 'compat' libraries you already loaded in the <head>
+  firebase.initializeApp(firebaseConfig);
+  
+  // Define your database and auth constants to use in the rest of your app
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+
+  // You can now add your app logic below this line
+  console.log("MatatuHub Firebase initialized on matatuhub.co.ke");
+</script>
+    
     <div style="font-family:var(--font-m);font-s
