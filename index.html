@@ -1379,12 +1379,14 @@ let firestoreTrips = [];   // trips fetched from Firebase
 // Credentials are saved in localStorage after setup.
 const _savedConfig = load('fs_config', {});
 let appConfig = {
-  apiKey:     _savedConfig.apiKey     || '',
-  authDomain: _savedConfig.authDomain || '',
-  projectId:  _savedConfig.projectId  || '',
-  appId:      _savedConfig.appId      || '',
-  saccoName:  _savedConfig.saccoName  || '',
-  appUrl:     ''
+  apiKey:            _savedConfig.apiKey            || '',
+  authDomain:        _savedConfig.authDomain        || 'matatuhub.co.ke',
+  projectId:         _savedConfig.projectId         || 'matatuhub-tracker',
+  storageBucket:     _savedConfig.storageBucket     || 'matatuhub-tracker.appspot.com',
+  messagingSenderId: _savedConfig.messagingSenderId || '',
+  appId:             _savedConfig.appId             || '',
+  saccoName:         _savedConfig.saccoName         || '',
+  appUrl:            ''
 };
 // Always keep appUrl current
 appConfig.appUrl = window.location.origin + window.location.pathname;
@@ -2468,10 +2470,12 @@ function initFirebase(){
   try{
     if(!firebase.apps.length){
       firebase.initializeApp({
-        apiKey:     cfg.apiKey,
-        authDomain: cfg.authDomain,
-        projectId:  cfg.projectId,
-        appId:      cfg.appId
+        apiKey:            cfg.apiKey,
+        authDomain:        cfg.authDomain,
+        projectId:         cfg.projectId,
+        storageBucket:     cfg.storageBucket,
+        messagingSenderId: cfg.messagingSenderId,
+        appId:             cfg.appId
       });
     } else {
       // App already initialized (e.g. hot reload) — just get instances
@@ -3769,9 +3773,13 @@ service cloud.firestore {
         <div class="field"><label>API KEY</label>
           <input type="text" id="fbApiKey" value="${appConfig.apiKey||''}" placeholder="AIzaSy..."></div>
         <div class="field"><label>AUTH DOMAIN</label>
-          <input type="text" id="fbAuthDomain" value="${appConfig.authDomain||''}" placeholder="your-app.firebaseapp.com"></div>
+          <input type="text" id="fbAuthDomain" value="${appConfig.authDomain||'matatuhub.co.ke'}" placeholder="matatuhub.co.ke"></div>
         <div class="field"><label>PROJECT ID</label>
-          <input type="text" id="fbProjectId" value="${appConfig.projectId||''}" placeholder="your-project-id"></div>
+          <input type="text" id="fbProjectId" value="${appConfig.projectId||'matatuhub-tracker'}" placeholder="matatuhub-tracker"></div>
+        <div class="field"><label>STORAGE BUCKET</label>
+          <input type="text" id="fbStorageBucket" value="${appConfig.storageBucket||'matatuhub-tracker.appspot.com'}" placeholder="matatuhub-tracker.appspot.com"></div>
+        <div class="field"><label>MESSAGING SENDER ID</label>
+          <input type="text" id="fbMessagingSenderId" value="${appConfig.messagingSenderId||''}" placeholder="123456789012"></div>
         <div class="field"><label>APP ID</label>
           <input type="text" id="fbAppId" value="${appConfig.appId||''}" placeholder="1:123456:web:abc..."></div>
         <button class="bb bstart" style="margin-top:4px" onclick="saveFirebaseConfig()">SAVE & CONNECT</button>
@@ -3938,17 +3946,19 @@ function saveEditTrip(){
 function deleteTrip(id){if(!confirm('Delete this trip?'))return;localTrips=localTrips.filter(t=>t.id!==id);save('fs_trips',localTrips);toast('DELETED');renderAdmin();}
 
 function saveFirebaseConfig(){
-  appConfig.apiKey      =(document.getElementById('fbApiKey')?.value||'').trim();
-  appConfig.authDomain  =(document.getElementById('fbAuthDomain')?.value||'').trim();
-  appConfig.projectId   =(document.getElementById('fbProjectId')?.value||'').trim();
-  appConfig.appId       =(document.getElementById('fbAppId')?.value||'').trim();
+  appConfig.apiKey            =(document.getElementById('fbApiKey')?.value||'').trim();
+  appConfig.authDomain        =(document.getElementById('fbAuthDomain')?.value||'matatuhub.co.ke').trim();
+  appConfig.projectId         =(document.getElementById('fbProjectId')?.value||'matatuhub-tracker').trim();
+  appConfig.storageBucket     =(document.getElementById('fbStorageBucket')?.value||'matatuhub-tracker.appspot.com').trim();
+  appConfig.messagingSenderId =(document.getElementById('fbMessagingSenderId')?.value||'').trim();
+  appConfig.appId             =(document.getElementById('fbAppId')?.value||'').trim();
   save('fs_config',appConfig);
   db=null; // force re-init with new config
-  if(appConfig.projectId&&initFirebase()){
+  if(appConfig.apiKey&&appConfig.projectId&&initFirebase()){
     toast('✅ FIREBASE CONNECTED!');
     startLiveListener();
   }
-  else{toast(appConfig.projectId?'⚠ CHECK CONFIG VALUES':'CONFIG SAVED — ENTER ALL 4 VALUES');}
+  else{toast(appConfig.apiKey?'⚠ CHECK CONFIG VALUES':'CONFIG SAVED — ENTER API KEY, SENDER ID & APP ID');}
   renderAdmin();
 }
 async function testFirebaseConnection(){
