@@ -3465,6 +3465,7 @@ function clearErrorLog(){
 }
 
 
+function renderCarBars(filtered,total){
   const cars=[...new Set(filtered.map(t=>t.carPlate).filter(Boolean))];
   if(!cars.length)return'';
   const today=new Date().toLocaleDateString('en-GB');
