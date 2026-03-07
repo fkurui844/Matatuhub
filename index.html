@@ -334,7 +334,17 @@ main{padding:13px 13px 74px}
 .queue-banner{background:var(--accent2);color:#fff;padding:7px 13px;font-family:var(--font-m);font-size:.88rem;letter-spacing:1px;display:none;align-items:center;justify-content:space-between;cursor:pointer}
 .queue-banner.show{display:flex}
 
-/* AUTH SCREENS */
+/* ROLE CARDS — auth landing */
+.auth-role-card{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:2px solid var(--border);padding:16px;cursor:pointer;transition:var(--transition);border-radius:var(--radius);box-shadow:var(--shadow)}
+.auth-role-card:hover{transform:translateY(-2px);box-shadow:var(--card-glow)}
+.auth-role-card.manager-role:hover{border-color:var(--accent2)}
+.auth-role-card.driver-role:hover{border-color:var(--accent)}
+.auth-role-ico{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;box-shadow:0 3px 10px rgba(0,0,0,.15)}
+.auth-role-body{flex:1;min-width:0}
+.auth-role-title{font-family:var(--font-d);font-size:1.15rem;letter-spacing:2px;margin-bottom:5px}
+.auth-role-sub{font-family:var(--font-m);font-size:.75rem;color:var(--muted);letter-spacing:.5px;line-height:1.7;margin-bottom:8px}
+.auth-role-tag{display:inline-block;font-family:var(--font-m);font-size:.72rem;letter-spacing:1.5px;padding:3px 10px;border-radius:99px;font-weight:700}
+.auth-role-left{flex-shrink:0}
 .auth-landing{display:flex;flex-direction:column;gap:14px;margin-top:4px}
 .auth-landing-card{background:var(--card);border:2px solid var(--border);padding:20px;cursor:pointer;transition:var(--transition);position:relative;overflow:hidden;border-radius:var(--radius)}
 .auth-landing-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--card-glow)}
@@ -424,25 +434,54 @@ main{padding:13px 13px 74px}
 .auth-card-sub{font-family:var(--font-m);font-size:.82rem;color:var(--muted);letter-spacing:1.5px;margin-bottom:20px;line-height:1.7}
 .auth-field{margin-bottom:14px}
 .auth-field label{display:block;font-family:var(--font-m);font-size:.80rem;color:var(--muted);letter-spacing:1.5px;margin-bottom:5px;text-transform:uppercase}
-.auth-input{width:100%;background:var(--bg);border:2px solid var(--border);color:var(--text);padding:12px 13px;font-family:var(--font-m);font-size:.9rem;outline:none;transition:border-color .2s;letter-spacing:1px}
-.auth-input:focus{border-color:var(--accent)}
-.auth-input.error{border-color:var(--red)}
+.auth-input{width:100%;background:var(--bg);border:2px solid var(--border);color:var(--text);padding:12px 13px;font-family:var(--font-m);font-size:.9rem;outline:none;transition:var(--transition);letter-spacing:1px;border-radius:var(--radius-sm)}
+.auth-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,122,60,.15)}
+.auth-input.error{border-color:var(--red);box-shadow:0 0 0 3px rgba(229,57,53,.12)}
+.auth-input.valid{border-color:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.1)}
 .auth-input-wrap{position:relative}
-.auth-eye{position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:4px}
-.auth-btn{width:100%;background:var(--accent);border:none;color:#fff;font-family:var(--font-d);font-size:1.1rem;letter-spacing:3px;padding:14px;cursor:pointer;transition:opacity .2s;margin-top:6px}
-.auth-btn:hover{opacity:.88}
-.auth-btn:disabled{opacity:.4;cursor:not-allowed}
-.auth-btn.secondary{background:transparent;border:2px solid var(--border);color:var(--muted);font-size:.98rem;letter-spacing:2px;margin-top:8px;padding:11px}
-.auth-btn.secondary:hover{border-color:var(--accent);color:var(--accent)}
-.auth-error{background:var(--rlight);border:1px solid var(--red);color:var(--red);font-family:var(--font-m);font-size:.84rem;padding:10px 12px;letter-spacing:1px;margin-bottom:12px;display:none;white-space:pre-wrap;line-height:1.7}
-.auth-error.show{display:block}
-.auth-success{background:#e8f5ed;border:1px solid var(--accent);color:var(--accent);font-family:var(--font-m);font-size:.86rem;padding:10px 12px;letter-spacing:1px;margin-bottom:12px;display:none}
-.auth-success.show{display:block}
+.auth-eye{position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:6px;border-radius:4px;transition:var(--transition)}
+.auth-eye:hover{color:var(--accent);background:var(--alight)}
+.auth-btn{width:100%;background:var(--accent-grad);border:none;color:#fff;font-family:var(--font-d);font-size:1.1rem;letter-spacing:3px;padding:14px;cursor:pointer;transition:var(--transition);margin-top:6px;border-radius:var(--radius-sm);box-shadow:0 3px 12px rgba(26,122,60,.28)}
+.auth-btn:hover{box-shadow:0 5px 18px rgba(26,122,60,.38);transform:translateY(-1px)}
+.auth-btn:active{transform:translateY(0) scale(.98)}
+.auth-btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;transform:none}
+.auth-btn.secondary{background:transparent;border:2px solid var(--border);color:var(--muted);font-size:.98rem;letter-spacing:2px;margin-top:8px;padding:11px;box-shadow:none;border-radius:var(--radius-sm)}
+.auth-btn.secondary:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px)}
+.auth-error{background:var(--rlight);border:1px solid var(--red);border-left:4px solid var(--red);color:var(--red);font-family:var(--font-m);font-size:.84rem;padding:10px 12px;letter-spacing:1px;margin-bottom:12px;display:none;white-space:pre-wrap;line-height:1.7;border-radius:var(--radius-sm)}
+.auth-error.show{display:block;animation:fadeUp .2s ease}
+.auth-success{background:#e8f5ed;border:1px solid var(--accent);border-left:4px solid var(--accent);color:var(--accent);font-family:var(--font-m);font-size:.86rem;padding:10px 12px;letter-spacing:1px;margin-bottom:12px;display:none;border-radius:var(--radius-sm)}
+.auth-success.show{display:block;animation:fadeUp .2s ease}
 .auth-divider{display:flex;align-items:center;gap:10px;margin:14px 0}
 .auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
 .auth-divider-txt{font-family:var(--font-m);font-size:.78rem;color:var(--muted);letter-spacing:1px}
 .auth-link{font-family:var(--font-m);font-size:.84rem;color:var(--accent);cursor:pointer;text-decoration:underline;background:none;border:none;padding:0;display:block;text-align:center;margin-top:12px;letter-spacing:1px}
 .auth-spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:8px}
+
+/* PASSWORD STRENGTH */
+.pw-strength-bar{height:4px;border-radius:2px;background:var(--border);margin-top:6px;overflow:hidden;transition:all .3s}
+.pw-strength-fill{height:100%;border-radius:2px;transition:width .4s,background .4s;width:0}
+.pw-strength-fill.weak{background:#e53935;width:25%}
+.pw-strength-fill.fair{background:#f0a500;width:55%}
+.pw-strength-fill.good{background:#22c55e;width:80%}
+.pw-strength-fill.strong{background:#1a7a3c;width:100%}
+.pw-strength-label{font-family:var(--font-m);font-size:.72rem;letter-spacing:1px;margin-top:3px;height:14px;transition:color .3s}
+.pw-strength-label.weak{color:#e53935}
+.pw-strength-label.fair{color:#f0a500}
+.pw-strength-label.good{color:#22c55e}
+.pw-strength-label.strong{color:#1a7a3c}
+
+/* FIELD HINT */
+.auth-field-hint{font-family:var(--font-m);font-size:.73rem;color:var(--muted);letter-spacing:.5px;margin-top:4px;line-height:1.5}
+.auth-field-hint.err{color:var(--red)}
+.auth-field-hint.ok{color:#22c55e}
+
+/* SETUP STEPS */
+.setup-steps{display:flex;gap:0;margin-bottom:20px;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border)}
+.setup-step{flex:1;padding:8px 4px;text-align:center;font-family:var(--font-m);font-size:.70rem;letter-spacing:1px;color:var(--muted);background:var(--surface);border-right:1px solid var(--border);transition:var(--transition)}
+.setup-step:last-child{border-right:none}
+.setup-step.active{background:var(--accent-grad);color:#fff}
+.setup-step.done{background:var(--alight);color:var(--accent)}
+.setup-step-num{display:block;font-family:var(--font-d);font-size:1rem;margin-bottom:1px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .driver-reg-card{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);padding:11px 13px;margin-bottom:8px}
 .driver-reg-name{font-family:var(--font-m);font-size:.95rem;font-weight:700;color:var(--text)}
@@ -774,8 +813,27 @@ main{padding:13px 13px 74px}
   <!-- Tagline -->
   <div class="splash-tagline">Built for Kenya's<br><span>Matatu Industry.</span></div>
 
+  <!-- Role hierarchy strip -->
+  <div style="display:flex;align-items:center;gap:0;margin-bottom:20px;width:100%;max-width:380px;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;background:var(--card)">
+    <div style="flex:1;padding:10px 8px;text-align:center;border-right:1px solid var(--border)">
+      <div style="font-size:1.1rem;margin-bottom:3px">🔧</div>
+      <div style="font-family:var(--font-d);font-size:.85rem;letter-spacing:1.5px;color:var(--muted)">DEVELOPER</div>
+      <div style="font-family:var(--font-m);font-size:.65rem;color:var(--muted);letter-spacing:.5px;margin-top:2px">ALL RIGHTS</div>
+    </div>
+    <div style="flex:1;padding:10px 8px;text-align:center;border-right:1px solid var(--border);background:rgba(240,165,0,.07)">
+      <div style="font-size:1.1rem;margin-bottom:3px">🏢</div>
+      <div style="font-family:var(--font-d);font-size:.85rem;letter-spacing:1.5px;color:var(--accent2)">MANAGER</div>
+      <div style="font-family:var(--font-m);font-size:.65rem;color:var(--muted);letter-spacing:.5px;margin-top:2px">FLEET CONTROL</div>
+    </div>
+    <div style="flex:1;padding:10px 8px;text-align:center;background:rgba(26,122,60,.06)">
+      <div style="font-size:1.1rem;margin-bottom:3px">🚌</div>
+      <div style="font-family:var(--font-d);font-size:.85rem;letter-spacing:1.5px;color:var(--accent)">DRIVER</div>
+      <div style="font-family:var(--font-m);font-size:.65rem;color:var(--muted);letter-spacing:.5px;margin-top:2px">LOGS TRIPS</div>
+    </div>
+  </div>
+
   <div class="splash-desc">
-    A modern platform that gives SACCO owners complete visibility of their fleet —
+    A modern platform that gives SACCO managers complete visibility of their fleet —
     tracking every trip, every fare, every driver, in real time from any device.
     No paperwork. No spreadsheets. No guessing.
   </div>
@@ -817,7 +875,7 @@ main{padding:13px 13px 74px}
     </div>
     <div class="splash-security-item">
       <span style="font-size:.9rem">✅</span>
-      <div class="splash-security-item-text"><strong>Role-based access</strong> — drivers only see their own data. Admins control who sees what.</div>
+      <div class="splash-security-item-text"><strong>Role-based access</strong> — drivers only see their own data. Managers control who sees what.</div>
     </div>
     <div class="splash-security-item">
       <span style="font-size:.9rem">✅</span>
@@ -882,19 +940,41 @@ main{padding:13px 13px 74px}
 
     <!-- ═══ PANEL: LANDING ═══ -->
     <div id="authPanelLanding" style="display:none">
-      <div class="auth-landing">
-        <div class="auth-landing-card admin-card" onclick="switchToPanel('create')">
-          <div class="auth-landing-card-ico">👑</div>
-          <div class="auth-landing-card-title">CREATE ACCOUNT</div>
-          <div class="auth-landing-card-sub">FIRST TIME? SET UP YOUR SACCO OWNER ACCOUNT<br>YOU'LL THEN REGISTER DRIVERS &amp; MANAGE YOUR FLEET</div>
-          <div class="auth-landing-card-arrow">›</div>
+
+      <!-- Role hierarchy intro -->
+      <div style="text-align:center;margin-bottom:18px">
+        <div style="font-family:var(--font-d);font-size:1.1rem;letter-spacing:2px;color:var(--text);margin-bottom:4px">WHO ARE YOU?</div>
+        <div style="font-family:var(--font-m);font-size:.78rem;color:var(--muted);letter-spacing:1px">SELECT YOUR ROLE TO GET STARTED</div>
+      </div>
+
+      <!-- MANAGER card — new account -->
+      <div class="auth-role-card manager-role" onclick="switchToPanel('create')" style="margin-bottom:10px">
+        <div class="auth-role-left">
+          <div class="auth-role-ico" style="background:linear-gradient(135deg,#f0a500,#d48c00)">🏢</div>
         </div>
-        <div class="auth-landing-card driver-card" onclick="switchToPanel('login')">
-          <div class="auth-landing-card-ico">🔑</div>
-          <div class="auth-landing-card-title">LOG IN</div>
-          <div class="auth-landing-card-sub">ALREADY HAVE AN ACCOUNT?<br>ADMIN, MANAGERS AND DRIVERS ALL LOGIN HERE</div>
-          <div class="auth-landing-card-arrow">›</div>
+        <div class="auth-role-body">
+          <div class="auth-role-title" style="color:var(--accent2)">MANAGER / SACCO OWNER</div>
+          <div class="auth-role-sub">Own a SACCO or fleet? Create your free account to register drivers, manage vehicles, set targets and view revenue reports.</div>
+          <div class="auth-role-tag" style="background:rgba(240,165,0,.12);color:var(--accent2)">NEW ACCOUNT →</div>
         </div>
+      </div>
+
+      <!-- DRIVER card — login -->
+      <div class="auth-role-card driver-role" onclick="switchToPanel('login')" style="margin-bottom:10px">
+        <div class="auth-role-left">
+          <div class="auth-role-ico" style="background:var(--accent-grad)">🚌</div>
+        </div>
+        <div class="auth-role-body">
+          <div class="auth-role-title" style="color:var(--accent)">DRIVER</div>
+          <div class="auth-role-sub">Log trips, declare collections and track your performance. Your manager invites you by email.</div>
+          <div class="auth-role-tag" style="background:var(--alight);color:var(--accent)">LOG IN →</div>
+        </div>
+      </div>
+
+      <!-- Already have account -->
+      <div style="text-align:center;margin:4px 0 16px">
+        <span style="font-family:var(--font-m);font-size:.80rem;color:var(--muted);letter-spacing:1px">Already have a manager account? </span>
+        <button onclick="switchToPanel('login')" style="background:none;border:none;font-family:var(--font-m);font-size:.80rem;color:var(--accent);cursor:pointer;text-decoration:underline;letter-spacing:1px;padding:0">LOG IN HERE</button>
       </div>
 
 
@@ -950,7 +1030,7 @@ main{padding:13px 13px 74px}
             </div>
             <div class="about-security-item">
               <div class="about-security-item-ico">✅</div>
-              <div class="about-security-item-text"><strong>Role-based access.</strong> Drivers only see their own trips and stats. Admins control who can see what. No cross-account data leakage.</div>
+              <div class="about-security-item-text"><strong>Role-based access.</strong> Drivers only see their own trips and stats. Managers control who can see what. No cross-account data leakage.</div>
             </div>
             <div class="about-security-item">
               <div class="about-security-item-ico">✅</div>
@@ -982,37 +1062,102 @@ main{padding:13px 13px 74px}
     <!-- ═══ PANEL: CREATE ADMIN ACCOUNT ═══ -->
     <div id="authPanelCreate" style="display:none">
       <button class="auth-back-btn" onclick="switchToPanel('landing')">‹ BACK</button>
-      <div class="auth-panel-title" style="color:var(--accent2)">SACCO SETUP</div>
-      <div class="auth-panel-sub">CREATE YOUR OWNER ACCOUNT. YOU'LL THEN<br>REGISTER DRIVERS FROM YOUR DASHBOARD.</div>
+      <div class="auth-panel-title" style="color:var(--accent2)">MANAGER SETUP</div>
+      <div class="auth-panel-sub">AS A MANAGER YOU CAN REGISTER DRIVERS & CARS,<br>SET TARGETS, OPEN SHIFTS AND VIEW ALL REPORTS.</div>
+
+      <!-- What you get as a manager -->
+      <div style="background:rgba(240,165,0,.08);border:1px solid rgba(240,165,0,.3);border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:16px;font-family:var(--font-m);font-size:.76rem;color:var(--text);letter-spacing:.5px;line-height:1.9">
+        <div style="font-family:var(--font-d);font-size:.9rem;color:var(--accent2);letter-spacing:2px;margin-bottom:6px">🏢 MANAGER RIGHTS INCLUDE:</div>
+        ✅ Register drivers &amp; assign cars<br>
+        ✅ Set daily revenue targets<br>
+        ✅ Open &amp; close shifts per vehicle<br>
+        ✅ View fleet live on dashboard<br>
+        ✅ Export PDF / Excel / WhatsApp reports
+      </div>
+
+      <!-- Progress steps -->
+      <div class="setup-steps" id="setupSteps">
+        <div class="setup-step active" id="setupStep1"><span class="setup-step-num">1</span>DETAILS</div>
+        <div class="setup-step" id="setupStep2"><span class="setup-step-num">2</span>SECURITY</div>
+        <div class="setup-step" id="setupStep3"><span class="setup-step-num">3</span>DONE</div>
+      </div>
+
       <div class="auth-error" id="authSetupError"></div>
-      <div class="auth-field">
-        <label>Your Full Name</label>
-        <input class="auth-input" type="text" id="setupName" placeholder="e.g. JOHN KAMAU"
-          style="text-transform:uppercase"
-          onkeydown="if(event.key==='Enter')document.getElementById('setupSaccoName').focus()">
-      </div>
-      <div class="auth-field">
-        <label>Sacco / Company Name</label>
-        <input class="auth-input" type="text" id="setupSaccoName" placeholder="e.g. SWIFT SACCO"
-          style="text-transform:uppercase"
-          onkeydown="if(event.key==='Enter')document.getElementById('setupEmail').focus()">
-      </div>
-      <div class="auth-field">
-        <label>Your Email Address</label>
-        <input class="auth-input" type="email" id="setupEmail" placeholder="owner@gmail.com"
-          onkeydown="if(event.key==='Enter')document.getElementById('setupPass').focus()">
-      </div>
-      <div class="auth-field">
-        <label>Create Password <span style="color:var(--muted);font-size:.75rem">(min 6 characters)</span></label>
-        <div class="auth-input-wrap">
-          <input class="auth-input" type="password" id="setupPass" placeholder="••••••••"
-            onkeydown="if(event.key==='Enter')authSetupAdmin()">
-          <button class="auth-eye" onclick="toggleSetupEye()" id="setupEyeBtn">👁</button>
+
+      <!-- Step 1: Personal + SACCO details -->
+      <div id="setupSection1">
+        <div class="auth-field">
+          <label>Your Full Name</label>
+          <input class="auth-input" type="text" id="setupName" placeholder="e.g. JOHN KAMAU"
+            style="text-transform:uppercase" autocomplete="name"
+            oninput="validateSetupField('name')"
+            onkeydown="if(event.key==='Enter')document.getElementById('setupSaccoName').focus()">
+          <div class="auth-field-hint" id="setupNameHint"></div>
+        </div>
+        <div class="auth-field">
+          <label>Sacco / Company Name</label>
+          <input class="auth-input" type="text" id="setupSaccoName" placeholder="e.g. SWIFT SACCO"
+            style="text-transform:uppercase" autocomplete="organization"
+            oninput="validateSetupField('sacco')"
+            onkeydown="if(event.key==='Enter')document.getElementById('setupPhone').focus()">
+          <div class="auth-field-hint" id="setupSaccoHint"></div>
+        </div>
+        <div class="auth-field">
+          <label>Phone Number <span style="color:var(--muted);font-size:.73rem">(optional)</span></label>
+          <input class="auth-input" type="tel" id="setupPhone" placeholder="e.g. 0712 345 678"
+            autocomplete="tel"
+            onkeydown="if(event.key==='Enter')document.getElementById('setupEmail').focus()">
+        </div>
+        <div class="auth-field">
+          <label>Your Email Address</label>
+          <input class="auth-input" type="email" id="setupEmail" placeholder="owner@gmail.com"
+            autocomplete="email"
+            oninput="validateSetupField('email')"
+            onkeydown="if(event.key==='Enter')document.getElementById('setupPass').focus()">
+          <div class="auth-field-hint" id="setupEmailHint"></div>
         </div>
       </div>
-      <button class="auth-btn" id="setupBtn" onclick="authSetupAdmin()"
-        style="background:var(--accent2)">
-        🚀 CREATE OWNER ACCOUNT
+
+      <!-- Step 2: Password -->
+      <div id="setupSection2" style="display:none">
+        <div style="font-family:var(--font-m);font-size:.82rem;color:var(--muted);letter-spacing:1px;margin-bottom:14px;padding:10px 12px;background:var(--alight);border:1px solid var(--border);border-radius:var(--radius-sm)">
+          Creating account for: <strong id="setupReviewEmail" style="color:var(--accent)"></strong>
+        </div>
+        <div class="auth-field">
+          <label>Create Password <span style="color:var(--muted);font-size:.73rem">(min 6 characters)</span></label>
+          <div class="auth-input-wrap">
+            <input class="auth-input" type="password" id="setupPass" placeholder="••••••••"
+              autocomplete="new-password"
+              oninput="updatePasswordStrength()"
+              onkeydown="if(event.key==='Enter')document.getElementById('setupPassConfirm').focus()">
+            <button class="auth-eye" onclick="toggleSetupEye()" id="setupEyeBtn">👁</button>
+          </div>
+          <div class="pw-strength-bar"><div class="pw-strength-fill" id="pwStrengthFill"></div></div>
+          <div class="pw-strength-label" id="pwStrengthLabel"></div>
+        </div>
+        <div class="auth-field">
+          <label>Confirm Password</label>
+          <div class="auth-input-wrap">
+            <input class="auth-input" type="password" id="setupPassConfirm" placeholder="••••••••"
+              autocomplete="new-password"
+              oninput="validateSetupField('confirm')"
+              onkeydown="if(event.key==='Enter')authSetupAdmin()">
+            <button class="auth-eye" onclick="toggleSetupConfirmEye()" id="setupConfirmEyeBtn">👁</button>
+          </div>
+          <div class="auth-field-hint" id="setupConfirmHint"></div>
+        </div>
+      </div>
+
+      <!-- Navigation buttons -->
+      <button class="auth-btn" id="setupNextBtn" onclick="setupNextStep()"
+        style="background:var(--accent2-grad);box-shadow:0 3px 12px rgba(240,165,0,.3)">
+        NEXT — SET PASSWORD →
+      </button>
+      <button class="auth-btn" id="setupBtn" onclick="authSetupAdmin()" style="display:none">
+        🚀 CREATE MY ACCOUNT
+      </button>
+      <button class="auth-btn secondary" id="setupBackBtn" onclick="setupPrevStep()" style="display:none">
+        ← BACK TO DETAILS
       </button>
     </div>
 
@@ -1020,7 +1165,10 @@ main{padding:13px 13px 74px}
     <div id="authPanelLogin" style="display:none">
       <button class="auth-back-btn" onclick="switchToPanel('landing')">‹ BACK</button>
       <div class="auth-panel-title">LOG IN</div>
-      <div class="auth-panel-sub">WORKS FOR ADMINS AND DRIVERS.<br>YOUR DASHBOARD OPENS AUTOMATICALLY.</div>
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:5px;background:rgba(240,165,0,.1);border:1px solid rgba(240,165,0,.3);padding:5px 10px;border-radius:99px;font-family:var(--font-m);font-size:.72rem;letter-spacing:1px;color:var(--accent2)">🏢 MANAGER</div>
+        <div style="display:flex;align-items:center;gap:5px;background:var(--alight);border:1px solid var(--border);padding:5px 10px;border-radius:99px;font-family:var(--font-m);font-size:.72px;letter-spacing:1px;color:var(--accent);font-size:.72rem">🚌 DRIVER</div>
+      </div>
       <div class="auth-error" id="authLoginError"></div>
       <div class="auth-field">
         <label>Email Address</label>
@@ -1248,8 +1396,8 @@ main{padding:13px 13px 74px}
 <div class="dev-pin-overlay" id="resetPinOverlay">
   <div class="dev-pin-box" style="border-color:var(--accent2)">
     <div style="font-size:2rem;margin-bottom:8px">🔑</div>
-    <div class="dev-pin-title" style="color:var(--accent2)">RESET ADMIN PIN</div>
-    <div class="dev-pin-sub">ENTER YOUR <strong style="color:var(--text)">DEVELOPER PIN</strong><br>TO VERIFY YOUR IDENTITY,<br>THEN SET A NEW ADMIN PIN</div>
+    <div class="dev-pin-title" style="color:var(--accent2)">RESET MANAGER PIN</div>
+    <div class="dev-pin-sub">ENTER YOUR <strong style="color:var(--text)">DEVELOPER PIN</strong><br>TO VERIFY YOUR IDENTITY,<br>THEN SET A NEW MANAGER PIN</div>
     <div id="resetStepVerify">
       <div id="resetVerifyMsg"></div>
       <input type="password" class="pininput" id="resetDevPinIn" maxlength="6" placeholder="DEV PIN"
@@ -2633,7 +2781,7 @@ function tagWithSaccoId(obj){
 async function submitToFirebase(trip){
   if(!initFirebase()){
     if(!isOnline()){offlineQ.push(trip);save('fs_queue',offlineQ);updateOfflineBadge();toast('📦 SAVED TO OFFLINE QUEUE');}
-    else toast('💾 SAVED LOCALLY — CONFIGURE FIREBASE IN ADMIN');
+    else toast('💾 SAVED LOCALLY — CONFIGURE FIREBASE IN MANAGER SETTINGS');
     return;
   }
   if(!isOnline()){offlineQ.push(trip);save('fs_queue',offlineQ);updateOfflineBadge();toast('📦 OFFLINE — QUEUED');return;}
@@ -2722,7 +2870,7 @@ function getSaccoId(){
 }
 
 async function loadFirebaseData(silent=false){
-  if(!initFirebase()){if(!silent)toast('⚠ CONFIGURE FIREBASE IN ADMIN');return;}
+  if(!initFirebase()){if(!silent)toast('⚠ CONFIGURE FIREBASE IN MANAGER SETTINGS');return;}
   if(!isOnline()&&!silent){toast('OFFLINE — SHOWING CACHED DATA');return;}
   try{
     // Build date range based on current filter
@@ -3689,8 +3837,8 @@ function renderAdmin(){
     const locked=isAdminLocked();
     el.innerHTML=`
       <div class="apinbox">
-        <div class="apintitle">ADMIN ACCESS</div>
-        <div class="apinsub">ENTER PIN TO MANAGE SHIFTS,<br>STATIONS, DRIVERS & SETTINGS</div>
+        <div class="apintitle">MANAGER ACCESS</div>
+        <div class="apinsub">ENTER YOUR PIN TO ACCESS<br>SHIFTS, DRIVERS, CARS & SETTINGS</div>
         ${locked?`<div class="pin-locked">🔒 TOO MANY ATTEMPTS<br>TRY AGAIN IN ${adminLockSecsLeft()}s</div>`:''}
         <input type="password" class="pininput" id="pinIn" maxlength="6" placeholder="••••"
           ${locked?'disabled':''} onkeydown="if(event.key==='Enter')checkPin()">
@@ -3703,14 +3851,14 @@ function renderAdmin(){
       </div>`;
     return;
   }
-  const adminName  = (currentDriverDoc?.name || 'ADMIN').split(' ')[0];
+  const adminName  = (currentDriverDoc?.name || 'MANAGER').split(' ')[0];
   const saccoLabel = currentDriverDoc?.saccoName || appConfig.saccoName || 'MY SACCO';
   el.innerHTML=`
     <div class="card" style="border-left:4px solid var(--accent2);margin-bottom:10px;padding:12px 14px">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div>
           <div class="ctitle" style="margin:0;font-size:1.15rem;letter-spacing:2px">${saccoLabel}</div>
-          <div style="font-family:var(--font-m);font-size:.80rem;color:var(--muted);letter-spacing:1px;margin-top:3px">👑 ${adminName} · ADMIN PANEL</div>
+          <div style="font-family:var(--font-m);font-size:.80rem;color:var(--muted);letter-spacing:1px;margin-top:3px">🏢 ${adminName} · MANAGER DASHBOARD</div>
         </div>
         <button class="bghost" style="color:var(--red);border-color:var(--red);font-size:.84rem;padding:7px 10px" onclick="authLogout()">🚪 LOG OUT</button>
       </div>
@@ -3988,9 +4136,9 @@ service cloud.firestore {
           <div class="ctitle" style="margin:0">SYSTEM CONFIG</div>
           <button class="bghost" style="color:var(--red);border-color:var(--red)" onclick="lockDev()">🔒 LOCK DEV</button>
         </div>
-        <div class="csub">// CHANGE ADMIN PIN</div>
+        <div class="csub">// CHANGE MANAGER PIN</div>
         <div class="irow">
-          <div class="field"><label>New Admin PIN (4-6 digits)</label><input type="password" id="newPin" placeholder="New PIN" maxlength="6"></div>
+          <div class="field"><label>New Manager PIN (4-6 digits)</label><input type="password" id="newPin" placeholder="New PIN" maxlength="6"></div>
           <button class="bsm bg" onclick="changePin()">SAVE</button>
         </div>
         <div class="divline"></div>
@@ -4349,7 +4497,7 @@ async function adminRegisterDriver(){
       carPlate:    car   || null,
       phone:       phone || null,
       saccoName,
-      invitedBy:    currentDriverDoc?.name || 'ADMIN',
+      invitedBy:    currentDriverDoc?.name || 'MANAGER',
       invitedByUid: currentAuthUser?.uid   || '',
       saccoId:      getSaccoId() || currentAuthUser?.uid || '',
       invitedAt:    Date.now(),
@@ -4999,7 +5147,7 @@ function commitResetPin(){
   adminPinFailures = 0;
   closeResetOverlay();
   renderAdmin();
-  toast('✅ ADMIN PIN RESET SUCCESSFULLY — USE YOUR NEW PIN TO LOGIN');
+  toast('✅ MANAGER PIN RESET SUCCESSFULLY — USE YOUR NEW PIN TO LOGIN');
 }
 
 // ══════════════════════════════════════════════
@@ -5591,6 +5739,25 @@ function switchToPanel(panel){
     if(el) el.style.display = (id===targetId) ? 'block' : 'none';
   });
   clearAuthErrors();
+  // Reset create account form to step 1 whenever navigating to it
+  if(panel==='create'||panel==='setup'){
+    document.getElementById('setupSection1').style.display='block';
+    document.getElementById('setupSection2').style.display='none';
+    document.getElementById('setupNextBtn').style.display='block';
+    document.getElementById('setupBtn').style.display='none';
+    document.getElementById('setupBackBtn').style.display='none';
+    ['setupStep1','setupStep2','setupStep3'].forEach((id,i)=>{
+      document.getElementById(id).className='setup-step'+(i===0?' active':'');
+    });
+    // Clear field states
+    ['setupName','setupSaccoName','setupEmail','setupPass','setupPassConfirm'].forEach(id=>{
+      const el=document.getElementById(id); if(el){el.classList.remove('valid','error');el.value='';}
+    });
+    ['setupNameHint','setupSaccoHint','setupEmailHint','setupConfirmHint','pwStrengthLabel'].forEach(id=>{
+      const el=document.getElementById(id); if(el) el.textContent='';
+    });
+    const fill=document.getElementById('pwStrengthFill'); if(fill) fill.className='pw-strength-fill';
+  }
   setTimeout(()=>{
     if(panel==='login')  document.getElementById('authEmail')?.focus();
     if(panel==='create'||panel==='setup') document.getElementById('setupName')?.focus();
@@ -5633,38 +5800,160 @@ function toggleSetupEye(){
 }
 
 // ── FIRST-TIME ADMIN SETUP ──────────────────────────────────────
+
+/** Inline field validation — called on oninput */
+function validateSetupField(field){
+  const nameEl  = document.getElementById('setupName');
+  const saccoEl = document.getElementById('setupSaccoName');
+  const emailEl = document.getElementById('setupEmail');
+  const confEl  = document.getElementById('setupPassConfirm');
+  const passEl  = document.getElementById('setupPass');
+
+  if(field==='name'){
+    const v=(nameEl.value||'').trim();
+    const hint=document.getElementById('setupNameHint');
+    if(!v){nameEl.classList.remove('valid','error');hint.textContent='';return;}
+    if(v.length<2){nameEl.classList.add('error');nameEl.classList.remove('valid');hint.textContent='Enter your full name';hint.className='auth-field-hint err';}
+    else{nameEl.classList.add('valid');nameEl.classList.remove('error');hint.textContent='✓';hint.className='auth-field-hint ok';}
+  }
+  if(field==='sacco'){
+    const v=(saccoEl.value||'').trim();
+    const hint=document.getElementById('setupSaccoHint');
+    if(!v){saccoEl.classList.remove('valid','error');hint.textContent='';return;}
+    if(v.length<2){saccoEl.classList.add('error');saccoEl.classList.remove('valid');hint.textContent='Enter your SACCO or company name';hint.className='auth-field-hint err';}
+    else{saccoEl.classList.add('valid');saccoEl.classList.remove('error');hint.textContent='✓';hint.className='auth-field-hint ok';}
+  }
+  if(field==='email'){
+    const v=(emailEl.value||'').trim();
+    const hint=document.getElementById('setupEmailHint');
+    if(!v){emailEl.classList.remove('valid','error');hint.textContent='';return;}
+    const ok=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    if(!ok){emailEl.classList.add('error');emailEl.classList.remove('valid');hint.textContent='Enter a valid email address';hint.className='auth-field-hint err';}
+    else{emailEl.classList.add('valid');emailEl.classList.remove('error');hint.textContent='✓ Looks good';hint.className='auth-field-hint ok';}
+  }
+  if(field==='confirm'){
+    const pass=(passEl?.value||'');
+    const conf=(confEl?.value||'');
+    const hint=document.getElementById('setupConfirmHint');
+    if(!conf){confEl.classList.remove('valid','error');hint.textContent='';return;}
+    if(conf!==pass){confEl.classList.add('error');confEl.classList.remove('valid');hint.textContent='Passwords do not match';hint.className='auth-field-hint err';}
+    else{confEl.classList.add('valid');confEl.classList.remove('error');hint.textContent='✓ Passwords match';hint.className='auth-field-hint ok';}
+  }
+}
+
+/** Password strength meter */
+function updatePasswordStrength(){
+  const pass = document.getElementById('setupPass')?.value||'';
+  const fill = document.getElementById('pwStrengthFill');
+  const label = document.getElementById('pwStrengthLabel');
+  if(!fill||!label) return;
+  let score=0;
+  if(pass.length>=6) score++;
+  if(pass.length>=10) score++;
+  if(/[A-Z]/.test(pass)&&/[a-z]/.test(pass)) score++;
+  if(/[0-9]/.test(pass)) score++;
+  if(/[^A-Za-z0-9]/.test(pass)) score++;
+  const levels=[{cls:'',txt:''},{cls:'weak',txt:'WEAK'},{cls:'fair',txt:'FAIR'},{cls:'good',txt:'GOOD'},{cls:'strong',txt:'STRONG'}];
+  const lvl = pass.length===0?0:Math.max(1,Math.min(4,score));
+  fill.className='pw-strength-fill'+(lvl?' '+levels[lvl].cls:'');
+  label.className='pw-strength-label'+(lvl?' '+levels[lvl].cls:'');
+  label.textContent=levels[lvl].txt;
+  // Also re-validate confirm
+  validateSetupField('confirm');
+}
+
+/** Eye toggle for confirm field */
+function toggleSetupConfirmEye(){
+  const inp=document.getElementById('setupPassConfirm');
+  const btn=document.getElementById('setupConfirmEyeBtn');
+  if(!inp)return;
+  inp.type=inp.type==='password'?'text':'password';
+  btn.textContent=inp.type==='password'?'👁':'🙈';
+}
+
+/** Step 1 → Step 2 */
+function setupNextStep(){
+  const name     = (document.getElementById('setupName')?.value||'').trim();
+  const saccoName= (document.getElementById('setupSaccoName')?.value||'').trim();
+  const email    = (document.getElementById('setupEmail')?.value||'').trim();
+  clearAuthErrors();
+  if(!name){
+    showAuthError('authSetupError','⚠ ENTER YOUR FULL NAME');
+    document.getElementById('setupName').focus();
+    document.getElementById('setupName').classList.add('error');
+    return;
+  }
+  if(!saccoName){
+    showAuthError('authSetupError','⚠ ENTER YOUR SACCO OR COMPANY NAME');
+    document.getElementById('setupSaccoName').focus();
+    document.getElementById('setupSaccoName').classList.add('error');
+    return;
+  }
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    showAuthError('authSetupError','⚠ ENTER A VALID EMAIL ADDRESS');
+    document.getElementById('setupEmail').focus();
+    document.getElementById('setupEmail').classList.add('error');
+    return;
+  }
+  // Move to step 2
+  document.getElementById('setupSection1').style.display='none';
+  document.getElementById('setupSection2').style.display='block';
+  document.getElementById('setupNextBtn').style.display='none';
+  document.getElementById('setupBtn').style.display='block';
+  document.getElementById('setupBackBtn').style.display='block';
+  document.getElementById('setupReviewEmail').textContent=email.toLowerCase();
+  // Update step indicators
+  document.getElementById('setupStep1').className='setup-step done';
+  document.getElementById('setupStep2').className='setup-step active';
+  setTimeout(()=>document.getElementById('setupPass')?.focus(), 150);
+}
+
+/** Step 2 → Step 1 */
+function setupPrevStep(){
+  document.getElementById('setupSection1').style.display='block';
+  document.getElementById('setupSection2').style.display='none';
+  document.getElementById('setupNextBtn').style.display='block';
+  document.getElementById('setupBtn').style.display='none';
+  document.getElementById('setupBackBtn').style.display='none';
+  document.getElementById('setupStep1').className='setup-step active';
+  document.getElementById('setupStep2').className='setup-step';
+  clearAuthErrors();
+}
+
 async function authSetupAdmin(){
   const name      = (document.getElementById('setupName')?.value||'').trim().toUpperCase();
   const saccoName = (document.getElementById('setupSaccoName')?.value||'').trim().toUpperCase();
+  const phone     = (document.getElementById('setupPhone')?.value||'').trim();
   const email     = (document.getElementById('setupEmail')?.value||'').trim().toLowerCase();
   const pass      = document.getElementById('setupPass')?.value||'';
+  const passConf  = document.getElementById('setupPassConfirm')?.value||'';
 
   clearAuthErrors();
-  if(!name)     { showAuthError('authSetupError','⚠ ENTER YOUR FULL NAME'); return; }
-  if(!saccoName){ showAuthError('authSetupError','⚠ ENTER YOUR SACCO NAME'); return; }
-  if(!email)    { showAuthError('authSetupError','⚠ ENTER YOUR EMAIL ADDRESS'); return; }
-  if(pass.length<6){ showAuthError('authSetupError','⚠ PASSWORD MUST BE AT LEAST 6 CHARACTERS'); return; }
+  if(!name)     { showAuthError('authSetupError','⚠ GO BACK AND ENTER YOUR FULL NAME'); return; }
+  if(!saccoName){ showAuthError('authSetupError','⚠ GO BACK AND ENTER YOUR SACCO NAME'); return; }
+  if(!email)    { showAuthError('authSetupError','⚠ GO BACK AND ENTER YOUR EMAIL ADDRESS'); return; }
+  if(pass.length<6){ showAuthError('authSetupError','⚠ PASSWORD MUST BE AT LEAST 6 CHARACTERS'); document.getElementById('setupPass')?.focus(); return; }
+  if(pass !== passConf){ showAuthError('authSetupError','⚠ PASSWORDS DO NOT MATCH — PLEASE RE-ENTER THEM'); document.getElementById('setupPassConfirm')?.focus(); document.getElementById('setupPassConfirm')?.classList.add('error'); return; }
 
   const btn=document.getElementById('setupBtn');
   btn.disabled=true; btn.innerHTML='<span class="auth-spinner"></span>CREATING ACCOUNT...';
 
+  // Step indicators
+  document.getElementById('setupStep3').className='setup-step active';
+
   try{
     if(!auth) initFirebase();
 
-    // STEP 1: Create the Firebase Auth account
     btn.innerHTML='<span class="auth-spinner"></span>STEP 1/3 — CREATING AUTH...';
     const cred = await auth.createUserWithEmailAndPassword(email, pass);
     const uid  = cred.user.uid;
 
-    // STEP 2: Immediately write profile to Firestore BEFORE anything else
-    // Set a flag so onAuthStateChanged knows the profile is being written
     window._pendingProfileWrite = true;
     btn.innerHTML='<span class="auth-spinner"></span>STEP 2/3 — SAVING PROFILE...';
-    const profile = { uid, name, email, role:'admin', saccoName, saccoId:uid, active:true, createdAt:Date.now() };
+    const profile = { uid, name, email, phone:phone||'', role:'admin', saccoName, saccoId:uid, active:true, createdAt:Date.now() };
     await db.collection('drivers').doc(uid).set(profile);
     window._pendingProfileWrite = false;
 
-    // STEP 3: Save config + mark setup done
     btn.innerHTML='<span class="auth-spinner"></span>STEP 3/3 — FINISHING...';
     appConfig.saccoName = saccoName;
     appConfig.appUrl    = window.location.origin + window.location.pathname;
@@ -5673,7 +5962,6 @@ async function authSetupAdmin(){
     localStorage.setItem('fs_setup_done','1');
     localStorage.setItem('fs_last_email', email);
     localStorage.setItem('fs_last_role', 'admin');
-    // Fresh start — wipe everything for this new account
     DRIVERS = [];       save('fs_drivers', []);
     CARS    = [];       save('fs_cars', []);
     localTrips = [];    save('fs_trips', []);
@@ -5686,9 +5974,11 @@ async function authSetupAdmin(){
     localStorage.removeItem('fs_pin');
     window._adminAuthCred = {email, password:pass};
 
+    // Mark step 3 done
+    document.getElementById('setupStep2').className='setup-step done';
+    document.getElementById('setupStep3').className='setup-step done';
     btn.disabled=false; btn.innerHTML='✅ ACCOUNT CREATED!';
 
-    // Route directly — tell the observer to skip
     window._pendingProfileWrite = false;
     window._loginHandled = true;
     onDriverAuthenticated(cred.user, profile);
@@ -5696,13 +5986,33 @@ async function authSetupAdmin(){
 
   } catch(e){
     window._pendingProfileWrite = false;
-    btn.disabled=false; btn.innerHTML='🚀 CREATE ADMIN ACCOUNT';
+    btn.disabled=false; btn.innerHTML='🚀 CREATE MY ACCOUNT';
+    document.getElementById('setupStep3').className='setup-step';
     const msgs={
-      'auth/email-already-in-use': '⚠ THAT EMAIL IS ALREADY REGISTERED — USE ADMIN LOGIN TAB',
-      'auth/invalid-email':        '⚠ INVALID EMAIL ADDRESS',
+      'auth/email-already-in-use': null, // handled specially below
+      'auth/invalid-email':        '⚠ INVALID EMAIL ADDRESS — GO BACK AND FIX IT',
       'auth/weak-password':        '⚠ PASSWORD TOO WEAK — USE AT LEAST 6 CHARACTERS',
+      'auth/network-request-failed': '⚠ NO INTERNET CONNECTION — CHECK YOUR DATA AND TRY AGAIN',
+      'auth/too-many-requests':    '⚠ TOO MANY ATTEMPTS — PLEASE WAIT A FEW MINUTES AND TRY AGAIN',
     };
-    showAuthError('authSetupError', msgs[e.code]||('⚠ '+e.message));
+    if(e.code === 'auth/email-already-in-use'){
+      showAuthError('authSetupError',
+        '⚠ THAT EMAIL IS ALREADY REGISTERED.\n\nIf this is your account, use the LOGIN button instead.\nIf you forgot your password, go to LOGIN → "Forgot your password?"');
+      // Offer a redirect button
+      setTimeout(()=>{
+        const errEl = document.getElementById('authSetupError');
+        if(errEl && errEl.classList.contains('show')){
+          const redirect = document.createElement('button');
+          redirect.className='auth-btn'; redirect.style.marginTop='10px'; redirect.style.fontSize='.88rem';
+          redirect.textContent='→ GO TO LOGIN';
+          redirect.onclick=()=>{ switchToPanel('login'); const el=document.getElementById('authEmail'); if(el) el.value=email; };
+          errEl.appendChild(document.createElement('br'));
+          errEl.appendChild(redirect);
+        }
+      }, 50);
+    } else {
+      showAuthError('authSetupError', msgs[e.code]||('⚠ '+e.message));
+    }
   }
 }
 
@@ -5730,7 +6040,7 @@ async function authLogin(){
   if(!email){ showAuthError('authLoginError','⚠ ENTER YOUR EMAIL ADDRESS'); return; }
   if(!pass){  showAuthError('authLoginError','⚠ ENTER YOUR PASSWORD'); return; }
   if(!appConfig.apiKey || !appConfig.projectId){
-    showAuthError('authLoginError','⚠ APP NOT CONFIGURED YET — CONTACT YOUR SACCO ADMIN');
+    showAuthError('authLoginError','⚠ APP NOT CONFIGURED YET — CONTACT YOUR SACCO MANAGER');
     return;
   }
 
@@ -5859,13 +6169,13 @@ async function authLogin(){
   } catch(e){
     resetBtn();
     const msgs={
-      'auth/user-not-found':         '⚠ NO ACCOUNT FOUND — CHECK YOUR EMAIL',
-      'auth/wrong-password':         '⚠ INCORRECT PASSWORD — TRY AGAIN',
-      'auth/invalid-email':          '⚠ INVALID EMAIL ADDRESS',
-      'auth/user-disabled':          '⚠ ACCOUNT DISABLED — CONTACT YOUR ADMIN',
-      'auth/too-many-requests':      '⚠ TOO MANY ATTEMPTS — WAIT A FEW MINUTES',
-      'auth/invalid-credential':     '⚠ INCORRECT EMAIL OR PASSWORD',
-      'auth/network-request-failed': '⚠ NO INTERNET — CHECK YOUR CONNECTION',
+      'auth/user-not-found':         '⚠ NO ACCOUNT FOUND WITH THAT EMAIL.\nIf you\'re new, use CREATE ACCOUNT instead.',
+      'auth/wrong-password':         '⚠ INCORRECT PASSWORD.\nTry again or use "Forgot your password?" to reset it.',
+      'auth/invalid-email':          '⚠ INVALID EMAIL ADDRESS — PLEASE CHECK AND TRY AGAIN',
+      'auth/user-disabled':          '⚠ THIS ACCOUNT HAS BEEN DISABLED — CONTACT YOUR SACCO MANAGER',
+      'auth/too-many-requests':      '⚠ TOO MANY FAILED ATTEMPTS — PLEASE WAIT A FEW MINUTES BEFORE TRYING AGAIN',
+      'auth/invalid-credential':     '⚠ INCORRECT EMAIL OR PASSWORD.\nDouble-check both and try again.',
+      'auth/network-request-failed': '⚠ NO INTERNET CONNECTION — CHECK YOUR DATA OR WIFI AND TRY AGAIN',
     };
     showAuthError('authLoginError', msgs[e.code]||('⚠ '+e.message));
   }
@@ -5902,7 +6212,7 @@ async function authForgotPassword(){
 
 // ── LOGOUT ─────────────────────────────────────────────────────
 async function authLogout(){
-  const msg = isAdminUser ? 'LOG OUT OF ADMIN PANEL?' : 'LOG OUT OF YOUR ACCOUNT?';
+  const msg = isAdminUser ? 'LOG OUT OF MANAGER PANEL?' : 'LOG OUT OF YOUR ACCOUNT?';
   if(!confirm(msg)) return;
   try{
     if(!isAdminUser){
@@ -5966,7 +6276,7 @@ function onDriverAuthenticated(user, profile){
     // Don't sign out — just show error on login panel so they can retry
     showAuthOverlay();
     switchToPanel('login');
-    showAuthError('authLoginError','⚠ NO PROFILE FOUND — PLEASE TRY AGAIN OR CONTACT YOUR ADMIN');
+    showAuthError('authLoginError','⚠ NO PROFILE FOUND — PLEASE TRY AGAIN OR CONTACT YOUR MANAGER');
     return;
   }
 
@@ -5978,14 +6288,14 @@ function onDriverAuthenticated(user, profile){
     isAdminUser   = true;
     adminUnlocked = true;
     if(profile.saccoName) updateSaccoName(profile.saccoName);
-    const firstName = (profile.name||'ADMIN').split(' ')[0];
-    document.getElementById('driverBadge').textContent = '👑 '+firstName;
+    const firstName = (profile.name||'MANAGER').split(' ')[0];
+    document.getElementById('driverBadge').textContent = '🏢 '+firstName;
     // Avatar & greeting
     const initials = (profile.name||'AD').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
     const av=document.getElementById('driverAvatar'); if(av){av.textContent=initials;av.style.display='flex';av.style.background='rgba(240,165,0,.3)';}
     const gr=document.getElementById('headerGreeting'); if(gr){const h=new Date().getHours();gr.textContent=(h<12?'GOOD MORNING':h<17?'GOOD AFTERNOON':'GOOD EVENING')+', '+firstName;}
     const hSub=document.getElementById('headerSubText');
-    if(hSub) hSub.textContent='// ADMIN PANEL · '+(profile.saccoName||appConfig.saccoName||'SACCO');
+    if(hSub) hSub.textContent='// MANAGER · '+(profile.saccoName||appConfig.saccoName||'SACCO');
     hideAuthOverlay();
     showNavFor('admin');
     // Always open on DRIVERS tab — that's where admin manages the fleet
@@ -6207,10 +6517,10 @@ async function acceptInvitation(){
     btn.disabled=false; btn.innerHTML='✅ ACCEPT INVITATION & LOG IN';
     const msgs = {
       'auth/invalid-email':          '⚠ INVALID EMAIL ADDRESS',
-      'auth/user-disabled':          '⚠ YOUR ACCOUNT HAS BEEN DISABLED — CONTACT YOUR ADMIN',
+      'auth/user-disabled':          '⚠ YOUR ACCOUNT HAS BEEN DISABLED — CONTACT YOUR SACCO MANAGER',
       'auth/weak-password':          '⚠ PASSWORD TOO WEAK — USE AT LEAST 6 CHARACTERS',
       'auth/network-request-failed': '⚠ NO INTERNET CONNECTION — CHECK YOUR NETWORK',
-      'auth/operation-not-allowed':  '⚠ ACCOUNT CREATION IS NOT ENABLED — CONTACT YOUR ADMIN',
+      'auth/operation-not-allowed':  '⚠ ACCOUNT CREATION IS NOT ENABLED — CONTACT YOUR SACCO MANAGER',
     };
     showInviteError(msgs[e.code] || ('⚠ ' + (e.message||e.code)));
     console.error('acceptInvitation error:', e.code, e.message);
@@ -7137,7 +7447,7 @@ updatePwaTheme();
 })();
 </script>
 
-/* ════════════════════════════════════════════
+<!-- ════════════════════════════════════════════
      INVITE DRIVER MODAL
 ════════════════════════════════════════════ -->
 <div id="inviteDriverModal" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);align-items:flex-end;justify-content:center" onclick="if(event.target===this)closeInviteModal()">
