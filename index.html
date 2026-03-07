@@ -895,7 +895,45 @@ main{padding:13px 13px 74px}
       <span class="offline-badge" id="offlineBadge">OFFLINE</span>
       <button class="hico" onclick="toggleDark()" id="darkBtn" title="Toggle dark mode">🌙</button>
       <div class="dbadge" id="driverBadge" onclick="isAdminUser?null:goSetup()">— LOGIN —</div>
-      <div class="driver-avatar" id="driverAvatar" style="display:none"></div>
+      <!-- Avatar + dropdown wrapper -->
+      <div id="avatarWrap" style="position:relative;display:none">
+        <div class="driver-avatar" id="driverAvatar"
+          onclick="toggleAvatarMenu()"
+          title="Account menu"
+          style="cursor:pointer;user-select:none"></div>
+        <!-- Dropdown -->
+        <div id="avatarDropdown"
+          style="display:none;position:absolute;top:calc(100% + 8px);right:0;
+                 background:var(--card);border:1.5px solid var(--border);
+                 border-radius:10px;min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,.35);
+                 z-index:9999;overflow:hidden;animation:fadeUp .18s ease">
+          <!-- User info header -->
+          <div id="avatarDropUser"
+            style="padding:13px 16px 11px;border-bottom:1px solid var(--border);
+                   font-family:var(--font-m);font-size:.78rem;letter-spacing:1px;color:var(--muted)">
+          </div>
+          <!-- Settings -->
+          <button onclick="closeAvatarMenu();isAdminUser?adminSettings():goDriverSettings()"
+            style="display:flex;align-items:center;gap:10px;width:100%;padding:12px 16px;
+                   background:none;border:none;border-bottom:1px solid var(--border);
+                   font-family:var(--font-m);font-size:.82rem;letter-spacing:1px;
+                   color:var(--text);cursor:pointer;text-align:left;transition:background .15s"
+            onmouseover="this.style.background='var(--surface)'"
+            onmouseout="this.style.background='none'">
+            ⚙️ <span>SETTINGS</span>
+          </button>
+          <!-- Log out -->
+          <button onclick="closeAvatarMenu();authLogout()"
+            style="display:flex;align-items:center;gap:10px;width:100%;padding:12px 16px;
+                   background:none;border:none;
+                   font-family:var(--font-m);font-size:.82rem;letter-spacing:1px;
+                   color:var(--red);cursor:pointer;text-align:left;transition:background .15s"
+            onmouseover="this.style.background='var(--rlight)'"
+            onmouseout="this.style.background='none'">
+            🚪 <span>LOG OUT</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
   <div class="hsub">
@@ -921,12 +959,22 @@ main{padding:13px 13px 74px}
     <div class="splash-hero">
 
       <!-- Logo row -->
-      <div class="splash-logo-row">
-        <div class="splash-logo-ico">🚌</div>
-        <div class="splash-logo-text">
-          <div class="splash-logo-name">Matatu<span>Hub</span></div>
-          <div class="splash-logo-sub">FLEET MANAGEMENT SYSTEM</div>
+      <div class="splash-logo-row" style="justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="splash-logo-ico">🚌</div>
+          <div class="splash-logo-text">
+            <div class="splash-logo-name">Matatu<span>Hub</span></div>
+            <div class="splash-logo-sub">FLEET MANAGEMENT SYSTEM</div>
+          </div>
         </div>
+        <!-- Theme toggle on splash -->
+        <button id="splashThemeBtn" onclick="toggleDark()" title="Toggle dark / light mode"
+          style="background:var(--surface);border:1.5px solid var(--border);color:var(--text);
+                 width:40px;height:40px;border-radius:10px;font-size:1.1rem;cursor:pointer;
+                 display:flex;align-items:center;justify-content:center;flex-shrink:0;
+                 transition:all .22s cubic-bezier(.4,0,.2,1)">
+          🌙
+        </button>
       </div>
 
       <!-- Step dots -->
@@ -1955,7 +2003,7 @@ let chartTrendEntity   = '';         // specific driver/car name, '' = show all
 let chartTrendPeriod   = '30';       // '14' | '30' | 'weekly'
 let editingTripId      = null;
 
-if(darkMode){document.documentElement.setAttribute('data-theme','dark'); document.getElementById('darkBtn').textContent='☀️';}
+if(darkMode){document.documentElement.setAttribute('data-theme','dark'); document.getElementById('darkBtn').textContent='☀️'; const sb=document.getElementById('splashThemeBtn'); if(sb)sb.textContent='☀️';}
 
 // ══════════════════════════════════════════════
 // DARK MODE
@@ -1963,7 +2011,10 @@ if(darkMode){document.documentElement.setAttribute('data-theme','dark'); documen
 function toggleDark(){
   darkMode=!darkMode; save('fs_dark',darkMode);
   document.documentElement.setAttribute('data-theme',darkMode?'dark':'light');
-  document.getElementById('darkBtn').textContent=darkMode?'☀️':'🌙';
+  const icon = darkMode?'☀️':'🌙';
+  document.getElementById('darkBtn').textContent=icon;
+  const splashBtn = document.getElementById('splashThemeBtn');
+  if(splashBtn) splashBtn.textContent=icon;
   if(currentPage==='reports'&&reportTab==='charts')setTimeout(renderCharts,100);
   if(typeof updatePwaTheme==='function')updatePwaTheme();
 }
@@ -6851,7 +6902,9 @@ function onDriverAuthenticated(user, profile){
     document.getElementById('driverBadge').textContent = '🏢 '+firstName;
     // Avatar & greeting
     const initials = (profile.name||'AD').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
-    const av=document.getElementById('driverAvatar'); if(av){av.textContent=initials;av.style.display='flex';av.style.background='rgba(240,165,0,.3)';}
+    const av=document.getElementById('driverAvatar'); if(av){av.textContent=initials;av.style.background='rgba(240,165,0,.3)';}
+    const aw=document.getElementById('avatarWrap'); if(aw)aw.style.display='block';
+    const dropUser=document.getElementById('avatarDropUser'); if(dropUser)dropUser.textContent=(profile.name||'MANAGER').toUpperCase();
     const gr=document.getElementById('headerGreeting'); if(gr){const h=new Date().getHours();gr.textContent=(h<12?'GOOD MORNING':h<17?'GOOD AFTERNOON':'GOOD EVENING')+', '+firstName;}
     const hSub=document.getElementById('headerSubText');
     if(hSub) hSub.textContent='// MANAGER · '+(profile.saccoName||appConfig.saccoName||'SACCO');
@@ -6878,7 +6931,9 @@ function onDriverAuthenticated(user, profile){
       firstName + (tripState.carPlate?' · '+tripState.carPlate:'');
     // Avatar & greeting
     const dInitials = tripState.driver.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
-    const dAv=document.getElementById('driverAvatar'); if(dAv){dAv.textContent=dInitials;dAv.style.display='flex';}
+    const dAv=document.getElementById('driverAvatar'); if(dAv){dAv.textContent=dInitials;}
+    const dAw=document.getElementById('avatarWrap'); if(dAw)dAw.style.display='block';
+    const dDropUser=document.getElementById('avatarDropUser'); if(dDropUser)dDropUser.textContent=tripState.driver.toUpperCase();
     const dGr=document.getElementById('headerGreeting'); if(dGr){const h=new Date().getHours();dGr.textContent=(h<12?'GOOD MORNING':h<17?'GOOD AFTERNOON':'GOOD EVENING')+', '+firstName;}
     const hSub2=document.getElementById('headerSubText');
     if(hSub2) hSub2.textContent='// DRIVER · '+firstName;
@@ -7146,6 +7201,8 @@ function startAuthListener(){
       tripState.driver = ''; tripState.carPlate = '';
       save('fs_driver', null);
       document.getElementById('driverBadge').textContent = '— LOGIN —';
+      const aw2=document.getElementById('avatarWrap'); if(aw2)aw2.style.display='none';
+      closeAvatarMenu();
       const btn = document.getElementById('authLoginBtn');
       if(btn){ btn.disabled=false; btn.textContent='LOG IN'; btn.style.background=''; }
       showNavFor(null);
@@ -7789,7 +7846,7 @@ function renderNotesList(){
     // Clear persisted login so badge shows "LOGIN"
     save('fs_driver', null);
     document.getElementById('driverBadge').textContent = '— LOGIN —';
-  }
+    const _aw3=document.getElementById('avatarWrap'); if(_aw3)_aw3.style.display='none';
 
   updateOfflineBadge();
   startAutoSync();
@@ -7980,7 +8037,45 @@ function updatePwaTheme(){
 }
 updatePwaTheme();
 
-// Show iOS install instructions if Safari and not installed
+// ══════════════════════════════════════════════
+// AVATAR DROPDOWN MENU
+// ══════════════════════════════════════════════
+function toggleAvatarMenu(){
+  const dd = document.getElementById('avatarDropdown');
+  if(!dd) return;
+  const open = dd.style.display === 'block';
+  dd.style.display = open ? 'none' : 'block';
+}
+function closeAvatarMenu(){
+  const dd = document.getElementById('avatarDropdown');
+  if(dd) dd.style.display = 'none';
+}
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e){
+  const wrap = document.getElementById('avatarWrap');
+  if(wrap && !wrap.contains(e.target)){
+    closeAvatarMenu();
+  }
+});
+// Driver settings — take them to profile/setup
+function goDriverSettings(){
+  closeAvatarMenu();
+  // Navigate to the trip page and show the driver/car setup card
+  switchPage('log');
+  setTimeout(()=>{
+    const setupBtn = document.querySelector('.bout[onclick*="goSetup"]');
+    if(setupBtn) setupBtn.scrollIntoView({behavior:'smooth'});
+    else toast('GO TO TRIP LOG → CHANGE CAR / DRIVER TO UPDATE YOUR SETTINGS');
+  }, 150);
+}
+// Admin settings — open admin panel on settings tab
+function adminSettings(){
+  adminTab = 'settings';
+  switchPage('admin');
+  renderAdmin();
+}
+
+
 (function(){
   const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
   const isSafari = /safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent);
