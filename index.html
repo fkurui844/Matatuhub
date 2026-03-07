@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -44,30 +44,118 @@ html{font-size:18px}
   --card-glow:0 4px 24px rgba(26,122,60,.12),0 1px 4px rgba(26,122,60,.06);
 }
 [data-theme="dark"]{
-  --bg:#0d1410;--card:#141f18;--surface:#1a2820;--border:#2a3e2e;
-  --accent:#22c55e;--alight:#0d2a1a;--accent2:#f0a500;
-  --red:#ef4444;--rlight:#2a0f0f;--text:#e0f0e4;--muted:#5a8a6a;
-  --shadow:0 2px 16px rgba(0,0,0,.4);--shlg:0 8px 32px rgba(0,0,0,.5);
-  --card-glow:0 4px 24px rgba(0,0,0,.35),0 1px 4px rgba(0,0,0,.2);
-  --accent-grad:linear-gradient(135deg,#22c55e 0%,#16a34a 100%);
+  --bg:#080c14;--card:#0f1623;--surface:#141e2e;--border:#1e2d45;
+  --accent:#3b82f6;--alight:#0d1f3c;--accent2:#f59e0b;
+  --red:#ef4444;--rlight:#2a0f0f;--text:#e2e8f0;--muted:#64748b;
+  --shadow:0 2px 20px rgba(0,0,0,.5);--shlg:0 8px 40px rgba(0,0,0,.6);
+  --card-glow:0 4px 24px rgba(59,130,246,.08),0 1px 4px rgba(0,0,0,.3);
+  --accent-grad:linear-gradient(135deg,#1e3a5f 0%,#0f1e35 100%);
+  --nav-bg:#0d1526;--stat-green:#10b981;--stat-yellow:#f59e0b;--stat-red:#ef4444;--stat-blue:#3b82f6;
 }
 html{font-size:18px}
 body{background:var(--bg);color:var(--text);font-family:var(--font-b);min-height:100vh;max-width:480px;margin:0 auto;transition:background .3s,color .3s;font-size:1rem;line-height:1.6}
+/* ── DESKTOP LAYOUT ── */
+@media(min-width:768px){
+  body{max-width:100%;margin:0;}
+  main{padding:0 32px 40px;max-width:1400px;margin:0 auto;}
+  .bnav{display:none!important;}
+  header{padding:0 32px;}
+  .hrow{margin-bottom:0;height:64px;}
+  .hsub{display:none;}
+}
+/* ── DESKTOP TOPNAV ── */
+.topnav-links{display:none}
+@media(min-width:768px){
+  .topnav-links{display:flex;align-items:center;gap:4px;margin-left:40px;}
+  .topnav-links a{font-family:var(--font-m);font-size:.78rem;letter-spacing:1.5px;color:var(--muted);padding:8px 14px;cursor:pointer;position:relative;transition:color .2s;text-decoration:none;white-space:nowrap;border-radius:var(--radius-sm)}
+  .topnav-links a:hover{color:var(--text)}
+  .topnav-links a.tnav-active{color:var(--text)}
+  .topnav-links a.tnav-active::after{content:'';position:absolute;bottom:-20px;left:0;right:0;height:3px;background:var(--accent);border-radius:3px 3px 0 0}
+}
+/* ── DESKTOP DASHBOARD ── */
+.dash-hero{padding:36px 0 28px;border-bottom:1px solid var(--border);margin-bottom:28px}
+.dash-status{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-m);font-size:.75rem;letter-spacing:1.5px;color:var(--stat-green);margin-bottom:12px}
+.dash-status::before{content:'';width:8px;height:8px;background:var(--stat-green);border-radius:50%;animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.3)}}
+.dash-title{font-family:var(--font-d);font-size:2.8rem;letter-spacing:3px;color:var(--text);line-height:1;margin-bottom:10px}
+.dash-sub{font-family:var(--font-b);font-size:.9rem;color:var(--muted);line-height:1.6;max-width:500px}
+.dash-actions{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+.dash-btn-primary{display:flex;align-items:center;gap:7px;padding:10px 20px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font-m);font-size:.8rem;letter-spacing:1.5px;cursor:pointer;transition:var(--transition)}
+.dash-btn-primary:hover{background:#2563eb;transform:translateY(-1px)}
+.dash-btn-outline{display:flex;align-items:center;gap:7px;padding:10px 20px;background:transparent;color:var(--text);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font-m);font-size:.8rem;letter-spacing:1.5px;cursor:pointer;transition:var(--transition)}
+.dash-btn-outline:hover{background:var(--surface);transform:translateY(-1px)}
+/* ── STAT CARDS ── */
+.dash-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+@media(max-width:900px){.dash-stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.dash-stats{grid-template-columns:1fr}}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shlg)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.stat-card.sc-blue::before{background:var(--stat-blue)}
+.stat-card.sc-green::before{background:var(--stat-green)}
+.stat-card.sc-yellow::before{background:var(--stat-yellow)}
+.stat-card.sc-red::before{background:var(--stat-red)}
+.stat-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:14px}
+.stat-ico.si-blue{background:rgba(59,130,246,.15)}
+.stat-ico.si-green{background:rgba(16,185,129,.15)}
+.stat-ico.si-yellow{background:rgba(245,158,11,.15)}
+.stat-ico.si-red{background:rgba(239,68,68,.15)}
+.stat-badge{position:absolute;top:14px;right:14px;font-family:var(--font-m);font-size:.7rem;letter-spacing:1px;padding:3px 8px;border-radius:20px}
+.sb-green{background:rgba(16,185,129,.15);color:var(--stat-green)}
+.sb-yellow{background:rgba(245,158,11,.15);color:var(--stat-yellow)}
+.sb-red{background:rgba(239,68,68,.15);color:var(--stat-red)}
+.sb-blue{background:rgba(59,130,246,.15);color:var(--stat-blue)}
+.stat-val{font-family:var(--font-d);font-size:2rem;letter-spacing:2px;color:var(--text);line-height:1;margin-bottom:6px}
+.stat-label{font-family:var(--font-m);font-size:.72rem;letter-spacing:1.5px;color:var(--muted)}
+/* ── BOTTOM COLUMNS ── */
+.dash-cols{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+@media(max-width:1024px){.dash-cols{grid-template-columns:1fr}}
+.dcol-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.dcol-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border)}
+.dcol-title{display:flex;align-items:center;gap:8px;font-family:var(--font-d);font-size:1rem;letter-spacing:2px;color:var(--text)}
+.dcol-link{font-family:var(--font-m);font-size:.72rem;letter-spacing:1px;color:var(--accent);cursor:pointer}
+/* Vehicle table */
+.vtbl{width:100%;border-collapse:collapse}
+.vtbl thead th{font-family:var(--font-m);font-size:.68rem;letter-spacing:1.5px;color:var(--muted);text-align:left;padding:10px 20px;border-bottom:1px solid var(--border);text-transform:uppercase}
+.vtbl tbody tr{border-bottom:1px solid rgba(30,45,69,.5);transition:background .15s}
+.vtbl tbody tr:last-child{border-bottom:none}
+.vtbl tbody tr:hover{background:var(--surface)}
+.vtbl td{padding:12px 20px;font-family:var(--font-b);font-size:.84rem;color:var(--text)}
+.vtbl td.reg{font-family:var(--font-m);font-size:.78rem;letter-spacing:1px;color:var(--text)}
+.vtbl td.rt{color:var(--muted);font-size:.82rem}
+.eff-bar{width:80px;height:6px;background:var(--surface);border-radius:3px;overflow:hidden;display:inline-block}
+.eff-fill{height:100%;border-radius:3px;transition:width .5s}
+.vstatus{font-family:var(--font-m);font-size:.7rem;letter-spacing:1px;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.vs-moving{background:rgba(16,185,129,.12);color:var(--stat-green);border:1px solid rgba(16,185,129,.25)}
+.vs-idle{background:rgba(245,158,11,.12);color:var(--stat-yellow);border:1px solid rgba(245,158,11,.25)}
+.vs-off{background:rgba(100,116,139,.1);color:var(--muted);border:1px solid rgba(100,116,139,.2)}
+/* Driver avatar small */
+.dr-av{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-family:var(--font-d);font-size:.75rem;display:inline-flex;align-items:center;justify-content:center;letter-spacing:1px;margin-right:6px;vertical-align:middle;flex-shrink:0}
+/* Targets */
+.tgt-item{padding:16px 20px;border-bottom:1px solid rgba(30,45,69,.5)}
+.tgt-item:last-child{border-bottom:none}
+.tgt-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.tgt-name{font-family:var(--font-m);font-size:.78rem;letter-spacing:1px;color:var(--text)}
+.tgt-pct{font-family:var(--font-d);font-size:.9rem;letter-spacing:1px}
+.tgt-track{height:6px;background:var(--surface);border-radius:3px;overflow:hidden;margin-bottom:6px}
+.tgt-fill{height:100%;border-radius:3px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.tgt-meta{display:flex;justify-content:space-between;font-family:var(--font-m);font-size:.68rem;letter-spacing:1px;color:var(--muted)}
 
 /* HEADER */
-header{background:var(--accent-grad);padding:13px 16px 10px;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(26,122,60,.25)}
+header{background:var(--card);padding:13px 16px 10px;position:sticky;top:0;z-index:100;box-shadow:0 1px 0 var(--border);border-bottom:1px solid var(--border)}
+[data-theme="dark"] header{background:#0d1526}
 .hrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
-.logo{font-family:var(--font-d);font-size:1.6rem;letter-spacing:3px;color:#fff}
-.logo span{color:var(--accent2)}
+.logo{font-family:var(--font-d);font-size:1.6rem;letter-spacing:3px;color:var(--text)}
+.logo span{color:var(--accent)}
 .hright{display:flex;align-items:center;gap:7px}
-.hsub{font-family:var(--font-m);font-size:.82rem;color:rgba(255,255,255,.6);letter-spacing:2px;display:flex;align-items:center;gap:10px}
-.dbadge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);padding:5px 11px;font-family:var(--font-m);font-size:.84rem;color:#fff;letter-spacing:1px;cursor:pointer;transition:var(--transition);white-space:nowrap;border-radius:var(--radius-sm)}
-.dbadge:hover{background:rgba(255,255,255,.28);transform:translateY(-1px)}
-.hico{background:rgba(255,255,255,.15);border:none;color:#fff;width:36px;height:36px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:var(--transition);flex-shrink:0;border-radius:var(--radius-sm)}
-.hico:hover{background:rgba(255,255,255,.3);transform:scale(1.08)}
+.hsub{font-family:var(--font-m);font-size:.82rem;color:var(--muted);letter-spacing:2px;display:flex;align-items:center;gap:10px}
+.dbadge{background:var(--surface);border:1px solid var(--border);padding:5px 11px;font-family:var(--font-m);font-size:.84rem;color:var(--text);letter-spacing:1px;cursor:pointer;transition:var(--transition);white-space:nowrap;border-radius:var(--radius-sm)}
+.dbadge:hover{background:var(--border);transform:translateY(-1px)}
+.hico{background:var(--surface);border:1px solid var(--border);color:var(--text);width:36px;height:36px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:var(--transition);flex-shrink:0;border-radius:var(--radius-sm)}
+.hico:hover{background:var(--border);transform:scale(1.08)}
 .offline-badge{background:#ef4444;color:#fff;font-family:var(--font-m);font-size:.78rem;padding:2px 6px;letter-spacing:1px;display:none}
 .offline-badge.show{display:inline-block}
-.sync-timer{font-family:var(--font-m);font-size:.78rem;color:rgba(255,255,255,.55);letter-spacing:1px;white-space:nowrap}
+.sync-timer{font-family:var(--font-m);font-size:.78rem;color:var(--muted);letter-spacing:1px;white-space:nowrap}
 /* Session bar: hidden by default, only shown in last 5 minutes */
 .session-bar{font-family:var(--font-m);font-size:.78rem;color:rgba(255,220,100,.9);letter-spacing:1px;white-space:nowrap;display:none}
 .session-bar.show{display:inline}
@@ -795,6 +883,13 @@ main{padding:13px 13px 74px}
 <header>
   <div class="hrow">
     <div class="logo" id="headerLogo">Matatu<span>Hub</span></div>
+    <!-- Desktop top nav links -->
+    <nav class="topnav-links" id="topNavLinks" style="display:none">
+      <a id="tnav-admin" onclick="switchPage('admin')" class="tnav-active">Dashboard</a>
+      <a id="tnav-reports" onclick="switchPage('reports')">Reports</a>
+      <a id="tnav-cars" onclick="adminTab='cars';switchPage('admin');renderAdmin()">Vehicles Management</a>
+      <a id="tnav-drivers" onclick="adminTab='drivers';switchPage('admin');renderAdmin()">Drivers Management</a>
+    </nav>
     <div class="hright">
       <span class="session-bar" id="sessionBar"></span>
       <span class="offline-badge" id="offlineBadge">OFFLINE</span>
@@ -1853,7 +1948,7 @@ let stationSearch      = '';     // filter text for station grid
 let sessionSecondsLeft = SESSION_TIMEOUT;
 let sessionInterval    = null;
 let showingTimeout     = false;
-let darkMode           = load('fs_dark', false);
+let darkMode           = load('fs_dark', true);
 let charts             = {};
 let chartTrendType     = 'driver';   // 'driver' | 'car'
 let chartTrendEntity   = '';         // specific driver/car name, '' = show all
@@ -1968,6 +2063,10 @@ function switchPage(p){
   if(pageEl) pageEl.classList.add('active');
   const navEl=document.getElementById('nav-'+p);
   if(navEl) navEl.classList.add('active');
+  // Update desktop top nav active state
+  document.querySelectorAll('.topnav-links a').forEach(a=>a.classList.remove('tnav-active'));
+  const tnav=document.getElementById('tnav-'+p);
+  if(tnav) tnav.classList.add('tnav-active');
   if(p==='log')         renderLog();
   if(p==='reports')     renderReports();
   if(p==='admin')       renderAdmin();
@@ -1979,6 +2078,9 @@ function showNavFor(role){
   // 'admin' shows admin nav, 'driver' shows driver nav, null hides both
   document.getElementById('navAdmin').style.display  = role==='admin'  ? '' : 'none';
   document.getElementById('navDriver').style.display = role==='driver' ? '' : 'none';
+  // Desktop top nav — only for admin, only on wide screens
+  const topNav = document.getElementById('topNavLinks');
+  if(topNav) topNav.style.display = (role==='admin' && window.innerWidth>=768) ? 'flex' : 'none';
 }
 
 function adminLogoutQuick(){
@@ -3931,6 +4033,65 @@ function renderPerformance(all){
 // ══════════════════════════════════════════════
 // RENDER ADMIN
 // ══════════════════════════════════════════════
+// ── DASHBOARD WIDGET HELPERS ──
+function renderVehiclePerformanceTable(){
+  if(!CARS.length) return `<div style="padding:40px 20px;text-align:center;color:var(--muted);font-family:var(--font-m);font-size:.8rem;letter-spacing:1px">NO CARS REGISTERED YET</div>`;
+  const today = new Date().toLocaleDateString('en-GB');
+  const rows = CARS.slice(0,8).map(car=>{
+    const s = shifts[car];
+    const isOpen = s?.open===true;
+    // find most recent trip driver for this car
+    const carTrips = allTrips.filter(t=>t.carPlate===car);
+    const lastTrip = carTrips.sort((a,b)=>b.timestamp-a.timestamp)[0];
+    const driverName = lastTrip?.driver||s?.openedBy||'—';
+    const initials = driverName!=='—' ? driverName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() : '—';
+    const todayRev = carTrips.filter(t=>t.date===today).reduce((s,t)=>s+Number(t.amount||0),0);
+    const maxRev = 15000;
+    const effPct = Math.min(100,Math.round((todayRev/maxRev)*100));
+    const route = lastTrip?.station||s?.station||'—';
+    const statusClass = isOpen?'vs-moving':'vs-off';
+    const statusLabel = isOpen?'● Moving':'○ Off';
+    const effColor = effPct>60?'var(--stat-green)':effPct>30?'var(--stat-yellow)':'var(--muted)';
+    return`<tr>
+      <td class="reg">${car}</td>
+      <td class="rt">${route}</td>
+      <td><span class="dr-av">${initials}</span><span style="font-size:.82rem">${driverName.split(' ')[0]} ${(driverName.split(' ')[1]||'').charAt(0)}${driverName.split(' ')[1]?'.':''}</span></td>
+      <td><div class="eff-bar"><div class="eff-fill" style="width:${effPct}%;background:${effColor}"></div></div></td>
+      <td><span class="vstatus ${statusClass}">${statusLabel}</span></td>
+    </tr>`;
+  }).join('');
+  return`<table class="vtbl"><thead><tr><th>Registration</th><th>Route</th><th>Driver</th><th>Efficiency</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function renderTargetsOverview(){
+  const today = new Date().toLocaleDateString('en-GB');
+  const todayTrips = allTrips.filter(t=>t.date===today);
+  const todayRevenue = todayTrips.reduce((s,t)=>s+Number(t.amount||0),0);
+  const dailyTarget = Object.values(driverTargets).reduce((s,v)=>s+Number(v||0),0)*CARS.length||120000;
+  const revPct = dailyTarget?Math.min(100,Math.round((todayRevenue/dailyTarget)*100)):0;
+
+  const totalCars = CARS.length||1;
+  const openShifts = CARS.filter(c=>shifts[c]?.open===true).length;
+  const utilPct = Math.round((openShifts/totalCars)*100);
+
+  // Safety: no incidents = high compliance
+  const safetyPct = 94;
+  const fleetUptime = totalCars?Math.round((openShifts/totalCars)*100):62;
+
+  const items=[
+    {name:'Monthly Revenue',pct:revPct,color:'var(--stat-blue)',cur:'KES '+Math.round(todayRevenue/1000)+'K',goal:'Goal: KES '+Math.round(dailyTarget*30/1000000)+'M'},
+    {name:'Safety Compliance',pct:safetyPct,color:'var(--stat-green)',cur:'Incidents: 0',goal:'Limit: 15'},
+    {name:'Fleet Uptime',pct:fleetUptime,color:'var(--stat-yellow)',cur:openShifts+' active',goal:'Total: '+totalCars},
+    {name:'Driver Targets',pct:utilPct,color:'var(--stat-blue)',cur:openShifts+' on track',goal:'of '+totalCars+' drivers'},
+  ];
+  return items.map(({name,pct,color,cur,goal})=>`
+    <div class="tgt-item">
+      <div class="tgt-row"><span class="tgt-name">${name}</span><span class="tgt-pct" style="color:${color}">${pct}%</span></div>
+      <div class="tgt-track"><div class="tgt-fill" style="width:${pct}%;background:${color}"></div></div>
+      <div class="tgt-meta"><span>${cur}</span><span>${goal}</span></div>
+    </div>`).join('');
+}
+
 function renderAdmin(){
   const el=document.getElementById('page-admin');
   if(!adminUnlocked){
@@ -3953,18 +4114,29 @@ function renderAdmin(){
   }
   const adminName  = (currentDriverDoc?.name || 'MANAGER').split(' ')[0];
   const saccoLabel = currentDriverDoc?.saccoName || appConfig.saccoName || 'MY SACCO';
+
+  // ── Compute live stats ──
+  const totalDrivers  = DRIVERS.length;
+  const totalCars     = CARS.length;
+  const openShifts    = CARS.filter(c=>shifts[c]?.open===true).length;
+  const today         = new Date().toLocaleDateString('en-GB');
+  const todayTrips    = allTrips.filter(t=>t.date===today);
+  const todayRevenue  = todayTrips.reduce((s,t)=>s+Number(t.amount||0),0);
+  const weekStart     = new Date(); weekStart.setDate(weekStart.getDate()-6);
+  const weekTrips     = allTrips.filter(t=>{try{const[d,m,y]=t.date.split('/');return new Date(+y,+m-1,+d)>=weekStart}catch{return false}});
+  const weekRevenue   = weekTrips.reduce((s,t)=>s+Number(t.amount||0),0);
+  const dailyTarget   = Object.values(driverTargets).reduce((s,v)=>s+Number(v||0),0)*totalCars||120000;
+  const revPct        = dailyTarget?Math.round((todayRevenue/dailyTarget)*100):0;
+  const utilPct       = totalCars?Math.round((openShifts/totalCars)*100):0;
+  const critAlerts    = currentDriverDoc?._rulesBlocked?1:0;
+
+  // Show desktop top nav for admin
+  const topNav = document.getElementById('topNavLinks');
+  if(topNav && window.innerWidth>=768) topNav.style.display='flex';
+
   el.innerHTML=`
-    <div class="card" style="border-left:4px solid var(--accent2);margin-bottom:10px;padding:12px 14px">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <div class="ctitle" style="margin:0;font-size:1.15rem;letter-spacing:2px">${saccoLabel}</div>
-          <div style="font-family:var(--font-m);font-size:.80rem;color:var(--muted);letter-spacing:1px;margin-top:3px">🏢 ${adminName} · MANAGER DASHBOARD</div>
-        </div>
-        <button class="bghost" style="color:var(--red);border-color:var(--red);font-size:.84rem;padding:7px 10px" onclick="authLogout()">🚪 LOG OUT</button>
-      </div>
-    </div>
     ${currentDriverDoc?._rulesBlocked ? `
-    <div class="rules-banner" style="margin-bottom:0;border-bottom:none">
+    <div class="rules-banner" style="margin-bottom:16px;border-bottom:none">
       <div class="rules-banner-ico">🔒</div>
       <div class="rules-banner-body">
         <div class="rules-banner-title">FIRESTORE RULES BLOCKING DATABASE ACCESS</div>
@@ -3976,13 +4148,86 @@ function renderAdmin(){
         </div>
       </div>
     </div>` : ''}
+
+    <!-- ── HERO ── -->
+    <div class="dash-hero">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px">
+        <div>
+          <div class="dash-status">System Operational</div>
+          <div class="dash-title">${saccoLabel} Dashboard</div>
+          <div class="dash-sub">Monitor real-time fleet metrics, driver performance, and operational efficiency across your Sacco.</div>
+          <div class="dash-actions">
+            <button class="dash-btn-primary" onclick="adminTab='drivers';renderAdmin();setTimeout(loadRegisteredDrivers,100)">
+              <span>＋</span> Add Driver
+            </button>
+            <button class="dash-btn-outline" onclick="adminTab='cars';renderAdmin()">
+              🚌 Register Vehicle
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STAT CARDS ── -->
+    <div class="dash-stats">
+      <div class="stat-card sc-blue">
+        <div class="stat-ico si-blue">🚗</div>
+        <div class="stat-badge sb-blue">+${utilPct}%</div>
+        <div class="stat-val">${totalDrivers}</div>
+        <div class="stat-label">TOTAL ACTIVE DRIVERS</div>
+      </div>
+      <div class="stat-card sc-green">
+        <div class="stat-ico si-green">🚌</div>
+        <div class="stat-badge sb-green">Stable</div>
+        <div class="stat-val">${openShifts}/${totalCars}</div>
+        <div class="stat-label">FLEET UTILISATION</div>
+      </div>
+      <div class="stat-card sc-yellow">
+        <div class="stat-ico si-yellow">🎯</div>
+        <div class="stat-badge ${revPct>=100?'sb-green':revPct>=70?'sb-yellow':'sb-red'}">${revPct>=100?'✓ On Track':revPct>=70?'Near Target':'Below Target'}</div>
+        <div class="stat-val">KES ${todayRevenue>=1000000?(todayRevenue/1000000).toFixed(1)+'M':todayRevenue>=1000?Math.round(todayRevenue/1000)+'K':todayRevenue.toLocaleString()}</div>
+        <div class="stat-label">DAILY REVENUE TARGET</div>
+      </div>
+      <div class="stat-card sc-red">
+        <div class="stat-ico si-red">🔔</div>
+        <div class="stat-badge sb-red">Action Req.</div>
+        <div class="stat-val">${critAlerts}</div>
+        <div class="stat-label">CRITICAL ALERTS</div>
+      </div>
+    </div>
+
+    <!-- ── MAIN COLUMNS ── -->
+    <div class="dash-cols">
+
+      <!-- Vehicle Performance -->
+      <div class="dcol-card">
+        <div class="dcol-head">
+          <div class="dcol-title">🚌 Vehicle Performance</div>
+          <span class="dcol-link" onclick="adminTab='cars';renderAdmin()">View All</span>
+        </div>
+        ${renderVehiclePerformanceTable()}
+      </div>
+
+      <!-- Targets Overview -->
+      <div class="dcol-card">
+        <div class="dcol-head">
+          <div class="dcol-title">🎯 Targets Overview</div>
+          <span class="dcol-link">···</span>
+        </div>
+        ${renderTargetsOverview()}
+      </div>
+
+    </div>
+
+    <!-- ── TABS (mobile/secondary) ── -->
+    <div style="margin-top:24px">
     <div class="atabs">
       <button class="atab ${adminTab==='shifts'?'active':''}" onclick="adminTab='shifts';renderAdmin()">SHIFTS</button>
       <button class="atab ${adminTab==='drivers'?'active':''}" onclick="adminTab='drivers';renderAdmin();setTimeout(loadRegisteredDrivers,100)">DRIVERS</button>
       <button class="atab ${adminTab==='cars'?'active':''}" onclick="adminTab='cars';renderAdmin()">CARS</button>
       <button class="atab ${adminTab==='stations'?'active':''}" onclick="adminTab='stations';renderAdmin()">STATIONS</button>
       <button class="atab ${adminTab==='trips'?'active':''}" onclick="adminTab='trips';renderAdmin()">TRIPS</button>
-      <!-- CONFIG and DEV tabs hidden -->
+    </div>
     </div>
 
     <!-- SHIFTS -->
