@@ -4277,117 +4277,188 @@ function renderAdmin(){
     <!-- DRIVERS -->
     <div class="asect ${adminTab==='drivers'?'active':''}">
 
-      <!-- ONBOARDING BANNER — shown only on first login when no drivers yet -->
-      ${isFirstAdminLogin && !currentDriverDoc?._rulesBlocked ? `
-      <div class="onboard-banner">
-        <div class="onboard-banner-ico">🎉</div>
-        <div class="onboard-banner-text">
-          <div class="onboard-banner-title">YOUR SACCO IS SET UP!</div>
-          <div class="onboard-banner-sub">
-            Now invite your drivers. They'll receive an email with a link to join.<br>
-            Once registered, each driver logs in with their own account.
-          </div>
-        </div>
-      </div>` : ''}
-
-      <!-- FIRESTORE RULES BANNER — shown when Firestore permissions are blocking operations -->
       ${currentDriverDoc?._rulesBlocked ? `
-      <div class="rules-banner">
+      <div class="rules-banner" style="margin-bottom:16px">
         <div class="rules-banner-ico">🔒</div>
         <div class="rules-banner-body">
           <div class="rules-banner-title">⚠ FIRESTORE RULES NEED UPDATING</div>
-          <div class="rules-banner-sub">
-            Your account is active but Firestore rules are blocking database access.<br>
-            This prevents inviting drivers, loading data, and saving trips.<br>
-            Fix takes 30 seconds — copy the rules below into Firebase Console:
-          </div>
-          <div class="rules-code">rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if request.auth != null;
-    }
-  }
-}</div>
+          <div class="rules-banner-sub">Firestore rules are blocking database access. Fix takes 30 seconds.</div>
           <div class="rules-btns">
             <button class="rules-btn primary" onclick="copyFirestoreRules()">📋 COPY RULES</button>
-            <button class="rules-btn secondary" onclick="openFirebaseRules()">🔗 OPEN FIREBASE CONSOLE</button>
-            <button class="rules-btn secondary" onclick="window.location.reload()">🔄 REFRESH AFTER FIXING</button>
+            <button class="rules-btn secondary" onclick="openFirebaseRules()">🔗 FIREBASE CONSOLE</button>
+            <button class="rules-btn secondary" onclick="window.location.reload()">🔄 REFRESH</button>
           </div>
         </div>
       </div>` : ''}
 
-      <!-- INVITE DRIVER — opens modal -->
-      <button class="bb bstart" style="background:var(--accent2);border-color:var(--accent2);width:100%;margin-bottom:14px;font-size:.93rem;padding:14px;letter-spacing:2px" onclick="openInviteModal()">
-        📨 INVITE A DRIVER
-      </button>
-
-      <!-- REGISTERED DRIVERS LIST -->
-      <div class="card">
-        <div class="ctitle">REGISTERED DRIVERS <span class="pill" id="regDriverCount">—</span></div>
-        <div class="csub">// RESET PASSWORDS · DISABLE ACCOUNTS · VIEW ASSIGNMENTS</div>
-        <div id="regDriverList">
-          <div style="text-align:center;padding:20px;font-family:var(--font-m);font-size:.86rem;color:var(--muted)">
-            CLICK REFRESH TO LOAD DRIVERS
+      <!-- INVITE DRIVER CARD -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px">
+        <div style="background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(59,130,246,.03));padding:18px 20px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
+          <div style="width:40px;height:40px;background:rgba(59,130,246,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">👤</div>
+          <div>
+            <div style="font-family:var(--font-d);font-size:1.05rem;letter-spacing:2px;color:var(--text)">INVITE A DRIVER</div>
+            <div style="font-family:var(--font-m);font-size:.72rem;color:var(--muted);letter-spacing:1px;margin-top:2px">DRIVER RECEIVES AN EMAIL LINK TO JOIN YOUR SACCO</div>
           </div>
         </div>
-        <div style="margin-top:10px">
-          <button class="bsm bg" style="width:100%;padding:10px" onclick="loadRegisteredDrivers()">⟳ LOAD / REFRESH DRIVERS</button>
+        <div style="padding:18px 20px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+            <div>
+              <label style="font-family:var(--font-m);font-size:.72rem;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase">Full Name</label>
+              <input type="text" id="regDName" placeholder="e.g. John Kamau"
+                style="text-transform:uppercase;width:100%;background:var(--surface);border:1.5px solid var(--border);color:var(--text);padding:10px 12px;font-family:var(--font-b);font-size:.86rem;outline:none;border-radius:var(--radius-sm)"
+                onkeydown="if(event.key==='Enter')document.getElementById('regDEmail').focus()">
+            </div>
+            <div>
+              <label style="font-family:var(--font-m);font-size:.72rem;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase">Email Address</label>
+              <input type="email" id="regDEmail" placeholder="driver@gmail.com"
+                style="width:100%;background:var(--surface);border:1.5px solid var(--border);color:var(--text);padding:10px 12px;font-family:var(--font-b);font-size:.86rem;outline:none;border-radius:var(--radius-sm)"
+                onkeydown="if(event.key==='Enter')document.getElementById('regDPhone').focus()">
+            </div>
+            <div>
+              <label style="font-family:var(--font-m);font-size:.72rem;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase">Phone <span style="opacity:.6;font-size:.68rem">(optional)</span></label>
+              <input type="tel" id="regDPhone" placeholder="0712 345 678"
+                style="width:100%;background:var(--surface);border:1.5px solid var(--border);color:var(--text);padding:10px 12px;font-family:var(--font-b);font-size:.86rem;outline:none;border-radius:var(--radius-sm)"
+                onkeydown="if(event.key==='Enter')document.getElementById('regDCar').focus()">
+            </div>
+            <div>
+              <label style="font-family:var(--font-m);font-size:.72rem;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase">Assign Vehicle <span style="opacity:.6;font-size:.68rem">(optional)</span></label>
+              <select id="regDCar" style="width:100%;background:var(--surface);border:1.5px solid var(--border);color:var(--text);padding:10px 12px;font-family:var(--font-b);font-size:.86rem;outline:none;border-radius:var(--radius-sm);appearance:none">
+                <option value="">— No vehicle yet —</option>
+                ${CARS.map(c=>`<option value="${c}">${c}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <div id="regDriverError" style="display:none;background:var(--rlight);border:1px solid var(--red);color:var(--red);font-family:var(--font-m);font-size:.82rem;padding:9px 11px;letter-spacing:1px;margin-bottom:10px;line-height:1.6;border-radius:var(--radius-sm)"></div>
+          <div id="regDriverSuccess" style="display:none;margin-bottom:10px"></div>
+          <button id="regDBtn" onclick="adminRegisterDriver()"
+            style="width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font-d);font-size:.95rem;letter-spacing:2.5px;cursor:pointer;transition:var(--transition)">
+            📨 &nbsp;SEND INVITATION
+          </button>
+          <div style="font-family:var(--font-m);font-size:.72rem;color:var(--muted);text-align:center;margin-top:10px;line-height:1.7">
+            Driver gets an email link to set their password &amp; join your Sacco
+          </div>
+        </div>
+      </div>
+
+      <!-- REGISTERED DRIVERS LIST -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-family:var(--font-d);font-size:1rem;letter-spacing:2px;color:var(--text)">REGISTERED DRIVERS</span>
+            <span class="pill" id="regDriverCount" style="background:rgba(59,130,246,.12);color:var(--accent);font-family:var(--font-m);font-size:.72rem;padding:2px 9px;border-radius:20px">—</span>
+          </div>
+          <button onclick="loadRegisteredDrivers()"
+            style="display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-sm);font-family:var(--font-m);font-size:.72rem;letter-spacing:1px;cursor:pointer">
+            ⟳ &nbsp;REFRESH
+          </button>
+        </div>
+        <div id="regDriverList" style="min-height:60px">
+          <div style="text-align:center;padding:28px;font-family:var(--font-m);font-size:.8rem;color:var(--muted);letter-spacing:1px">
+            TAP REFRESH TO LOAD DRIVERS
+          </div>
         </div>
       </div>
 
       <!-- DAILY TARGETS -->
-      <div class="card" style="margin-top:12px">
-        <div class="ctitle">DAILY REVENUE TARGETS</div>
-        <div class="csub">// SET KES TARGETS PER DRIVER</div>
+      ${DRIVERS.length ? `
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+        <div style="padding:16px 20px;border-bottom:1px solid var(--border)">
+          <div style="font-family:var(--font-d);font-size:1rem;letter-spacing:2px;color:var(--text)">DAILY REVENUE TARGETS</div>
+          <div style="font-family:var(--font-m);font-size:.72rem;color:var(--muted);letter-spacing:1px;margin-top:2px">SET TARGET IN KES PER DRIVER PER DAY</div>
+        </div>
         ${DRIVERS.map((d,i)=>{
-          const esc=d.replace(/'/g,"\'");
+          const esc=d.replace(/'/g,"\\'");
           const target=driverTargets[d];
-          return`<div class="aitem" style="flex-direction:column;align-items:stretch;gap:8px;padding:12px">
-            <div style="display:flex;align-items:center;justify-content:space-between">
-              <div><div class="aitem-name">${d}</div></div>
-              <div class="abtn-row"><button class="adel" onclick="removeDriver(${i})">✕</button></div>
+          return\`<div style="display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(30,45,69,.4)">
+            <div style="width:36px;height:36px;border-radius:50%;background:rgba(59,130,246,.12);color:var(--accent);font-family:var(--font-d);font-size:.8rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:1px">
+              \${d.split(' ').map(w=>w[0]).join('').slice(0,2)}
             </div>
-            <div style="display:flex;gap:6px;align-items:center">
-              <div style="font-family:var(--font-m);font-size:.80rem;color:var(--muted);white-space:nowrap;letter-spacing:1px">DAILY TARGET KES</div>
-              <input type="number" id="dt_${i}" placeholder="e.g. 5000" value="${target||''}"
-                style="flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 9px;font-family:var(--font-m);font-size:.78rem;outline:none;min-width:0"
-                onkeydown="if(event.key==='Enter')saveDriverTarget('${esc}',${i})">
-              <button class="bsm bg" onclick="saveDriverTarget('${esc}',${i})">SET</button>
-              ${target?`<button class="bsm br" onclick="removeDriverTarget('${esc}')">✕</button>`:''}
+            <div style="flex:1;min-width:0">
+              <div style="font-family:var(--font-m);font-size:.84rem;letter-spacing:1px;color:var(--text)">\${d}</div>
+              \${target?\`<div style="font-family:var(--font-m);font-size:.72rem;color:var(--stat-green)">🎯 KES \${Number(target).toLocaleString()} / day</div>\`:
+              \`<div style="font-family:var(--font-m);font-size:.72rem;color:var(--muted)">No target set</div>\`}
             </div>
-          </div>`;
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+              <input type="number" id="dt_\${i}" placeholder="KES" value="\${target||''}"
+                style="width:100px;background:var(--surface);border:1.5px solid var(--border);color:var(--text);padding:7px 10px;font-family:var(--font-m);font-size:.78rem;outline:none;border-radius:var(--radius-sm);text-align:right"
+                onkeydown="if(event.key==='Enter')saveDriverTarget('\${esc}',\${i})">
+              <button onclick="saveDriverTarget('\${esc}',\${i})" style="padding:7px 12px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font-m);font-size:.72rem;letter-spacing:1px;cursor:pointer">SET</button>
+              <button onclick="removeDriver(\${i})" style="width:30px;height:30px;background:var(--rlight);color:var(--red);border:1px solid var(--red);border-radius:var(--radius-sm);cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center" title="Remove driver">✕</button>
+            </div>
+          </div>\`;
         }).join('')}
-      </div>
+      </div>` : ''}
 
     </div>
 
     <!-- CARS -->
     <div class="asect ${adminTab==='cars'?'active':''}">
-      <div class="card">
-        <div class="ctitle">CARS <span class="pill">${CARS.length}</span></div>
-        ${!CARS.length ? `
-          <div style="text-align:center;padding:20px 10px;border:2px dashed var(--border);margin-bottom:12px">
-            <div style="font-size:2rem;margin-bottom:8px">🚗</div>
-            <div style="font-family:var(--font-d);font-size:1rem;letter-spacing:2px;color:var(--muted);margin-bottom:6px">NO CARS REGISTERED</div>
-            <div style="font-family:var(--font-m);font-size:.82rem;color:var(--muted);letter-spacing:1px;line-height:1.8">
-              ADD YOUR FIRST CAR PLATE BELOW<br>DRIVERS WILL SELECT IT WHEN LOGGING TRIPS
-            </div>
-          </div>` :
-        CARS.map((c,i)=>`<div class="aitem">
-          <div><div class="aitem-name">${c}</div><div class="aitem-sub">Target: ${carTargets[c]?'KES '+Number(carTargets[c]).toLocaleString():'Not set'}</div></div>
-          <div class="abtn-row">
-            <button class="aedit" onclick="adminSetTarget('${c}')">🎯</button>
-            <button class="adel" onclick="removeCar(${i})">✕</button>
+
+      <!-- ADD VEHICLE CARD -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px">
+        <div style="background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(245,158,11,.03));padding:18px 20px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
+          <div style="width:40px;height:40px;background:rgba(245,158,11,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">🚌</div>
+          <div>
+            <div style="font-family:var(--font-d);font-size:1.05rem;letter-spacing:2px;color:var(--text)">REGISTER A VEHICLE</div>
+            <div style="font-family:var(--font-m);font-size:.72rem;color:var(--muted);letter-spacing:1px;margin-top:2px">ADD VEHICLE NUMBER PLATES TO YOUR FLEET</div>
           </div>
-        </div>`).join('')}
-        <div class="divline"></div>
-        <div class="addrow">
-          <div class="field"><label>New Car Plate</label><input type="text" id="newCar" placeholder="e.g. KCA 123A"></div>
-          <button class="bsm bg" onclick="addCar()">ADD</button>
+        </div>
+        <div style="padding:18px 20px">
+          <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end">
+            <div>
+              <label style="font-family:var(--font-m);font-size:.72rem;letter-spacing:1.5px;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase">Vehicle Number Plate</label>
+              <input type="text" id="newCar" placeholder="e.g. KCA 123A"
+                style="text-transform:uppercase;width:100%;background:var(--surface);border:1.5px solid var(--border);color:var(--text);padding:11px 14px;font-family:var(--font-d);font-size:1rem;letter-spacing:3px;outline:none;border-radius:var(--radius-sm)"
+                onkeydown="if(event.key==='Enter')addCar()">
+            </div>
+            <button onclick="addCar()"
+              style="padding:11px 20px;background:var(--accent2);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font-d);font-size:.9rem;letter-spacing:2px;cursor:pointer;white-space:nowrap;height:44px;display:flex;align-items:center;gap:6px">
+              ＋ ADD
+            </button>
+          </div>
         </div>
       </div>
+
+      <!-- FLEET LIST -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+        <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-family:var(--font-d);font-size:1rem;letter-spacing:2px;color:var(--text)">YOUR FLEET</span>
+            <span style="background:rgba(245,158,11,.12);color:var(--accent2);font-family:var(--font-m);font-size:.72rem;padding:2px 9px;border-radius:20px">${CARS.length} vehicles</span>
+          </div>
+        </div>
+        ${!CARS.length ? `
+        <div style="text-align:center;padding:40px 20px">
+          <div style="font-size:2.5rem;margin-bottom:12px">🚌</div>
+          <div style="font-family:var(--font-d);font-size:1rem;letter-spacing:2px;color:var(--muted);margin-bottom:8px">NO VEHICLES YET</div>
+          <div style="font-family:var(--font-m);font-size:.78rem;color:var(--muted);letter-spacing:1px;line-height:1.8">
+            ADD YOUR FIRST NUMBER PLATE ABOVE.<br>
+            DRIVERS SELECT A VEHICLE WHEN LOGGING TRIPS.
+          </div>
+        </div>` :
+        CARS.map((c,i)=>{
+          const s=shifts[c];
+          const isOpen=s?.open===true;
+          const target=carTargets[c];
+          return\`<div style="display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid rgba(30,45,69,.4)">
+            <div style="width:40px;height:40px;border-radius:10px;background:\${isOpen?'rgba(16,185,129,.12)':'rgba(100,116,139,.1)'};display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">\${isOpen?'🟢':'⚫'}</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-family:var(--font-d);font-size:1rem;letter-spacing:2px;color:var(--text);\${isOpen?'color:var(--text)':''}">\${c}</div>
+              <div style="display:flex;align-items:center;gap:8px;margin-top:3px">
+                <span style="font-family:var(--font-m);font-size:.72rem;color:\${isOpen?'var(--stat-green)':'var(--muted)'};letter-spacing:1px">\${isOpen?'● SHIFT OPEN':'○ SHIFT CLOSED'}</span>
+                \${target?\`<span style="font-family:var(--font-m);font-size:.72rem;color:var(--muted)">· 🎯 KES \${Number(target).toLocaleString()}</span>\`:''}
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+              <button onclick="adminSetTarget('\${c}')" style="padding:6px 10px;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font-m);font-size:.7rem;letter-spacing:1px;cursor:pointer" title="Set target">🎯 TARGET</button>
+              <button onclick="removeCar(\${i})" style="width:30px;height:30px;background:var(--rlight);color:var(--red);border:1px solid var(--red);border-radius:var(--radius-sm);cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center" title="Remove vehicle">✕</button>
+            </div>
+          </div>\`;
+        }).join('')}
+      </div>
+
     </div>
+
 
     <!-- STATIONS -->
     <div class="asect ${adminTab==='stations'?'active':''}">
