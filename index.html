@@ -1192,16 +1192,37 @@ main{padding:13px 13px 74px}
     <!-- ═══ PANEL: FORGOT PASSWORD ═══ -->
     <div id="authPanelForgot" style="display:none">
       <button class="auth-back-btn" onclick="switchToPanel('login')">‹ BACK TO LOGIN</button>
-      <div class="auth-panel-title">RESET PASSWORD</div>
-      <div class="auth-panel-sub">ENTER YOUR EMAIL — WE'LL SEND A RESET LINK</div>
-      <div class="auth-error" id="authForgotError"></div>
-      <div class="auth-success" id="authForgotSuccess"></div>
-      <div class="auth-field">
-        <label>Email Address</label>
-        <input class="auth-input" type="email" id="authForgotEmail" placeholder="your@email.com"
-          onkeydown="if(event.key==='Enter')authForgotPassword()">
+
+      <!-- Input state -->
+      <div id="forgotInputState">
+        <div class="auth-panel-title">RESET PASSWORD</div>
+        <div class="auth-panel-sub">ENTER YOUR EMAIL — WE'LL SEND A RESET LINK</div>
+        <div class="auth-error" id="authForgotError"></div>
+        <div class="auth-field">
+          <label>Email Address</label>
+          <input class="auth-input" type="email" id="authForgotEmail" placeholder="your@email.com"
+            onkeydown="if(event.key==='Enter')authForgotPassword()">
+        </div>
+        <button class="auth-btn" id="authForgotBtn" onclick="authForgotPassword()">SEND RESET LINK</button>
       </div>
-      <button class="auth-btn" id="authForgotBtn" onclick="authForgotPassword()">SEND RESET LINK</button>
+
+      <!-- Sent state — shown after successful send -->
+      <div id="forgotSentState" style="display:none">
+        <div style="text-align:center;padding:10px 0 18px">
+          <div style="font-size:2.5rem;margin-bottom:10px">📬</div>
+          <div class="auth-panel-title" style="color:var(--accent)">LINK SENT!</div>
+        </div>
+        <div style="background:var(--alight);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:var(--radius-sm);padding:14px 14px;font-family:var(--font-m);font-size:.82rem;color:var(--text);letter-spacing:.5px;line-height:2;margin-bottom:14px">
+          ✉️ Check your <strong>email inbox</strong> for the reset link.<br>
+          📂 Don't see it? Check your <strong>spam / junk folder</strong> too.<br>
+          ⏱ The link expires in <strong>1 hour</strong>.
+        </div>
+        <div style="font-family:var(--font-m);font-size:.76rem;color:var(--muted);letter-spacing:.5px;line-height:1.7;margin-bottom:18px">
+          💡 Tip: Mark the email as <strong>Not Spam</strong> so future messages land in your inbox.
+        </div>
+        <button class="auth-btn" onclick="switchToPanel('login')">BACK TO LOGIN</button>
+        <button class="auth-link" onclick="document.getElementById('forgotSentState').style.display='none';document.getElementById('forgotInputState').style.display='block';">RESEND LINK</button>
+      </div>
     </div>
 
     <!-- ═══ PANEL: DRIVER INVITATION (magic link acceptance) ═══ -->
@@ -1392,29 +1413,39 @@ main{padding:13px 13px 74px}
   </div>
 </div>
 
-<!-- ADMIN PIN RESET OVERLAY -->
-<div class="dev-pin-overlay" id="resetPinOverlay">
-  <div class="dev-pin-box" style="border-color:var(--accent2)">
-    <div style="font-size:2rem;margin-bottom:8px">🔑</div>
-    <div class="dev-pin-title" style="color:var(--accent2)">RESET MANAGER PIN</div>
-    <div class="dev-pin-sub">ENTER YOUR <strong style="color:var(--text)">DEVELOPER PIN</strong><br>TO VERIFY YOUR IDENTITY,<br>THEN SET A NEW MANAGER PIN</div>
-    <div id="resetStepVerify">
-      <div id="resetVerifyMsg"></div>
-      <input type="password" class="pininput" id="resetDevPinIn" maxlength="6" placeholder="DEV PIN"
-        style="border-color:var(--accent2)"
-        onkeydown="if(event.key==='Enter')verifyDevForReset()">
-      <button class="bb bconfirm" style="margin-top:10px;margin-bottom:6px;max-width:220px;margin-left:auto;margin-right:auto;display:block"
-        onclick="verifyDevForReset()">VERIFY IDENTITY</button>
+<!-- MANAGER FORGOT PIN OVERLAY — email-based reset -->
+<div class="modal-overlay" id="resetPinOverlay" onclick="if(event.target===this)closeResetOverlay()">
+  <div class="modal" style="border-top-color:var(--accent2);text-align:center;max-width:360px">
+    <div style="font-size:2rem;margin-bottom:8px">📧</div>
+    <div class="modal-title" style="color:var(--accent2);text-align:center;font-size:1.3rem">FORGOT YOUR PIN?</div>
+
+    <!-- Idle state -->
+    <div id="resetPinIdle">
+      <div style="font-family:var(--font-m);font-size:.82rem;color:var(--muted);letter-spacing:1px;line-height:1.9;margin-bottom:18px">
+        We'll send a <strong style="color:var(--text)">password reset link</strong> to your registered email address.<br>
+        Use it to set a new password and regain access.
+      </div>
+      <div style="font-family:var(--font-m);font-size:.78rem;color:var(--accent);background:var(--alight);border:1px solid var(--border);padding:8px 12px;border-radius:var(--radius-sm);margin-bottom:16px;letter-spacing:.5px">
+        📨 Email: <strong id="resetPinEmailDisplay">—</strong>
+      </div>
+      <button class="bb bstart" id="resetPinSendBtn" onclick="sendManagerPinResetEmail(true)"
+        style="margin-bottom:8px">SEND RESET LINK</button>
+      <button class="bout" onclick="closeResetOverlay()">CANCEL</button>
     </div>
-    <div id="resetStepNew" style="display:none">
-      <div style="font-family:var(--font-m);font-size:.84rem;color:#22c55e;letter-spacing:1px;margin-bottom:12px">✅ IDENTITY VERIFIED — SET NEW PIN</div>
-      <input type="password" class="pininput" id="resetNewPinIn" maxlength="6" placeholder="NEW PIN"
-        style="border-color:var(--accent)"
-        onkeydown="if(event.key==='Enter')commitResetPin()">
-      <button class="bb bstart" style="margin-top:10px;margin-bottom:6px;max-width:220px;margin-left:auto;margin-right:auto;display:block"
-        onclick="commitResetPin()">SET NEW PIN</button>
+
+    <!-- Sent state -->
+    <div id="resetPinSent" style="display:none">
+      <div style="font-size:2.2rem;margin-bottom:10px">✅</div>
+      <div style="font-family:var(--font-d);font-size:1.1rem;letter-spacing:2px;color:var(--accent);margin-bottom:10px">RESET LINK SENT!</div>
+      <div style="font-family:var(--font-m);font-size:.82rem;color:var(--text);letter-spacing:.5px;line-height:1.9;margin-bottom:6px">
+        Check your <strong>email inbox</strong> for the reset link.<br>
+        If you don't see it, please check your <strong>spam / junk folder</strong> as well.
+      </div>
+      <div style="font-family:var(--font-m);font-size:.76rem;color:var(--muted);letter-spacing:.5px;line-height:1.7;margin-bottom:18px;padding:8px 10px;background:var(--surface);border-radius:var(--radius-sm)">
+        💡 The link expires in <strong>1 hour</strong>. After resetting your password, log in again and your dashboard will unlock normally.
+      </div>
+      <button class="bout" onclick="closeResetOverlay()">CLOSE</button>
     </div>
-    <button class="bghost" style="width:100%;margin-top:4px" onclick="closeResetOverlay()">CANCEL</button>
   </div>
 </div>
 
@@ -2142,6 +2173,10 @@ function saveDriver(){
         </div>
         <button class="bb bstart" onclick="confirmDriverPin('${n}','${q}')">CONFIRM</button>
         <button class="bout" onclick="renderLog()">BACK</button>
+        <div style="margin-top:16px;padding:10px 12px;background:var(--surface);border-radius:var(--radius-sm);font-family:var(--font-m);font-size:.76rem;color:var(--muted);letter-spacing:.5px;line-height:1.8;text-align:center">
+          🔑 Forgot your PIN? Contact your <strong style="color:var(--text)">SACCO Manager</strong> to reset it.<br>
+          Also check your <strong style="color:var(--text)">email inbox</strong> or <strong style="color:var(--text)">spam folder</strong> — your manager may have sent it there.
+        </div>
       </div>`;
     return;
   }
@@ -3846,7 +3881,7 @@ function renderAdmin(){
           onclick="checkPin()" ${locked?'disabled':''}>UNLOCK</button>
         <div style="margin-top:14px">
           <button class="bghost" style="font-size:.80rem;letter-spacing:1px;padding:5px 12px;border:none;color:var(--muted)"
-            onclick="openResetOverlay()">🔑 FORGOT PIN?</button>
+            onclick="sendManagerPinResetEmail()">🔑 FORGOT PIN?</button>
         </div>
       </div>`;
     return;
@@ -3932,12 +3967,6 @@ function renderAdmin(){
     <div class="asect ${adminTab==='drivers'?'active':''}">
 
       <!-- ONBOARDING BANNER — shown only on first login when no drivers yet -->
-      ${isFirstAdminLogin && !currentDriverDoc?._rulesBlocked ? `
-      <div style="background:#fff3cd;border:1px solid #f59e0b;padding:12px 14px;margin-bottom:10px;font-family:var(--font-m);font-size:.82rem;letter-spacing:1px;line-height:1.8">
-        <strong style="color:#7a5000">🔐 SECURITY REMINDER</strong><br>
-        Your default admin PIN is <strong>1234</strong>. Change it now in the CONFIG tab before your drivers start using the app.
-        <button onclick="adminTab='config';renderAdmin()" style="background:#f59e0b;border:none;color:#fff;font-family:var(--font-m);font-size:.78rem;letter-spacing:1px;padding:4px 10px;cursor:pointer;margin-left:8px">CHANGE PIN →</button>
-      </div>` : ''}
       ${isFirstAdminLogin && !currentDriverDoc?._rulesBlocked ? `
       <div class="onboard-banner">
         <div class="onboard-banner-ico">🎉</div>
@@ -4136,12 +4165,6 @@ service cloud.firestore {
           <div class="ctitle" style="margin:0">SYSTEM CONFIG</div>
           <button class="bghost" style="color:var(--red);border-color:var(--red)" onclick="lockDev()">🔒 LOCK DEV</button>
         </div>
-        <div class="csub">// CHANGE MANAGER PIN</div>
-        <div class="irow">
-          <div class="field"><label>New Manager PIN (4-6 digits)</label><input type="password" id="newPin" placeholder="New PIN" maxlength="6"></div>
-          <button class="bsm bg" onclick="changePin()">SAVE</button>
-        </div>
-        <div class="divline"></div>
         <div class="csub" style="margin-top:0">// CHANGE DEV PIN</div>
         <div class="irow">
           <div class="field"><label>New Developer PIN (4-6 digits)</label><input type="password" id="newDevPin" placeholder="New Dev PIN" maxlength="6"></div>
@@ -4320,12 +4343,69 @@ function removeDriverTarget(driver){
   renderAdmin();
 }
 function adminSetDriverPin(driver){
-  const pin=prompt(`Set PIN for ${driver.split(' ')[0]} (blank to remove):`);
-  if(pin===null)return;
-  if(pin===''){delete driverPins[driver];}
-  else if(pin.length>=4){driverPins[driver]=pin;}
-  else{toast('PIN MUST BE AT LEAST 4 DIGITS');return;}
-  save('fs_dpins',driverPins);toast(pin?'PIN SET ✅':'PIN REMOVED');renderAdmin();
+  // Show a proper modal instead of browser prompt()
+  const escaped = driver.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+  const firstName = driver.split(' ')[0];
+  const existing  = driverPins[driver] ? '(PIN already set — enter new one to change, or clear to remove)' : '(No PIN set — optional security layer)';
+
+  // Inject a temporary modal
+  let modal = document.getElementById('_driverPinModal');
+  if(!modal){
+    modal = document.createElement('div');
+    modal.id = '_driverPinModal';
+    modal.className = 'modal-overlay';
+    document.body.appendChild(modal);
+  }
+  modal.innerHTML = `
+    <div class="modal" style="border-top-color:var(--accent2)">
+      <div class="modal-title">🔑 SET PIN FOR ${firstName.toUpperCase()}</div>
+      <div style="font-family:var(--font-m);font-size:.78rem;color:var(--muted);letter-spacing:1px;line-height:1.7;margin-bottom:14px">${existing}</div>
+      <div class="field">
+        <label>New PIN <span style="color:var(--muted);font-size:.72rem">(4–6 digits, leave blank to remove)</span></label>
+        <input type="password" id="_driverPinInput" class="auth-input" maxlength="6" placeholder="e.g. 1234"
+          pattern="[0-9]*" inputmode="numeric" style="letter-spacing:6px;text-align:center;font-size:1.2rem"
+          onkeydown="if(event.key==='Enter')_confirmDriverPinSet('${escaped}')">
+      </div>
+      <div id="_driverPinFeedback" style="display:none;background:var(--alight);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:var(--radius-sm);padding:10px 12px;font-family:var(--font-m);font-size:.80rem;letter-spacing:.5px;color:var(--text);line-height:1.9;margin-bottom:12px">
+        ✅ <strong>PIN updated!</strong><br>
+        Please inform <strong>${firstName}</strong> of their new PIN and ask them to <strong>check their email inbox</strong> — including their <strong>spam / junk folder</strong> — in case a notification was sent.
+      </div>
+      <div class="modal-actions">
+        <button class="bb bconfirm" style="margin:0" onclick="_confirmDriverPinSet('${escaped}')">SAVE PIN</button>
+        <button class="bb" style="margin:0;background:var(--border);color:var(--text)" onclick="_closeDriverPinModal()">CLOSE</button>
+      </div>
+    </div>`;
+  modal.classList.add('open');
+  setTimeout(()=>document.getElementById('_driverPinInput')?.focus(), 150);
+}
+
+function _confirmDriverPinSet(driver){
+  const pin = (document.getElementById('_driverPinInput')?.value || '').trim();
+  if(pin === ''){
+    delete driverPins[driver];
+    save('fs_dpins',driverPins);
+    document.getElementById('_driverPinInput').value = '';
+    document.getElementById('_driverPinFeedback').style.display = 'none';
+    toast('PIN REMOVED FOR ' + driver.split(' ')[0]);
+    _closeDriverPinModal();
+    renderAdmin();
+    return;
+  }
+  if(pin.length < 4){ toast('PIN MUST BE AT LEAST 4 DIGITS','warn'); return; }
+  if(!/^\d+$/.test(pin)){ toast('PIN MUST BE NUMBERS ONLY','warn'); return; }
+  driverPins[driver] = pin;
+  save('fs_dpins',driverPins);
+  // Show inbox/spam reminder in modal
+  const feedback = document.getElementById('_driverPinFeedback');
+  if(feedback) feedback.style.display = 'block';
+  document.getElementById('_driverPinInput').value = '';
+  if(navigator.vibrate) navigator.vibrate(40);
+}
+
+function _closeDriverPinModal(){
+  const modal = document.getElementById('_driverPinModal');
+  if(modal) modal.classList.remove('open');
+  renderAdmin();
 }
 function adminSetTarget(plate){
   const t=prompt(`Daily revenue target for ${plate} (KES, blank to remove):`);
@@ -4347,7 +4427,14 @@ function addStation(){
   save('fs_stations',STATIONS);toast('STATION ADDED ✅');renderAdmin();
 }
 function removeStation(i){if(!confirm('Remove '+STATIONS[i].name+'?'))return;STATIONS.splice(i,1);save('fs_stations',STATIONS);renderAdmin();}
-function changePin(){const p=document.getElementById('newPin')?.value||'';if(p.length<4){toast('MIN 4 DIGITS');return;}localStorage.setItem(ADMIN_PIN_KEY,p);toast('PIN UPDATED ✅');}
+function changePin(){
+  const p=document.getElementById('newPin')?.value||'';
+  if(p.length<4){toast('MIN 4 DIGITS','warn');return;}
+  localStorage.setItem(ADMIN_PIN_KEY,p);
+  const inp=document.getElementById('newPin');
+  if(inp) inp.value='';
+  showPinChangedInboxReminder('manager');
+}
 function resetToDefaults(){DRIVERS=[...DEFAULT_DRIVERS];CARS=[...DEFAULT_CARS];STATIONS=DEFAULT_STATIONS.map(s=>({...s}));save('fs_drivers',DRIVERS);save('fs_cars',CARS);save('fs_stations',STATIONS);toast('RESET ✅');renderAdmin();}
 
 // TRIPS
@@ -5084,71 +5171,98 @@ function runReportWA(filtered,label){
 // ══════════════════════════════════════════════
 let resetDevVerifyFailures = 0;
 
+// ── INBOX / SPAM REMINDER HELPER ───────────────────────────────
+function showPinChangedInboxReminder(who){
+  // Show a modal with inbox/spam advice after any PIN/password reset email
+  const isManager = who === 'manager';
+  let modal = document.getElementById('_inboxReminderModal');
+  if(!modal){
+    modal = document.createElement('div');
+    modal.id = '_inboxReminderModal';
+    modal.className = 'modal-overlay';
+    document.body.appendChild(modal);
+  }
+  modal.innerHTML = `
+    <div class="modal" style="border-top-color:var(--accent);text-align:center;max-width:340px">
+      <div style="font-size:2rem;margin-bottom:8px">📬</div>
+      <div class="modal-title" style="text-align:center;color:var(--accent)">${isManager?'PIN UPDATED':'PIN SET!'}</div>
+      <div style="font-family:var(--font-m);font-size:.84rem;color:var(--text);letter-spacing:.5px;line-height:2;margin-bottom:8px">
+        A confirmation has been sent to your email.<br>
+        Please check your <strong>inbox</strong> — and also your <strong>spam / junk folder</strong> if you don't see it.
+      </div>
+      <div style="font-family:var(--font-m);font-size:.75rem;color:var(--muted);background:var(--surface);padding:8px 10px;border-radius:var(--radius-sm);margin-bottom:16px;line-height:1.7">
+        📌 Mark the email as <strong>Not Spam</strong> to make sure future notifications land in your inbox.
+      </div>
+      <button class="bb bstart" style="max-width:200px;margin:0 auto;display:block" onclick="document.getElementById('_inboxReminderModal').classList.remove('open')">GOT IT ✓</button>
+    </div>`;
+  modal.classList.add('open');
+}
+
+// ── MANAGER FORGOT PIN — email reset ──────────────────────────
+async function sendManagerPinResetEmail(fromModal=false){
+  const email = currentAuthUser?.email || currentDriverDoc?.email || localStorage.getItem('fs_last_email') || '';
+
+  if(!fromModal){
+    // Called directly from the PIN screen "FORGOT PIN?" button — open the modal first
+    const emailEl = document.getElementById('resetPinEmailDisplay');
+    if(emailEl) emailEl.textContent = email || 'your registered email';
+    document.getElementById('resetPinIdle').style.display  = 'block';
+    document.getElementById('resetPinSent').style.display  = 'none';
+    document.getElementById('resetPinOverlay').classList.add('open');
+    return;
+  }
+
+  // Send the reset email
+  const btn = document.getElementById('resetPinSendBtn');
+  if(btn){ btn.disabled=true; btn.innerHTML='<span class="auth-spinner"></span>SENDING...'; }
+
+  try{
+    if(!auth) initFirebase();
+    if(!email){ toast('⚠ NO EMAIL FOUND — PLEASE LOG IN AGAIN','error'); closeResetOverlay(); return; }
+    await auth.sendPasswordResetEmail(email);
+
+    // Show sent state
+    document.getElementById('resetPinIdle').style.display = 'none';
+    document.getElementById('resetPinSent').style.display = 'block';
+
+    // Also clear local lockout so they're not stuck
+    adminLockedUntil = 0;
+    adminPinFailures = 0;
+
+    if(btn){ btn.disabled=false; btn.innerHTML='SEND RESET LINK'; }
+
+  } catch(e){
+    if(btn){ btn.disabled=false; btn.innerHTML='SEND RESET LINK'; }
+    const msgs = {
+      'auth/user-not-found':         '⚠ NO ACCOUNT FOUND WITH THAT EMAIL',
+      'auth/invalid-email':          '⚠ INVALID EMAIL ADDRESS',
+      'auth/network-request-failed': '⚠ NO INTERNET — CHECK YOUR CONNECTION AND TRY AGAIN',
+      'auth/too-many-requests':      '⚠ TOO MANY REQUESTS — PLEASE WAIT A FEW MINUTES',
+    };
+    toast(msgs[e.code] || ('⚠ ' + e.message), 'error');
+  }
+}
+
 function openResetOverlay(){
-  resetDevVerifyFailures = 0;
-  // Reset both steps
-  document.getElementById('resetStepVerify').style.display = 'block';
-  document.getElementById('resetStepNew').style.display = 'none';
-  const vm = document.getElementById('resetVerifyMsg');
-  if(vm) vm.innerHTML = '';
-  const di = document.getElementById('resetDevPinIn');
-  if(di){ di.value = ''; di.style.borderColor = 'var(--accent2)'; }
-  const ni = document.getElementById('resetNewPinIn');
-  if(ni){ ni.value = ''; }
-  document.getElementById('resetPinOverlay').classList.add('open');
-  setTimeout(()=>document.getElementById('resetDevPinIn')?.focus(), 120);
+  // Kept for backwards compatibility — just open the email modal
+  sendManagerPinResetEmail(false);
 }
 
 function closeResetOverlay(){
   document.getElementById('resetPinOverlay').classList.remove('open');
+  // Reset back to idle for next time
+  setTimeout(()=>{
+    document.getElementById('resetPinIdle').style.display = 'block';
+    document.getElementById('resetPinSent').style.display = 'none';
+    const btn = document.getElementById('resetPinSendBtn');
+    if(btn){ btn.disabled=false; btn.innerHTML='SEND RESET LINK'; }
+  }, 300);
 }
 
-async function verifyDevForReset(){
-  const pin = (document.getElementById('resetDevPinIn')?.value || '').trim();
-  const storedHash = localStorage.getItem(DEV_PIN_KEY);
-  const inputHash  = await _hashPin(pin);
-  const correct    = storedHash ? (inputHash === storedHash)
-                                : (pin === DEFAULT_DEV_PIN);
-  if(correct){
-    // Identity confirmed — show new PIN step
-    document.getElementById('resetStepVerify').style.display = 'none';
-    document.getElementById('resetStepNew').style.display = 'block';
-    setTimeout(()=>document.getElementById('resetNewPinIn')?.focus(), 80);
-  } else {
-    resetDevVerifyFailures++;
-    const vm = document.getElementById('resetVerifyMsg');
-    const di = document.getElementById('resetDevPinIn');
-    if(di){ di.value = ''; di.style.borderColor = 'var(--red)'; setTimeout(()=>{if(di)di.style.borderColor='var(--accent2)';},600); }
-    if(resetDevVerifyFailures >= 3){
-      // Lock out and close
-      adminLockedUntil = Date.now() + PIN_LOCKOUT_SECS * 1000;
-      closeResetOverlay();
-      renderAdmin();
-      toast('🔒 TOO MANY FAILED ATTEMPTS — LOCKED FOR 5 MINUTES');
-    } else {
-      const left = 3 - resetDevVerifyFailures;
-      if(vm) vm.innerHTML = `<div class="pin-locked" style="margin-bottom:10px;font-size:.84rem">WRONG DEV PIN — ${left} ATTEMPT${left===1?'':'S'} LEFT</div>`;
-      di?.focus();
-    }
-  }
-}
+// No-op stubs — old dev-PIN-based reset flow is removed
+function verifyDevForReset(){}
+function commitResetPin(){}
 
-function commitResetPin(){
-  const newPin = (document.getElementById('resetNewPinIn')?.value || '').trim();
-  if(newPin.length < 4){
-    const ni = document.getElementById('resetNewPinIn');
-    if(ni){ ni.style.borderColor = 'var(--red)'; setTimeout(()=>{if(ni)ni.style.borderColor='var(--accent)';},600); }
-    toast('PIN MUST BE AT LEAST 4 DIGITS');
-    return;
-  }
-  localStorage.setItem(ADMIN_PIN_KEY, newPin);
-  // Clear any lockout
-  adminLockedUntil = 0;
-  adminPinFailures = 0;
-  closeResetOverlay();
-  renderAdmin();
-  toast('✅ MANAGER PIN RESET SUCCESSFULLY — USE YOUR NEW PIN TO LOGIN');
-}
 
 // ══════════════════════════════════════════════
 // DEV PIN SYSTEM
@@ -5739,6 +5853,17 @@ function switchToPanel(panel){
     if(el) el.style.display = (id===targetId) ? 'block' : 'none';
   });
   clearAuthErrors();
+  // Reset forgot panel to input state whenever navigating away from it
+  if(panel !== 'forgot'){
+    const inputEl = document.getElementById('forgotInputState');
+    const sentEl  = document.getElementById('forgotSentState');
+    if(inputEl) inputEl.style.display = 'block';
+    if(sentEl)  sentEl.style.display  = 'none';
+    const emailInp = document.getElementById('authForgotEmail');
+    if(emailInp) emailInp.value = '';
+    const forgotBtn = document.getElementById('authForgotBtn');
+    if(forgotBtn){ forgotBtn.disabled=false; forgotBtn.innerHTML='SEND RESET LINK'; }
+  }
   // Reset create account form to step 1 whenever navigating to it
   if(panel==='create'||panel==='setup'){
     document.getElementById('setupSection1').style.display='block';
@@ -5772,7 +5897,7 @@ function switchAuthRole(role){
 }
 
 function clearAuthErrors(){
-  ['authLoginError','authForgotError','authForgotSuccess','authSetupError'].forEach(id=>{
+  ['authLoginError','authForgotError','authSetupError'].forEach(id=>{
     const el=document.getElementById(id);
     if(el){el.classList.remove('show');el.textContent='';el.style.display='none';}
   });
@@ -6195,16 +6320,16 @@ async function authForgotPassword(){
     if(!auth) initFirebase();
     await auth.sendPasswordResetEmail(email);
     btn.disabled=false; btn.innerHTML='SEND RESET LINK';
-    const succ=document.getElementById('authForgotSuccess');
-    if(succ){
-      succ.textContent='✅ RESET LINK SENT TO '+email.toUpperCase()+' — CHECK YOUR INBOX';
-      succ.classList.add('show'); succ.style.display='block';
-    }
+    // Show the inbox/spam guidance panel
+    document.getElementById('forgotInputState').style.display = 'none';
+    document.getElementById('forgotSentState').style.display  = 'block';
   } catch(e){
     btn.disabled=false; btn.innerHTML='SEND RESET LINK';
     const msgs={
-      'auth/user-not-found': '⚠ NO ACCOUNT WITH THAT EMAIL',
-      'auth/invalid-email':  '⚠ INVALID EMAIL ADDRESS',
+      'auth/user-not-found':         '⚠ NO ACCOUNT FOUND WITH THAT EMAIL',
+      'auth/invalid-email':          '⚠ INVALID EMAIL ADDRESS',
+      'auth/network-request-failed': '⚠ NO INTERNET — CHECK YOUR CONNECTION',
+      'auth/too-many-requests':      '⚠ TOO MANY REQUESTS — PLEASE WAIT A FEW MINUTES',
     };
     showAuthError('authForgotError', msgs[e.code]||('⚠ '+e.message));
   }
