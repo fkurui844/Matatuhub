@@ -2212,7 +2212,6 @@ function startTrip(){
   if(reasonVal) tripState.odomSkipReason = reasonVal;
   if(tripState.odomWorking && !tripState.odomStart){
     toast('⚠ ODOMETER READING REQUIRED — ENTER START KM TO PROCEED');
-    // Shake the odom input visually
     const inp = document.getElementById('odomStartIn');
     if(inp){ inp.style.borderColor='var(--red)'; inp.focus(); setTimeout(()=>inp.style.borderColor='var(--red)',600); }
     return;
@@ -2223,12 +2222,49 @@ function startTrip(){
     if(ta){ ta.style.borderColor='var(--red)'; ta.focus(); }
     return;
   }
+  // ── LOCATION IS MANDATORY — request before doing anything ──
+  if(!navigator.geolocation){
+    showGpsBlockModal('LOCATION NOT SUPPORTED','This device does not support GPS. Location tracking is required to start a trip. Please use a GPS-enabled device.');
+    return;
+  }
+  // Show waiting indicator on button
+  const startBtn = document.getElementById('startTripBtn');
+  if(startBtn){ startBtn.disabled=true; startBtn.textContent='📍 GETTING LOCATION...'; }
+  navigator.geolocation.getCurrentPosition(
+    // ✅ Permission granted & fix obtained — proceed with trip
+    function(pos){
+      lastGpsPos = { lat: pos.coords.latitude, lng: pos.coords.longitude,
+                     accuracy: Math.round(pos.coords.accuracy), ts: Date.now() };
+      if(startBtn){ startBtn.disabled=false; startBtn.textContent='START TRIP'; }
+      _doStartTrip();
+      // Continue watching after trip starts
+      gpsWatchId = navigator.geolocation.watchPosition(function(p){
+        lastGpsPos = { lat: p.coords.latitude, lng: p.coords.longitude,
+                       accuracy: Math.round(p.coords.accuracy), ts: Date.now() };
+      }, function(){}, { enableHighAccuracy:true, maximumAge:20000 });
+      gpsInterval = setInterval(pushLocationToFirestore, 30000);
+      pushLocationToFirestore();
+    },
+    // ❌ Permission denied or error — hard block
+    function(err){
+      if(startBtn){ startBtn.disabled=false; startBtn.textContent='START TRIP'; }
+      const msg = err.code===1
+        ? 'You have BLOCKED location access.\n\nTo start a trip you must:\n1. Tap the 🔒 lock icon in your browser address bar\n2. Set Location to ALLOW\n3. Refresh and try again'
+        : err.code===2
+        ? 'GPS signal not found. Move to an open area and try again.'
+        : 'Location request timed out. Please ensure GPS is enabled and try again.';
+      showGpsBlockModal('📍 LOCATION REQUIRED', msg);
+    },
+    { enableHighAccuracy:true, timeout:20000, maximumAge:0 }
+  );
+}
+
+function _doStartTrip(){
   tripState.phase='active';
   tripState.tripStart=Date.now();
   tripState.toStation=null;
   tripState.notes='';
   saveTripState();
-  // Tell admin: this car is now driving
   writeSession('driving', {
     from: tripState.fromStation?.name || '',
     to: '',
@@ -2236,8 +2272,27 @@ function startTrip(){
   });
   renderLog();
   startTripTimer();
-  startLocationTracking();
-  toast('TRIP STARTED — SAFE JOURNEY! 🚌');
+  toast('📍 LOCATION ACTIVE — TRIP STARTED! SAFE JOURNEY 🚌');
+}
+
+function showGpsBlockModal(title, message){
+  // Remove any existing GPS modal
+  const old = document.getElementById('gpsBlockModal');
+  if(old) old.remove();
+  const modal = document.createElement('div');
+  modal.id = 'gpsBlockModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML = `
+    <div style="background:var(--card);border:2px solid var(--red);max-width:360px;width:100%;padding:28px 22px;text-align:center">
+      <div style="font-size:2.2rem;margin-bottom:12px">🚫</div>
+      <div style="font-family:var(--font-d);font-size:1rem;letter-spacing:3px;color:var(--red);margin-bottom:14px">${title}</div>
+      <div style="font-family:var(--font-m);font-size:.84rem;color:var(--text);letter-spacing:.5px;line-height:1.9;white-space:pre-line;margin-bottom:22px">${message}</div>
+      <button onclick="document.getElementById('gpsBlockModal').remove()"
+        style="width:100%;padding:14px;background:var(--red);border:none;color:#fff;font-family:var(--font-d);font-size:.9rem;letter-spacing:3px;cursor:pointer">
+        UNDERSTOOD
+      </button>
+    </div>`;
+  document.body.appendChild(modal);
 }
 
 function arrive(){
@@ -6186,20 +6241,19 @@ function startAuthListener(){
 // GPS LOCATION TRACKING
 // ══════════════════════════════════════════════
 function startLocationTracking(){
-  if(!navigator.geolocation){ console.warn("Geolocation not supported"); return; }
-  // Immediately get first fix
+  // Called on page reload when trip is already active — re-attaches GPS watch
+  if(!navigator.geolocation) return;
+  if(gpsWatchId !== null) return; // already watching
   navigator.geolocation.getCurrentPosition(pos=>{
     lastGpsPos = { lat: pos.coords.latitude, lng: pos.coords.longitude,
                    accuracy: Math.round(pos.coords.accuracy), ts: Date.now() };
     pushLocationToFirestore();
-  }, err=>console.warn("GPS error:", err), { enableHighAccuracy:true, timeout:15000 });
-  // Watch position continuously
+  }, ()=>{}, { enableHighAccuracy:true, timeout:15000 });
   gpsWatchId = navigator.geolocation.watchPosition(pos=>{
     lastGpsPos = { lat: pos.coords.latitude, lng: pos.coords.longitude,
                    accuracy: Math.round(pos.coords.accuracy), ts: Date.now() };
-  }, err=>console.warn("GPS watch error:", err), { enableHighAccuracy:true, maximumAge:20000 });
-  // Push to Firestore every 30 seconds
-  gpsInterval = setInterval(pushLocationToFirestore, 30000);
+  }, ()=>{}, { enableHighAccuracy:true, maximumAge:20000 });
+  if(!gpsInterval) gpsInterval = setInterval(pushLocationToFirestore, 30000);
 }
 
 function stopLocationTracking(){
