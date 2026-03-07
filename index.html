@@ -6205,15 +6205,18 @@ async function changeDevPin(){
 // ── SPLASH SCREEN ──────────────────────────────────────────────
 
 function goToSplashStep2(){
-  document.getElementById('splashStep1').style.display = 'none';
-  document.getElementById('splashStep1Btn').style.display = 'none';
-  const s2    = document.getElementById('splashStep2');
-  const s2btn = document.getElementById('splashStep2Btn');
-  s2.style.display    = 'flex';
-  s2btn.style.display = 'flex';
-  s2.classList.add('splash-anim-in');
-  document.getElementById('dot1').classList.remove('active');
-  document.getElementById('dot2').classList.add('active');
+  try{
+    const s1=document.getElementById('splashStep1'),s1btn=document.getElementById('splashStep1Btn');
+    const s2=document.getElementById('splashStep2'),s2btn=document.getElementById('splashStep2Btn');
+    if(!s1||!s1btn||!s2||!s2btn) return;
+    s1.style.display='none'; s1btn.style.display='none';
+    s2.style.removeProperty('display'); s2.style.display='flex';
+    s2btn.style.removeProperty('display'); s2btn.style.display='flex';
+    s2.classList.remove('splash-anim-in'); void s2.offsetWidth;
+    s2.classList.add('splash-anim-in'); s2.scrollTop=0;
+    const d1=document.getElementById('dot1'),d2=document.getElementById('dot2');
+    if(d1)d1.classList.remove('active'); if(d2)d2.classList.add('active');
+  } catch(e){ console.error('Step2 error:',e); }
 }
 
 function goToSplashStep1(){
@@ -6229,8 +6232,11 @@ function goToSplashStep1(){
 }
 
 function proceedAsRole(role){
-  // role = 'create' (manager new account) or 'login' (driver / existing manager)
   window._splashIntendedRole = role;
+  // Highlight the chosen card
+  document.querySelectorAll('.auth-role-card').forEach(c=>c.style.outline='none');
+  const card = document.querySelector(role==='create'?'.manager-role':'.driver-role');
+  if(card) card.style.outline='2.5px solid var(--accent)';
 }
 
 function toggleProceedBtn(){
@@ -8074,6 +8080,13 @@ function adminSettings(){
   switchPage('admin');
   renderAdmin();
 }
+
+// ── GET STARTED button — backup listener in case onclick attr fails ──
+document.addEventListener('DOMContentLoaded', function(){
+  const btn = document.querySelector('#splashStep1Btn .splash-proceed-btn');
+  if(btn){ btn.removeAttribute('onclick'); btn.addEventListener('click', goToSplashStep2); }
+});
+
 
 
 (function(){
