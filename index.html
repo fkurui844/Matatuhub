@@ -1139,6 +1139,61 @@ function toggleDark(){
   if(b1)b1.textContent=icon; if(b2)b2.textContent=icon;
   try{ localStorage.setItem('fs_dark',JSON.stringify(!isDark)); }catch(e){}
 }
+
+// ── Early auth routing stubs ─────────────────────────────────
+// These are overridden by the full implementations in the main script.
+// Defined here so onclick="switchToPanel(...)" in splash/auth HTML
+// never throws ReferenceError even on early clicks.
+function showAuthOverlay(){
+  var el=document.getElementById('authOverlay');
+  if(el) el.classList.remove('hidden');
+}
+function hideAuthOverlay(){
+  var el=document.getElementById('authOverlay');
+  if(el) el.classList.add('hidden');
+}
+function _switchToPanelInternal(panel){
+  var panels=['landing','create','login','forgot','invite'];
+  panels.forEach(function(p){
+    var el=document.getElementById('authPanel'+p.charAt(0).toUpperCase()+p.slice(1));
+    if(el) el.style.display='none';
+  });
+  var target=document.getElementById('authPanel'+panel.charAt(0).toUpperCase()+panel.slice(1));
+  if(target) target.style.display='block';
+}
+function switchToPanel(panel){
+  // Will be replaced by full version in main script — this stub handles early calls
+  showAuthOverlay();
+  _switchToPanelInternal(panel);
+}
+
+// ── Early stubs for auth action functions ────────────────────
+// All defined in full in the main script. These stubs queue the
+// call until the main script is ready, preventing ReferenceError
+// on any early click.
+function _deferUntilReady(fn, args){
+  var CHECK_MS = 50, MAX_WAIT = 8000, waited = 0;
+  (function poll(){
+    if(typeof window._mainScriptReady !== 'undefined'){
+      fn.apply(null, args||[]);
+    } else if(waited < MAX_WAIT){
+      waited += CHECK_MS;
+      setTimeout(poll, CHECK_MS);
+    }
+  })();
+}
+function authLogin(){         _deferUntilReady(function(){ if(typeof window._authLogin==='function') window._authLogin(); }); }
+function authForgotPassword(){ _deferUntilReady(function(){ if(typeof window._authForgotPassword==='function') window._authForgotPassword(); }); }
+function authSetupAdmin(){    _deferUntilReady(function(){ if(typeof window._authSetupAdmin==='function') window._authSetupAdmin(); }); }
+function acceptInvitation(){  _deferUntilReady(function(){ if(typeof window._acceptInvitation==='function') window._acceptInvitation(); }); }
+function setupNextStep(){     _deferUntilReady(function(){ if(typeof window._setupNextStep==='function') window._setupNextStep(); }); }
+function setupPrevStep(){     _deferUntilReady(function(){ if(typeof window._setupPrevStep==='function') window._setupPrevStep(); }); }
+function toggleAuthEye(){     var i=document.getElementById('authPassword'); if(i) i.type=i.type==='password'?'text':'password'; }
+function toggleSetupEye(){    var i=document.getElementById('setupPassword'); if(i) i.type=i.type==='password'?'text':'password'; }
+function toggleSetupConfirmEye(){ var i=document.getElementById('setupConfirm'); if(i) i.type=i.type==='password'?'text':'password'; }
+function toggleInviteEye(){   var i=document.getElementById('invitePassword'); if(i) i.type=i.type==='password'?'text':'password'; }
+function toggleAbout(el){     var a=document.getElementById('aboutSection'); if(a) a.style.display=a.style.display==='none'?'block':'none'; }
+function goHomeFromAbout(){   var a=document.getElementById('aboutSection'); if(a) a.style.display='none'; }
 function goToSplashStep2(){
   try{
     // If admin already authenticated (page reload), skip WHO ARE YOU and go straight to app
@@ -7715,6 +7770,32 @@ function toggleInviteEye(){
 window._pendingProfileWrite = window._pendingProfileWrite || false;
 window._intentionalSignOut  = false; // set true before manual auth.signOut()
 window._loginHandled        = false; // set true when authLogin/setup routes directly
+
+// ── Register real implementations so early stubs can resolve ──
+window._authLogin          = authLogin;
+window._authForgotPassword = authForgotPassword;
+window._authSetupAdmin     = authSetupAdmin;
+window._acceptInvitation   = acceptInvitation;
+window._setupNextStep      = setupNextStep;
+window._setupPrevStep      = setupPrevStep;
+// Signal that the main script is fully loaded
+window._mainScriptReady    = true;
+// Also override the stubs directly so future calls skip the polling
+window.authLogin           = authLogin;
+window.authForgotPassword  = authForgotPassword;
+window.authSetupAdmin      = authSetupAdmin;
+window.acceptInvitation    = acceptInvitation;
+window.setupNextStep       = setupNextStep;
+window.setupPrevStep       = setupPrevStep;
+window.toggleAuthEye       = toggleAuthEye;
+window.toggleSetupEye      = toggleSetupEye;
+window.toggleSetupConfirmEye = toggleSetupConfirmEye;
+window.toggleInviteEye     = toggleInviteEye;
+window.toggleAbout         = toggleAbout;
+window.goHomeFromAbout     = goHomeFromAbout;
+window.switchToPanel       = switchToPanel;
+window.showAuthOverlay     = showAuthOverlay;
+window.hideAuthOverlay     = hideAuthOverlay;
 
 function startAuthListener(){
   if(!auth) return;
