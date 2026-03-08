@@ -870,101 +870,149 @@ main{padding:13px 13px 74px}
 /* GREETING */
 .header-greeting{font-family:var(--font-m);font-size:.76rem;color:rgba(255,255,255,.65);letter-spacing:1.5px}
 
-/* ── SPLASH / WELCOME SCREEN ────────────────────────────────── */
-.splash-overlay{position:fixed;inset:0;z-index:800;background:var(--bg);display:flex;flex-direction:column;align-items:stretch;transition:opacity .5s ease}
+/* ── SPLASH: Co-op Bank style ──────────────────────────────── */
+
+/* The overlay fills the screen; no background color — hero image shows */
+.splash-overlay{position:fixed;inset:0;z-index:800;background:#000;display:flex;flex-direction:column;align-items:stretch;transition:opacity .5s ease}
 .splash-overlay.hiding{opacity:0;pointer-events:none}
+
+/* Hero image — top 48% of screen */
+.splash-hero-img{
+  position:absolute;top:0;left:0;right:0;
+  height:52vh;min-height:240px;
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,.25) 0%, rgba(0,0,0,.05) 50%, rgba(0,0,0,.7) 100%),
+    linear-gradient(135deg,#0a4d1f 0%,#1a7a3c 30%,#2d9e56 55%,#1b6b30 75%,#0d4422 100%);
+  overflow:hidden;
+  flex-shrink:0;
+}
+/* Kenyan road scene drawn with CSS */
+.splash-hero-img::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 80%,rgba(180,120,40,.18) 0%,transparent 70%),
+    radial-gradient(circle at 20% 30%,rgba(255,200,80,.08) 0%,transparent 50%),
+    radial-gradient(circle at 80% 20%,rgba(100,200,100,.12) 0%,transparent 40%);
+}
+.splash-hero-img::after{
+  content:'🌍';
+  position:absolute;bottom:28%;right:12%;
+  font-size:5rem;opacity:.07;
+}
+
+/* Logo centred over the hero */
+.splash-hero-logo{
+  position:absolute;top:0;left:0;right:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding-top:max(env(safe-area-inset-top,0px), 18px);
+  padding-bottom:16px;
+  pointer-events:none;
+  z-index:2;
+}
+.splash-hero-bus{font-size:2.6rem;filter:drop-shadow(0 3px 14px rgba(0,0,0,.5));margin-bottom:4px;animation:splashBounce .7s ease}
+.splash-hero-name{font-family:var(--font-d);font-size:2rem;letter-spacing:5px;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);line-height:1}
+.splash-hero-name span{color:#ffd166}
+.splash-hero-sub{font-family:var(--font-m);font-size:.65rem;color:rgba(255,255,255,.75);letter-spacing:3px;margin-top:4px;text-transform:uppercase}
+
+/* Top-right theme toggle overlaid on hero */
+.splash-theme-btn{
+  position:absolute;top:max(env(safe-area-inset-top,0px),14px);right:14px;
+  background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.3);
+  backdrop-filter:blur(6px);color:#fff;
+  width:38px;height:38px;border-radius:10px;font-size:1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;z-index:3;
+}
+
+/* Bottom sheet */
+.splash-sheet{
+  position:absolute;bottom:0;left:0;right:0;
+  background:var(--bg);
+  border-radius:22px 22px 0 0;
+  /* Sheet covers bottom ~58% of screen */
+  max-height:68vh;
+  display:flex;flex-direction:column;
+  box-shadow:0 -8px 40px rgba(0,0,0,.4);
+  animation:splashSheetUp .45s cubic-bezier(.34,1.1,.64,1) both;
+  overflow:hidden;
+}
+@keyframes splashSheetUp{from{transform:translateY(100%);opacity:.4}to{transform:translateY(0);opacity:1}}
+.splash-sheet-handle{width:44px;height:5px;border-radius:3px;background:var(--border);margin:12px auto 0;flex-shrink:0;cursor:pointer}
+.splash-sheet-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 18px 0}
+
+/* Welcome heading */
+.splash-welcome{font-family:var(--font-d);font-size:1.3rem;letter-spacing:2px;color:var(--text);margin-bottom:16px;text-align:center}
+
+/* Big CTA card — like Co-op Bank green "Open an account" */
+.splash-cta-card{
+  background:var(--accent-grad);
+  border-radius:16px;padding:20px 18px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;margin-bottom:16px;cursor:pointer;
+  box-shadow:0 6px 24px rgba(26,122,60,.45);
+  transition:transform .2s,box-shadow .2s;
+  position:relative;overflow:hidden;
+}
+.splash-cta-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.08) 0%,transparent 60%)}
+.splash-cta-card:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(26,122,60,.5)}
+.splash-cta-card:active{transform:scale(.98)}
+.splash-cta-left{}
+.splash-cta-title{font-family:var(--font-d);font-size:1.15rem;letter-spacing:2px;color:#fff;margin-bottom:6px}
+.splash-cta-desc{font-family:var(--font-m);font-size:.78rem;color:rgba(255,255,255,.85);letter-spacing:.4px;line-height:1.6;max-width:220px}
+.splash-cta-ico{font-size:2.8rem;flex-shrink:0;filter:drop-shadow(0 4px 12px rgba(0,0,0,.3));z-index:1}
+
+/* 2×2 feature card grid — like Co-op Bank service cards */
+.splash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.splash-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:16px 13px 12px;
+  display:flex;flex-direction:column;justify-content:space-between;
+  min-height:110px;cursor:pointer;
+  transition:transform .18s,box-shadow .18s;
+}
+.splash-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.splash-card:active{transform:scale(.97)}
+.splash-card-title{font-family:var(--font-m);font-size:.86rem;font-weight:700;color:var(--text);letter-spacing:.5px;margin-bottom:5px}
+.splash-card-desc{font-family:var(--font-m);font-size:.72rem;color:var(--muted);letter-spacing:.2px;line-height:1.55;flex:1}
+.splash-card-ico{font-size:2.2rem;align-self:flex-end;margin-top:6px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.18))}
+
+/* Demo stats strip */
+.splash-stats{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px}
+.splash-stat-cell{padding:11px 6px;text-align:center;border-right:1px solid var(--border)}
+.splash-stat-cell:last-child{border-right:none}
+.splash-stat-val{font-family:var(--font-d);font-size:1.15rem;letter-spacing:.5px;line-height:1;margin-bottom:3px}
+.splash-stat-lbl{font-family:var(--font-m);font-size:.58rem;color:var(--muted);letter-spacing:.5px;line-height:1.3}
+@keyframes countUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* Sticky LOGIN button at bottom — exactly like Co-op Bank */
+.splash-login-bar{
+  padding:12px 18px max(env(safe-area-inset-bottom,0px),20px);
+  background:var(--bg);border-top:1px solid var(--border);
+  flex-shrink:0;
+}
+.splash-login-btn{
+  width:100%;padding:17px;
+  background:var(--accent-grad);border:none;border-radius:14px;
+  color:#fff;font-family:var(--font-d);font-size:1rem;letter-spacing:3px;
+  cursor:pointer;box-shadow:0 5px 20px rgba(26,122,60,.4);
+  transition:transform .2s,box-shadow .2s;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.splash-login-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(26,122,60,.5)}
+.splash-login-btn:active{transform:scale(.98)}
+.splash-dev-line{font-family:var(--font-m);font-size:.65rem;color:var(--muted);letter-spacing:1px;text-align:center;margin-top:8px}
+.splash-dev-line span{color:var(--accent2);font-weight:700}
+
+/* Pulse dot */
+@keyframes demoPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+.demo-live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#22c55e;animation:demoPulse 1.4s infinite;vertical-align:middle}
+
+/* Scroll area bottom padding for step 2 */
 .splash-scroll-area{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 110px;display:flex;flex-direction:column;align-items:stretch}
 .splash-btn-area{position:absolute;bottom:0;left:0;right:0;z-index:10;padding:12px 20px 28px;background:var(--bg);border-top:1px solid var(--border);display:flex;flex-direction:column;align-items:center;gap:8px}
 .splash-proceed-btn{width:100%;max-width:380px;padding:18px;background:var(--accent-grad);border:none;color:#fff;font-family:var(--font-d);font-size:1rem;letter-spacing:4px;cursor:not-allowed;transition:var(--transition);opacity:.4;pointer-events:none;border-radius:var(--radius-sm);box-shadow:0 4px 16px rgba(26,122,60,.3)}
 .splash-proceed-btn.ready{opacity:1;cursor:pointer;pointer-events:auto}
 .splash-proceed-btn.ready:hover{box-shadow:0 6px 24px rgba(26,122,60,.4);transform:translateY(-2px)}
 .splash-proceed-btn.ready:active{transform:translateY(0)}
-.splash-dev-line{font-family:var(--font-m);font-size:.75rem;color:var(--muted);letter-spacing:1px;text-align:center}
-.splash-dev-line span{color:var(--accent2);font-weight:700}
-
-/* STEP 1 — Guest Landing Page */
-.splash-hero{padding:0 0 0;display:flex;flex-direction:column;align-items:stretch}
-
-/* Sticky top bar inside splash */
-.splash-topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);background:var(--card);position:sticky;top:0;z-index:10;flex-shrink:0}
-.splash-logo-row{display:flex;align-items:center;gap:10px}
-.splash-logo-ico{font-size:1.8rem;filter:drop-shadow(0 2px 6px rgba(26,122,60,.3))}
-.splash-logo-text{}
-.splash-logo-name{font-family:var(--font-d);font-size:1.3rem;letter-spacing:3px;color:var(--accent);line-height:1}
-.splash-logo-name span{color:var(--accent2)}
-.splash-logo-sub{font-family:var(--font-m);font-size:.6rem;color:var(--muted);letter-spacing:2px}
-.splash-topbar-right{display:flex;align-items:center;gap:8px}
-
-/* Login circle button */
-.splash-login-circle{width:42px;height:42px;border-radius:50%;background:var(--accent);border:none;color:#fff;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(26,122,60,.4);transition:transform .2s,box-shadow .2s;flex-shrink:0;animation:splashBounce .6s ease .3s both}
-.splash-login-circle:hover{transform:scale(1.08);box-shadow:0 5px 20px rgba(26,122,60,.5)}
-.splash-login-label{font-family:var(--font-m);font-size:.62rem;color:var(--accent);letter-spacing:1.5px;text-align:center;margin-top:2px}
-
-/* Hero banner */
-.splash-banner{background:linear-gradient(135deg,var(--accent) 0%,#0d7a35 100%);padding:28px 20px 24px;text-align:center;position:relative;overflow:hidden}
-.splash-banner::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
-.splash-banner-tag{display:inline-block;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:99px;padding:4px 14px;font-family:var(--font-m);font-size:.7rem;letter-spacing:2px;color:#fff;margin-bottom:14px}
-.splash-banner-h{font-family:var(--font-d);font-size:1.7rem;letter-spacing:2px;color:#fff;line-height:1.2;margin-bottom:10px}
-.splash-banner-h span{color:#ffd166}
-.splash-banner-sub{font-family:var(--font-m);font-size:.82rem;color:rgba(255,255,255,.85);letter-spacing:.5px;line-height:1.8;margin-bottom:20px}
-.splash-cta-btn{background:#fff;color:var(--accent);border:none;border-radius:99px;padding:13px 32px;font-family:var(--font-d);font-size:.95rem;letter-spacing:2px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:transform .2s,box-shadow .2s}
-.splash-cta-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.3)}
-.splash-cta-hint{font-family:var(--font-m);font-size:.7rem;color:rgba(255,255,255,.65);letter-spacing:1px;margin-top:10px}
-
-/* Live demo stats strip */
-.splash-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:1px solid var(--border)}
-.splash-stat-cell{padding:14px 8px;text-align:center;border-right:1px solid var(--border)}
-.splash-stat-cell:last-child{border-right:none}
-.splash-stat-val{font-family:var(--font-d);font-size:1.3rem;letter-spacing:1px;line-height:1;margin-bottom:4px}
-.splash-stat-lbl{font-family:var(--font-m);font-size:.62rem;color:var(--muted);letter-spacing:1px;line-height:1.4}
-
-/* Demo section */
-.splash-section{padding:18px 16px 0}
-.splash-section-title{font-family:var(--font-d);font-size:.85rem;letter-spacing:2.5px;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.splash-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
-
-/* Demo vehicle cards */
-.demo-vehicle{background:var(--card);border:2px solid var(--border);margin-bottom:8px;overflow:hidden;border-radius:var(--radius-sm)}
-.demo-vehicle.driving{border-color:#22c55e}
-.demo-vehicle.arrived{border-color:#f59e0b}
-.demo-vehicle-row{display:grid;grid-template-columns:80px 1fr auto;align-items:stretch}
-.demo-plate{display:flex;align-items:center;justify-content:center;padding:10px 8px;font-family:var(--font-d);font-size:.85rem;letter-spacing:2px}
-.demo-vehicle.driving .demo-plate{background:#22c55e;color:#fff}
-.demo-vehicle.arrived .demo-plate{background:#f59e0b;color:#fff}
-.demo-vehicle.idle .demo-plate{background:var(--surface);color:var(--muted)}
-.demo-info{padding:8px 10px}
-.demo-driver{font-family:var(--font-m);font-size:.88rem;font-weight:700;color:var(--text);letter-spacing:1px}
-.demo-route{font-family:var(--font-m);font-size:.76rem;color:var(--muted);margin-top:2px}
-.demo-gps{font-family:var(--font-m);font-size:.72rem;color:#60a5fa;margin-top:4px;display:flex;align-items:center;gap:4px}
-.demo-rev{padding:8px 10px;text-align:right;border-left:1px solid var(--border);display:flex;flex-direction:column;justify-content:center}
-.demo-rev-val{font-family:var(--font-d);font-size:1rem;color:var(--accent)}
-.demo-rev-lbl{font-family:var(--font-m);font-size:.65rem;color:var(--muted);letter-spacing:1px}
-.demo-bar{height:3px}
-.demo-vehicle.driving .demo-bar{background:linear-gradient(90deg,#22c55e 60%,transparent)}
-.demo-vehicle.arrived .demo-bar{background:linear-gradient(90deg,#f59e0b 85%,transparent)}
-
-/* Demo trip feed */
-.demo-trip{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
-.demo-trip:last-child{border-bottom:none}
-.demo-trip-left{display:flex;align-items:center;gap:10px}
-.demo-trip-plate{background:var(--accent);color:#fff;font-family:var(--font-m);font-size:.72rem;padding:3px 8px;letter-spacing:1px;border-radius:2px}
-.demo-trip-route{font-family:var(--font-m);font-size:.8rem;color:var(--text)}
-.demo-trip-driver{font-family:var(--font-m);font-size:.7rem;color:var(--muted);margin-top:1px}
-.demo-trip-amt{font-family:var(--font-d);font-size:1rem;color:var(--accent)}
-.demo-trip-time{font-family:var(--font-m);font-size:.68rem;color:var(--muted);text-align:right;margin-top:2px}
-
-/* Feature pills */
-.splash-features{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:16px 16px}
-.splash-feat{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--accent);padding:13px 11px;border-radius:var(--radius-sm)}
-.splash-feat-ico{font-size:1.4rem;margin-bottom:5px}
-.splash-feat-title{font-family:var(--font-m);font-size:.76rem;font-weight:700;color:var(--text);letter-spacing:1px;margin-bottom:3px}
-.splash-feat-desc{font-family:var(--font-m);font-size:.72rem;color:var(--muted);letter-spacing:.3px;line-height:1.6}
-
-/* Pulse dot for live */
-@keyframes demoPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
-.demo-live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#22c55e;animation:demoPulse 1.4s infinite;vertical-align:middle}
-@keyframes countUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.splash-stat-val{animation:countUp .6s ease both}
 
 /* STEP 2 — Who are you */
 .splash-step2{padding:24px 22px 8px;display:flex;flex-direction:column;align-items:stretch}
@@ -997,13 +1045,13 @@ main{padding:13px 13px 74px}
 
 <header>
   <div class="hrow">
-    <div class="logo" id="headerLogo">Matatu<span>Hub</span></div>
+    <div class="logo" id="headerLogo" onclick="if(typeof switchPage==='function')switchPage('home')" style="cursor:pointer" title="Go to Home">Matatu<span>Hub</span></div>
     <!-- Desktop top nav links -->
     <nav class="topnav-links" id="topNavLinks" style="display:none">
-      <a id="tnav-admin" onclick="switchPage('admin')" class="tnav-active">Dashboard</a>
+      <a id="tnav-home" onclick="switchPage('home')">Home</a>
       <a id="tnav-reports" onclick="switchPage('reports')">Reports</a>
-      <a id="tnav-cars" onclick="adminTab='cars';switchPage('admin');renderAdmin()">Vehicles Management</a>
-      <a id="tnav-drivers" onclick="adminTab='drivers';switchPage('admin');renderAdmin()">Drivers Management</a>
+      <a id="tnav-cars" onclick="adminTab='cars';switchPage('admin');renderAdmin()">Vehicles</a>
+      <a id="tnav-drivers" onclick="adminTab='drivers';switchPage('admin');renderAdmin()">Drivers</a>
     </nav>
     <div class="hright">
       <span class="session-bar" id="sessionBar"></span>
@@ -1032,7 +1080,17 @@ main{padding:13px 13px 74px}
             style="padding:13px 16px 11px;border-bottom:1px solid var(--border);
                    font-family:var(--font-m);font-size:.78rem;letter-spacing:1px;color:var(--muted)">
           </div>
-          <!-- Settings -->
+          <!-- Dashboard — goes to admin management panel -->
+          <button onclick="closeAvatarMenu();switchPage('admin');renderAdmin()"
+            style="display:flex;align-items:center;gap:10px;width:100%;padding:12px 16px;
+                   background:none;border:none;border-bottom:1px solid var(--border);
+                   font-family:var(--font-m);font-size:.82rem;letter-spacing:1px;
+                   color:var(--text);cursor:pointer;text-align:left;transition:background .15s"
+            onmouseover="this.style.background='var(--surface)'"
+            onmouseout="this.style.background='none'">
+            📊 <span>DASHBOARD</span>
+          </button>
+          <!-- Settings — opens config tab in admin (SACCO rename, etc.) -->
           <button onclick="closeAvatarMenu();isAdminUser?adminSettings():goDriverSettings()"
             style="display:flex;align-items:center;gap:10px;width:100%;padding:12px 16px;
                    background:none;border:none;border-bottom:1px solid var(--border);
@@ -1175,259 +1233,152 @@ function proceedFromSplash(){
 <div id="splashOverlay" class="splash-overlay">
 
   <!-- ══════════════════════════════════════════
-       STEP 1 — MARKETING / PRODUCT INTRO
+       STEP 1 — GUEST LANDING (Co-op Bank style)
   ══════════════════════════════════════════ -->
-  <div id="splashStep1" class="splash-scroll-area">
-    <div class="splash-hero">
+  <div id="splashStep1" style="position:absolute;inset:0;display:flex;flex-direction:column">
 
-      <!-- ── Sticky Top Bar ── -->
-      <div class="splash-topbar">
-        <div class="splash-logo-row">
-          <div class="splash-logo-ico">🚌</div>
-          <div class="splash-logo-text">
-            <div class="splash-logo-name">Matatu<span>Hub</span></div>
-            <div class="splash-logo-sub">FLEET MANAGEMENT</div>
-          </div>
+    <!-- ── HERO IMAGE (top ~48%) ── -->
+    <div class="splash-hero-img">
+      <!-- Kenyan road / matatu scene with CSS art -->
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden">
+        <!-- Road perspective -->
+        <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:0;height:0;border-left:160px solid transparent;border-right:160px solid transparent;border-bottom:280px solid rgba(40,30,20,.55)"></div>
+        <!-- Road markings -->
+        <div style="position:absolute;bottom:8%;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:18px;align-items:center">
+          <div style="width:6px;height:36px;background:rgba(255,220,0,.5);border-radius:3px"></div>
+          <div style="width:6px;height:36px;background:rgba(255,220,0,.4);border-radius:3px"></div>
+          <div style="width:6px;height:36px;background:rgba(255,220,0,.3);border-radius:3px"></div>
         </div>
-        <div class="splash-topbar-right">
-          <button id="splashThemeBtn" onclick="toggleDark()" title="Toggle theme"
-            style="background:var(--surface);border:1.5px solid var(--border);color:var(--text);
-                   width:36px;height:36px;border-radius:10px;font-size:1rem;cursor:pointer;
-                   display:flex;align-items:center;justify-content:center;flex-shrink:0">🌙</button>
-          <div style="display:flex;flex-direction:column;align-items:center">
-            <button class="splash-login-circle" onclick="goToSplashStep2()" title="Sign in / Register">
-              👤
-            </button>
-            <div class="splash-login-label">SIGN IN</div>
-          </div>
-        </div>
+        <!-- Big matatu emoji art -->
+        <div style="font-size:5rem;position:absolute;bottom:22%;left:50%;transform:translateX(-58%);filter:drop-shadow(0 8px 24px rgba(0,0,0,.6));animation:splashBounce .7s ease">🚌</div>
+        <!-- Trees/environment -->
+        <div style="position:absolute;left:6%;bottom:15%;font-size:3.2rem;opacity:.55;animation:splashBounce .9s ease .15s both">🌳</div>
+        <div style="position:absolute;right:5%;bottom:12%;font-size:2.6rem;opacity:.45;animation:splashBounce .9s ease .25s both">🌴</div>
+        <div style="position:absolute;right:18%;top:18%;font-size:1.8rem;opacity:.3">⛅</div>
+        <div style="position:absolute;left:15%;top:14%;font-size:1.4rem;opacity:.25">☁️</div>
       </div>
-
-      <!-- ── Hero Banner ── -->
-      <div class="splash-banner">
-        <div class="splash-banner-tag">🇰🇪 BUILT FOR KENYAN SACCOs</div>
-        <div class="splash-banner-h">KNOW YOUR FLEET.<br><span>GROW YOUR REVENUE.</span></div>
-        <div class="splash-banner-sub">Real-time GPS tracking, live revenue dashboards and driver management — all in one app. No spreadsheets. No guessing.</div>
-        <button class="splash-cta-btn" onclick="goToSplashStep2()">GET STARTED FREE &nbsp;›</button>
-        <div class="splash-cta-hint">👆 Or tap the circle at the top right to sign in</div>
-      </div>
-
-      <!-- ── Live Demo Stats ── -->
-      <div class="splash-stats">
-        <div class="splash-stat-cell">
-          <div class="splash-stat-val" style="color:#22c55e" id="demoStatOnline">3</div>
-          <div class="splash-stat-lbl">VEHICLES<br>ONLINE</div>
-        </div>
-        <div class="splash-stat-cell">
-          <div class="splash-stat-val" style="color:var(--accent2)" id="demoStatRev">47.2K</div>
-          <div class="splash-stat-lbl">TODAY'S<br>REVENUE</div>
-        </div>
-        <div class="splash-stat-cell">
-          <div class="splash-stat-val" style="color:var(--accent)" id="demoStatTrips">28</div>
-          <div class="splash-stat-lbl">TRIPS<br>TODAY</div>
-        </div>
-        <div class="splash-stat-cell">
-          <div class="splash-stat-val" style="color:#8b5cf6" id="demoStatDrivers">6</div>
-          <div class="splash-stat-lbl">ACTIVE<br>DRIVERS</div>
-        </div>
-      </div>
-
-      <!-- ── Live Fleet Board (demo) ── -->
-      <div class="splash-section">
-        <div class="splash-section-title"><span class="demo-live-dot"></span> LIVE FLEET — SAMPLE DATA</div>
-
-        <div class="demo-vehicle driving">
-          <div class="demo-vehicle-row">
-            <div class="demo-plate">KCB 412T</div>
-            <div class="demo-info">
-              <div class="demo-driver">James Mwangi</div>
-              <div class="demo-route">🚌 CBD → Westlands</div>
-              <div class="demo-gps">📍 <span id="demoGps1">-1.2921, 36.8219</span> · <span id="demoGpsAge1">JUST NOW</span></div>
-            </div>
-            <div class="demo-rev">
-              <div class="demo-rev-val">8.4K</div>
-              <div class="demo-rev-lbl">KES TODAY</div>
-            </div>
-          </div>
-          <div class="demo-bar"></div>
-        </div>
-
-        <div class="demo-vehicle driving">
-          <div class="demo-vehicle-row">
-            <div class="demo-plate">KDD 089S</div>
-            <div class="demo-info">
-              <div class="demo-driver">Peter Odhiambo</div>
-              <div class="demo-route">🚌 Kikuyu → CBD</div>
-              <div class="demo-gps">📍 <span id="demoGps2">-1.2790, 36.7830</span> · <span id="demoGpsAge2">1 MIN AGO</span></div>
-            </div>
-            <div class="demo-rev">
-              <div class="demo-rev-val">6.1K</div>
-              <div class="demo-rev-lbl">KES TODAY</div>
-            </div>
-          </div>
-          <div class="demo-bar"></div>
-        </div>
-
-        <div class="demo-vehicle arrived">
-          <div class="demo-vehicle-row">
-            <div class="demo-plate">KCF 773M</div>
-            <div class="demo-info">
-              <div class="demo-driver">Samuel Njoroge</div>
-              <div class="demo-route">📍 ARRIVED — Rongai</div>
-              <div class="demo-gps" style="color:#f59e0b">🏁 Arrived 3 min ago</div>
-            </div>
-            <div class="demo-rev">
-              <div class="demo-rev-val">5.7K</div>
-              <div class="demo-rev-lbl">KES TODAY</div>
-            </div>
-          </div>
-          <div class="demo-bar"></div>
-        </div>
-
-        <div class="demo-vehicle idle">
-          <div class="demo-vehicle-row">
-            <div class="demo-plate" style="color:var(--muted)">KBZ 214K</div>
-            <div class="demo-info">
-              <div class="demo-driver" style="color:var(--muted)">Grace Wanjiku</div>
-              <div class="demo-route">⏸ IDLE — Shift not started</div>
-              <div class="demo-gps" style="color:var(--border)">📡 Awaiting GPS...</div>
-            </div>
-            <div class="demo-rev">
-              <div class="demo-rev-val" style="color:var(--muted)">0</div>
-              <div class="demo-rev-lbl">KES TODAY</div>
-            </div>
-          </div>
-          <div class="demo-bar" style="background:var(--border)"></div>
-        </div>
-      </div>
-
-      <!-- ── Live Trip Feed (demo) ── -->
-      <div class="splash-section" style="margin-top:8px">
-        <div class="splash-section-title"><span class="demo-live-dot" style="background:var(--accent2)"></span> RECENT TRIPS</div>
-        <div id="demoTripFeed">
-          <div class="demo-trip">
-            <div class="demo-trip-left">
-              <div>
-                <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
-                  <div class="demo-trip-plate">KCB 412T</div>
-                  <div class="demo-trip-route">CBD → Westlands</div>
-                </div>
-                <div class="demo-trip-driver">👤 James Mwangi · 7.2 km</div>
-              </div>
-            </div>
-            <div style="text-align:right">
-              <div class="demo-trip-amt">KES 1,200</div>
-              <div class="demo-trip-time">2:47 PM</div>
-            </div>
-          </div>
-          <div class="demo-trip">
-            <div class="demo-trip-left">
-              <div>
-                <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
-                  <div class="demo-trip-plate" style="background:#8b5cf6">KDD 089S</div>
-                  <div class="demo-trip-route">Kikuyu → CBD</div>
-                </div>
-                <div class="demo-trip-driver">👤 Peter Odhiambo · 14.3 km</div>
-              </div>
-            </div>
-            <div style="text-align:right">
-              <div class="demo-trip-amt">KES 1,800</div>
-              <div class="demo-trip-time">2:31 PM</div>
-            </div>
-          </div>
-          <div class="demo-trip">
-            <div class="demo-trip-left">
-              <div>
-                <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
-                  <div class="demo-trip-plate" style="background:#f59e0b">KCF 773M</div>
-                  <div class="demo-trip-route">Rongai → CBD</div>
-                </div>
-                <div class="demo-trip-driver">👤 Samuel Njoroge · 21.5 km</div>
-              </div>
-            </div>
-            <div style="text-align:right">
-              <div class="demo-trip-amt">KES 2,500</div>
-              <div class="demo-trip-time">1:55 PM</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── Revenue Bar Chart (demo) ── -->
-      <div class="splash-section" style="margin-top:8px">
-        <div class="splash-section-title">📊 THIS WEEK'S REVENUE</div>
-        <div style="display:flex;align-items:flex-end;gap:6px;height:70px;padding:0 2px 8px;border-bottom:1px solid var(--border)">
-          ${['Mon','Tue','Wed','Thu','Fri','Sat','Today'].map((d,i)=>{
-            const h=[55,70,45,80,65,90,100][i];
-            const rev=['38K','52K','31K','61K','48K','71K','47K'][i];
-            const isToday=i===6;
-            return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
-              <div style="width:100%;background:${isToday?'var(--accent)':'var(--border)'};border-radius:3px 3px 0 0;height:${h}%" title="KES ${rev}"></div>
-              <div style="font-family:var(--font-m);font-size:.6rem;color:${isToday?'var(--accent)':'var(--muted)'};letter-spacing:.5px">${d}</div>
-            </div>`;
-          }).join('')}
-        </div>
-        <div style="font-family:var(--font-m);font-size:.72rem;color:var(--muted);letter-spacing:.5px;padding:8px 0 4px">
-          Weekly average: <strong style="color:var(--text)">KES 49,700</strong> &nbsp;·&nbsp; Best day: <strong style="color:var(--accent2)">Saturday — KES 71K</strong>
-        </div>
-      </div>
-
-      <!-- ── Features ── -->
-      <div class="splash-features">
-        <div class="splash-feat" style="border-left-color:var(--accent)">
-          <div class="splash-feat-ico">📍</div>
-          <div class="splash-feat-title">LIVE GPS</div>
-          <div class="splash-feat-desc">See every vehicle on the map — updated every 30 seconds in real time</div>
-        </div>
-        <div class="splash-feat" style="border-left-color:var(--accent2)">
-          <div class="splash-feat-ico">💰</div>
-          <div class="splash-feat-title">LIVE REVENUE</div>
-          <div class="splash-feat-desc">Watch daily collections grow trip by trip — exportable to PDF or Excel</div>
-        </div>
-        <div class="splash-feat" style="border-left-color:#8b5cf6">
-          <div class="splash-feat-ico">👤</div>
-          <div class="splash-feat-title">DRIVER CONTROL</div>
-          <div class="splash-feat-desc">Invite, track and manage drivers — set daily revenue targets per car</div>
-        </div>
-        <div class="splash-feat" style="border-left-color:#0ea5e9">
-          <div class="splash-feat-ico">⛽</div>
-          <div class="splash-feat-title">FUEL TRACKING</div>
-          <div class="splash-feat-desc">Log fuel costs, km/L efficiency and operating expenses per vehicle</div>
-        </div>
-      </div>
-
-      <!-- ── Why sign up banner ── -->
-      <div style="margin:0 16px 20px;background:linear-gradient(135deg,rgba(26,122,60,.12),rgba(240,165,0,.08));border:1.5px solid var(--accent);border-radius:var(--radius-sm);padding:18px 16px;text-align:center">
-        <div style="font-family:var(--font-d);font-size:1rem;letter-spacing:2px;color:var(--accent);margin-bottom:8px">🚀 READY TO TAKE CONTROL?</div>
-        <div style="font-family:var(--font-m);font-size:.8rem;color:var(--muted);line-height:1.8;margin-bottom:16px">
-          Join SACCOs already using MatatuHub to track their fleet,<br>collect revenue data and manage drivers — all for free.
-        </div>
-        <button class="splash-cta-btn" style="background:var(--accent);color:#fff;font-size:.82rem;padding:11px 28px" onclick="goToSplashStep2()">CREATE FREE ACCOUNT &nbsp;›</button>
-        <div style="margin-top:10px;font-family:var(--font-m);font-size:.72rem;color:var(--muted)">
-          Already registered? <button onclick="goToSplashStep2()" style="background:none;border:none;color:var(--accent);cursor:pointer;font-family:var(--font-m);font-size:.72rem;text-decoration:underline;padding:0">LOG IN HERE</button>
-        </div>
-      </div>
-
-      <!-- Security strip -->
-      <div style="margin:0 16px 24px;background:var(--card);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:var(--radius-sm);padding:11px 13px">
-        <div style="font-family:var(--font-m);font-size:.76rem;font-weight:700;color:var(--accent);letter-spacing:1.5px;margin-bottom:7px">🔒 YOUR DATA IS SAFE</div>
-        <div style="font-family:var(--font-m);font-size:.72rem;color:var(--muted);line-height:1.9">
-          ✅ <strong style="color:var(--text)">Private & encrypted</strong> — stored in secure Firebase cloud<br>
-          ✅ <strong style="color:var(--text)">Role-based access</strong> — drivers only see their own data<br>
-          ✅ <strong style="color:var(--text)">Works offline</strong> — trips sync when back online
-        </div>
-      </div>
-
     </div>
+
+    <!-- Logo centred at top of hero -->
+    <div class="splash-hero-logo">
+      <div class="splash-hero-bus">🚌</div>
+      <div class="splash-hero-name">Matatu<span>Hub</span></div>
+      <div class="splash-hero-sub">FLEET MANAGEMENT SYSTEM</div>
+    </div>
+
+    <!-- Theme toggle top-right -->
+    <button class="splash-theme-btn" id="splashThemeBtn" onclick="toggleDark()" title="Toggle theme">🌙</button>
+
+    <!-- ── BOTTOM SHEET ── -->
+    <div class="splash-sheet">
+      <div class="splash-sheet-handle" onclick="goToSplashStep2()"></div>
+
+      <!-- Scrollable content -->
+      <div class="splash-sheet-scroll">
+
+        <div class="splash-welcome">Welcome 👋</div>
+
+        <!-- LIVE DEMO STATS -->
+        <div class="splash-stats" style="margin-bottom:16px">
+          <div class="splash-stat-cell">
+            <div class="splash-stat-val" style="color:#22c55e" id="demoStatOnline">3</div>
+            <div class="splash-stat-lbl">ONLINE<br>NOW</div>
+          </div>
+          <div class="splash-stat-cell">
+            <div class="splash-stat-val" style="color:var(--accent2)" id="demoStatRev">47K</div>
+            <div class="splash-stat-lbl">TODAY'S<br>REVENUE</div>
+          </div>
+          <div class="splash-stat-cell">
+            <div class="splash-stat-val" style="color:var(--accent)" id="demoStatTrips">28</div>
+            <div class="splash-stat-lbl">TRIPS<br>TODAY</div>
+          </div>
+          <div class="splash-stat-cell">
+            <div class="splash-stat-val" style="color:#8b5cf6" id="demoStatDrivers">6</div>
+            <div class="splash-stat-lbl">ACTIVE<br>DRIVERS</div>
+          </div>
+        </div>
+
+        <!-- BIG CTA CARD — "Get started" like "Open an account" -->
+        <div class="splash-cta-card" onclick="goToSplashStep2()">
+          <div class="splash-cta-left">
+            <div class="splash-cta-title">START FOR FREE</div>
+            <div class="splash-cta-desc">Register your SACCO and take full control of your fleet in minutes.</div>
+          </div>
+          <div class="splash-cta-ico">🚀</div>
+        </div>
+
+        <!-- 2×2 FEATURE CARDS -->
+        <div class="splash-grid">
+          <div class="splash-card" onclick="goToSplashStep2()">
+            <div>
+              <div class="splash-card-title">Live GPS</div>
+              <div class="splash-card-desc">See every vehicle on the map — real-time updates every 30 seconds</div>
+            </div>
+            <div class="splash-card-ico">📍</div>
+          </div>
+          <div class="splash-card" onclick="goToSplashStep2()">
+            <div>
+              <div class="splash-card-title">Live Revenue</div>
+              <div class="splash-card-desc">Watch daily collections grow trip by trip — export to PDF or Excel</div>
+            </div>
+            <div class="splash-card-ico">💰</div>
+          </div>
+          <div class="splash-card" onclick="goToSplashStep2()">
+            <div>
+              <div class="splash-card-title">Driver Control</div>
+              <div class="splash-card-desc">Invite drivers, set daily targets and track performance per vehicle</div>
+            </div>
+            <div class="splash-card-ico">👤</div>
+          </div>
+          <div class="splash-card" onclick="goToSplashStep2()">
+            <div>
+              <div class="splash-card-title">Fuel Tracking</div>
+              <div class="splash-card-desc">Log refuels, km/L efficiency and control costs per vehicle</div>
+            </div>
+            <div class="splash-card-ico">⛽</div>
+          </div>
+          <div class="splash-card" onclick="goToSplashStep2()">
+            <div>
+              <div class="splash-card-title">Shift Manager</div>
+              <div class="splash-card-desc">Open and close shifts per car — drivers can only log when shift is active</div>
+            </div>
+            <div class="splash-card-ico">🔓</div>
+          </div>
+          <div class="splash-card" onclick="goToSplashStep2()">
+            <div>
+              <div class="splash-card-title">WhatsApp Reports</div>
+              <div class="splash-card-desc">Send daily fleet summaries directly to WhatsApp with one tap</div>
+            </div>
+            <div class="splash-card-ico">📱</div>
+          </div>
+        </div>
+
+        <!-- Trust strip -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin:0 0 20px;text-align:center">
+          <div style="font-family:var(--font-m);font-size:.7rem;color:var(--muted);line-height:2;letter-spacing:.4px">
+            🔒 <strong style="color:var(--text)">Private &amp; encrypted</strong> — Firebase cloud &nbsp;·&nbsp;
+            ✅ <strong style="color:var(--text)">Role-based access</strong><br>
+            📶 <strong style="color:var(--text)">Works offline</strong> — syncs when back online<br>
+            <span style="color:var(--muted);font-size:.66rem">Developed by <strong style="color:var(--accent2)">DatAfrica</strong> · v7.0 · 2025</span>
+          </div>
+        </div>
+
+      </div><!-- end scroll -->
+
+      <!-- STICKY LOGIN BUTTON — exactly like Co-op Bank -->
+      <div class="splash-login-bar">
+        <button class="splash-login-btn" onclick="goToSplashStep2()">
+          LOG IN / GET STARTED
+        </button>
+      </div>
+
+    </div><!-- end .splash-sheet -->
+
   </div><!-- end #splashStep1 -->
 
-  <!-- Step 1 button area — hidden, CTAs are inline on landing page -->
-  <div class="splash-btn-area" id="splashStep1Btn" style="display:none">
-    <button class="splash-proceed-btn ready" onclick="goToSplashStep2()">
-      GET STARTED &nbsp;›
-    </button>
-    <div class="splash-dev-line">Developed by <span>DatAfrica</span> &nbsp;·&nbsp; v7.0 · 2025</div>
-  </div>
+  <!-- Step 1 button area — unused but kept for JS compatibility -->
+  <div id="splashStep1Btn" style="display:none"></div>
+
 
 
   <!-- ══════════════════════════════════════════
@@ -1945,6 +1896,7 @@ function proceedFromSplash(){
 </div>
 
 <main>
+  <div id="page-home" class="page"></div>
   <div id="page-log" class="page active"></div>
   <div id="page-reports" class="page"></div>
   <div id="page-admin" class="page"></div>
@@ -1954,8 +1906,8 @@ function proceedFromSplash(){
 
 <!-- ADMIN NAV (shown only for admin users) -->
 <nav class="bnav" id="navAdmin" style="display:none">
-  <button class="nbtn" id="nav-admin" onclick="switchPage('admin')">
-    <span class="ni">📊</span><span class="nl">DASHBOARD</span>
+  <button class="nbtn" id="nav-home" onclick="switchPage('home')">
+    <span class="ni">🏠</span><span class="nl">HOME</span>
   </button>
   <button class="nbtn" id="nav-reports" onclick="switchPage('reports')">
     <span class="ni">📈</span><span class="nl">REPORTS</span>
@@ -2536,6 +2488,7 @@ function switchPage(p){
   if(p==='log')         renderLog();
   if(p==='reports')     renderReports();
   if(p==='admin')       renderAdmin();
+  if(p==='home')        renderHomePage();
   if(p==='performance') renderPerformancePage();
   if(p==='notes')       renderNotesPage();
   updateFloatingBack();
@@ -5077,7 +5030,25 @@ function renderAdmin(){
     <!-- CONFIG -->
     <div class="asect ${adminTab==='config'?'active':''}">
 
-      <!-- FIREBASE SETUP CHECKLIST -->
+      <!-- ── SACCO SETTINGS (no PIN required) ── -->
+      <div class="card" style="border-left:4px solid var(--accent);margin-bottom:12px">
+        <div class="ctitle" style="margin-bottom:4px">⚙️ SACCO SETTINGS</div>
+        <div class="csub" style="margin-top:0;margin-bottom:14px">// UPDATE YOUR SACCO NAME & DETAILS</div>
+        <div class="irow" style="margin-bottom:10px">
+          <div class="field">
+            <label>SACCO / Company Name</label>
+            <input class="itext" id="settingsSaccoName" placeholder="e.g. Swift Sacco"
+              value="${appConfig.saccoName||currentDriverDoc?.saccoName||''}"
+              onkeydown="if(event.key==='Enter')saveSaccoSettings()">
+          </div>
+        </div>
+        <button class="bb bconfirm" style="max-width:220px;margin:0;font-size:.9rem" onclick="saveSaccoSettings()">
+          💾 SAVE SACCO NAME
+        </button>
+        <div id="saccoSettingsFeedback" style="font-family:var(--font-m);font-size:.78rem;color:var(--accent);letter-spacing:1px;margin-top:10px;display:none">✅ SAVED!</div>
+      </div>
+
+      <!-- ── FIREBASE SETUP CHECKLIST ── -->
       <div class="card" style="border-left:4px solid var(--accent2);margin-bottom:12px">
         <div class="ctitle" style="color:var(--accent2);margin-bottom:6px">🔧 FIREBASE SETUP CHECKLIST</div>
         <div class="csub" style="margin-bottom:12px">// ONE-TIME SETUP IN FIREBASE CONSOLE</div>
@@ -7586,9 +7557,9 @@ function onDriverAuthenticated(user, profile){
     if(hSub) hSub.textContent='// MANAGER · '+(profile.saccoName||appConfig.saccoName||'SACCO');
     hideAuthOverlay();
     showNavFor('admin');
-    // Always open on DRIVERS tab — that's where admin manages the fleet
+    // Land on Home page first — dashboard is accessible via avatar
     adminTab = 'drivers';
-    switchPage('admin');
+    switchPage('home');
     // Load driver list after render
     setTimeout(()=>{
       loadRegisteredDrivers();
@@ -8889,9 +8860,9 @@ function goDriverSettings(){
     else toast('GO TO TRIP LOG → CHANGE CAR / DRIVER TO UPDATE YOUR SETTINGS');
   }, 150);
 }
-// Admin settings — open admin panel on settings tab
+// Admin settings — open admin panel on config tab (SACCO name, etc.)
 function adminSettings(){
-  adminTab = 'settings';
+  adminTab = 'config';
   switchPage('admin');
   renderAdmin();
 }
