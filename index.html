@@ -4283,10 +4283,10 @@ function renderAdmin(){
           <div class="dash-title">${saccoLabel} Dashboard</div>
           <div class="dash-sub">Monitor real-time fleet metrics, driver performance, and operational efficiency across your Sacco.</div>
           <div class="dash-actions">
-            <button class="dash-btn-primary" onclick="adminTab='drivers';renderAdmin();setTimeout(loadRegisteredDrivers,100)">
+            <button class="dash-btn-primary" onclick="openInviteModal()">
               <span>＋</span> Add Driver
             </button>
-            <button class="dash-btn-outline" onclick="adminTab='cars';renderAdmin()">
+            <button class="dash-btn-outline" onclick="openAddCarModal()">
               🚌 Register Vehicle
             </button>
           </div>
@@ -5050,6 +5050,52 @@ function closeInviteModal(){
   // Refresh driver list after closing
   setTimeout(loadRegisteredDrivers, 200);
 }
+
+function openAddCarModal(){
+  const modal = document.getElementById('addCarModal');
+  if(!modal) return;
+  const plateEl = document.getElementById('modalCarPlate');
+  const targetEl = document.getElementById('modalCarTarget');
+  const errEl = document.getElementById('addCarError');
+  const btn = document.getElementById('addCarBtn');
+  if(plateEl) plateEl.value = '';
+  if(targetEl) targetEl.value = '';
+  if(errEl){ errEl.style.display='none'; errEl.textContent=''; }
+  if(btn){ btn.disabled=false; btn.innerHTML='🚌 ADD VEHICLE'; }
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  setTimeout(()=>plateEl?.focus(), 300);
+}
+
+function closeAddCarModal(){
+  const modal = document.getElementById('addCarModal');
+  if(modal){ modal.style.display='none'; document.body.style.overflow=''; }
+}
+
+function modalAddCar(){
+  const plate = (document.getElementById('modalCarPlate')?.value||'').trim().toUpperCase();
+  const targetVal = document.getElementById('modalCarTarget')?.value||'';
+  const errEl = document.getElementById('addCarError');
+  if(!plate){
+    if(errEl){ errEl.textContent='⚠ Please enter a vehicle number plate.'; errEl.style.display='block'; }
+    return;
+  }
+  if(CARS.includes(plate)){
+    if(errEl){ errEl.textContent='⚠ This plate is already registered.'; errEl.style.display='block'; }
+    return;
+  }
+  CARS.push(plate);
+  save('fs_cars', CARS);
+  if(targetVal && Number(targetVal) > 0){
+    carTargets[plate] = Number(targetVal);
+    save('fs_targets', carTargets);
+  }
+  closeAddCarModal();
+  toast('🚌 '+plate+' ADDED TO FLEET ✅');
+  adminTab = 'cars';
+  renderAdmin();
+}
+
 
 async function adminRegisterDriver(){
   const name  = (document.getElementById('regDName')?.value||'').trim().toUpperCase();
@@ -8241,4 +8287,44 @@ function adminSettings(){
       📨 SEND INVITATION
     </button>
 
-    <div style="font-family:var(--font-m);font-s
+    <div style="font-family:var(--font-m);font-size:.72rem;color:var(--muted);text-align:center;margin-top:10px;line-height:1.7">
+      Driver receives an email link to set their password &amp; join your Sacco
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     ADD CAR MODAL
+════════════════════════════════════════════ -->
+<div id="addCarModal" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);align-items:flex-end;justify-content:center" onclick="if(event.target===this)closeAddCarModal()">
+  <div style="background:var(--card);width:100%;max-width:480px;border-radius:16px 16px 0 0;padding:24px 20px 32px;animation:slideUp .3s ease;max-height:80vh;overflow-y:auto">
+    <div style="width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px;cursor:pointer" onclick="closeAddCarModal()"></div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+      <div>
+        <div style="font-family:var(--font-d);font-size:1.3rem;letter-spacing:2px;color:var(--accent2)">🚌 REGISTER A VEHICLE</div>
+        <div style="font-family:var(--font-m);font-size:.78rem;color:var(--muted);letter-spacing:1px;margin-top:4px">ADD A NUMBER PLATE TO YOUR FLEET</div>
+      </div>
+      <button onclick="closeAddCarModal()" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted);line-height:1;padding:0 0 0 10px">✕</button>
+    </div>
+    <div id="addCarError" style="display:none;background:var(--rlight);border:1px solid var(--red);color:var(--red);font-family:var(--font-m);font-size:.84rem;padding:9px 11px;letter-spacing:1px;margin-bottom:12px;border-radius:4px"></div>
+    <div class="field">
+      <label>Vehicle Number Plate</label>
+      <input type="text" id="modalCarPlate" placeholder="e.g. KCA 123A"
+        style="text-transform:uppercase;letter-spacing:3px;font-family:var(--font-d);font-size:1rem"
+        onkeydown="if(event.key==='Enter')modalAddCar()">
+    </div>
+    <div class="field">
+      <label>Daily Revenue Target (KES) <span style="color:var(--muted);font-size:.75rem">(optional)</span></label>
+      <input type="number" id="modalCarTarget" placeholder="e.g. 5000" min="0"
+        onkeydown="if(event.key==='Enter')modalAddCar()">
+    </div>
+    <button class="bb bstart" id="addCarBtn"
+      style="margin:8px 0 0;background:var(--accent2);border-color:var(--accent2);width:100%;font-size:.92rem;padding:14px;letter-spacing:2px"
+      onclick="modalAddCar()">
+      🚌 ADD VEHICLE
+    </button>
+  </div>
+</div>
+
+</body>
+</html>
