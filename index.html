@@ -1217,25 +1217,53 @@ function proceedFromSplash(){
     <!-- ═══ PANEL: LANDING ═══ -->
     <div id="authPanelLanding" style="display:block">
 
-      <!-- Role hierarchy intro -->
+      <!-- Header -->
       <div style="text-align:center;margin-bottom:18px">
         <div style="font-family:var(--font-d);font-size:1.1rem;letter-spacing:2px;color:var(--text);margin-bottom:4px">WHO ARE YOU?</div>
         <div style="font-family:var(--font-m);font-size:.78rem;color:var(--muted);letter-spacing:1px">SELECT YOUR ROLE TO GET STARTED</div>
       </div>
 
-      <!-- MANAGER card — new account -->
-      <div class="auth-role-card manager-role" onclick="switchToPanel('create')" style="margin-bottom:10px">
-        <div class="auth-role-left">
-          <div class="auth-role-ico" style="background:linear-gradient(135deg,#f0a500,#d48c00)">🏢</div>
+      <!-- ── MANAGER SECTION ── -->
+      <div style="border:1.5px solid rgba(240,165,0,.35);border-radius:var(--radius);overflow:hidden;margin-bottom:12px">
+
+        <!-- Section label -->
+        <div style="background:linear-gradient(135deg,rgba(240,165,0,.18),rgba(240,165,0,.06));padding:10px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(240,165,0,.2)">
+          <div style="width:34px;height:34px;background:linear-gradient(135deg,#f0a500,#d48c00);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">🏢</div>
+          <div>
+            <div style="font-family:var(--font-d);font-size:.95rem;letter-spacing:2px;color:var(--accent2)">MANAGER / SACCO OWNER</div>
+            <div style="font-family:var(--font-m);font-size:.70rem;color:var(--muted);letter-spacing:.5px;margin-top:1px">Register drivers, manage fleet &amp; view reports</div>
+          </div>
         </div>
-        <div class="auth-role-body">
-          <div class="auth-role-title" style="color:var(--accent2)">MANAGER / SACCO OWNER</div>
-          <div class="auth-role-sub">Own a SACCO or fleet? Create your free account to register drivers, manage vehicles, set targets and view revenue reports.</div>
-          <div class="auth-role-tag" style="background:rgba(240,165,0,.12);color:var(--accent2)">NEW ACCOUNT →</div>
+
+        <!-- Two buttons side by side -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0">
+
+          <!-- New Account -->
+          <div onclick="switchToPanel('create')" style="padding:16px 14px;cursor:pointer;border-right:1px solid rgba(240,165,0,.2);transition:background .2s"
+            onmouseover="this.style.background='rgba(240,165,0,.08)'" onmouseout="this.style.background='transparent'">
+            <div style="font-size:1.6rem;margin-bottom:6px">✨</div>
+            <div style="font-family:var(--font-d);font-size:.82rem;letter-spacing:1.5px;color:var(--accent2);margin-bottom:4px">NEW ACCOUNT</div>
+            <div style="font-family:var(--font-m);font-size:.70rem;color:var(--muted);line-height:1.6">First time here? Register your SACCO for free</div>
+            <div style="margin-top:10px;display:inline-flex;align-items:center;gap:5px;background:rgba(240,165,0,.15);color:var(--accent2);font-family:var(--font-m);font-size:.72rem;letter-spacing:1px;padding:5px 11px;border-radius:20px;border:1px solid rgba(240,165,0,.3)">
+              CREATE ACCOUNT →
+            </div>
+          </div>
+
+          <!-- Log In -->
+          <div onclick="switchToPanel('login')" style="padding:16px 14px;cursor:pointer;transition:background .2s"
+            onmouseover="this.style.background='rgba(240,165,0,.08)'" onmouseout="this.style.background='transparent'">
+            <div style="font-size:1.6rem;margin-bottom:6px">🔑</div>
+            <div style="font-family:var(--font-d);font-size:.82rem;letter-spacing:1.5px;color:var(--accent2);margin-bottom:4px">EXISTING ACCOUNT</div>
+            <div style="font-family:var(--font-m);font-size:.70rem;color:var(--muted);line-height:1.6">Already registered? Log in to your dashboard</div>
+            <div style="margin-top:10px;display:inline-flex;align-items:center;gap:5px;background:rgba(240,165,0,.15);color:var(--accent2);font-family:var(--font-m);font-size:.72rem;letter-spacing:1px;padding:5px 11px;border-radius:20px;border:1px solid rgba(240,165,0,.3)">
+              LOG IN →
+            </div>
+          </div>
+
         </div>
       </div>
 
-      <!-- DRIVER card — login -->
+      <!-- ── DRIVER CARD ── -->
       <div class="auth-role-card driver-role" onclick="switchToPanel('login')" style="margin-bottom:10px">
         <div class="auth-role-left">
           <div class="auth-role-ico" style="background:var(--accent-grad)">🚌</div>
@@ -1245,12 +1273,6 @@ function proceedFromSplash(){
           <div class="auth-role-sub">Log trips, declare collections and track your performance. Your manager invites you by email.</div>
           <div class="auth-role-tag" style="background:var(--alight);color:var(--accent)">LOG IN →</div>
         </div>
-      </div>
-
-      <!-- Already have account -->
-      <div style="text-align:center;margin:4px 0 16px">
-        <span style="font-family:var(--font-m);font-size:.80rem;color:var(--muted);letter-spacing:1px">Already have a manager account? </span>
-        <button onclick="switchToPanel('login')" style="background:none;border:none;font-family:var(--font-m);font-size:.80rem;color:var(--accent);cursor:pointer;text-decoration:underline;letter-spacing:1px;padding:0">LOG IN HERE</button>
       </div>
 
 
@@ -6608,7 +6630,7 @@ function toggleSetupConfirmEye(){
 }
 
 /** Step 1 → Step 2 */
-function setupNextStep(){
+async function setupNextStep(){
   const name     = (document.getElementById('setupName')?.value||'').trim();
   const saccoName= (document.getElementById('setupSaccoName')?.value||'').trim();
   const email    = (document.getElementById('setupEmail')?.value||'').trim();
@@ -6631,6 +6653,78 @@ function setupNextStep(){
     document.getElementById('setupEmail').classList.add('error');
     return;
   }
+
+  // ── Check for duplicate SACCO name in Firestore ──
+  const nextBtn = document.getElementById('setupNextBtn');
+  nextBtn.disabled = true;
+  nextBtn.innerHTML = '<span class="auth-spinner"></span>CHECKING SACCO NAME...';
+
+  try {
+    if(!db) initFirebase();
+    const snap = await db.collection('drivers')
+      .where('role','==','admin')
+      .where('saccoName','==', saccoName.toUpperCase())
+      .limit(1)
+      .get();
+
+    if(!snap.empty){
+      const existing = snap.docs[0].data();
+      const ownerName = existing.name || 'Unknown';
+      const ownerEmail = existing.email || '';
+      const maskedEmail = ownerEmail
+        ? ownerEmail.replace(/(.{2})(.*)(@.*)/, (_,a,b,c) => a + b.replace(/./g,'*') + c)
+        : '—';
+
+      nextBtn.disabled = false;
+      nextBtn.innerHTML = 'NEXT — SET PASSWORD →';
+
+      // Build rich error with options
+      const errEl = document.getElementById('authSetupError');
+      errEl.innerHTML = '';
+      errEl.className = 'auth-error show';
+      errEl.style.background = 'rgba(220,38,38,.08)';
+      errEl.style.border = '1.5px solid rgba(220,38,38,.4)';
+      errEl.style.borderRadius = 'var(--radius-sm)';
+      errEl.style.padding = '14px 14px';
+
+      errEl.innerHTML = `
+        <div style="font-family:var(--font-d);font-size:.95rem;letter-spacing:1.5px;color:#ef4444;margin-bottom:8px">
+          🏢 SACCO ALREADY REGISTERED
+        </div>
+        <div style="font-family:var(--font-m);font-size:.78rem;color:var(--text);line-height:1.8;margin-bottom:10px">
+          <strong>${saccoName.toUpperCase()}</strong> is already registered on MatatuHub.
+          <br>Registered by: <strong style="color:var(--accent2)">${ownerName}</strong>
+          <br>Account email: <span style="color:var(--muted)">${maskedEmail}</span>
+        </div>
+        <div style="font-family:var(--font-m);font-size:.75rem;color:var(--muted);line-height:1.8;margin-bottom:12px;padding:8px 10px;background:rgba(255,255,255,.04);border-radius:4px;border-left:3px solid var(--accent2)">
+          If this is your SACCO, use the <strong>LOG IN</strong> option on the previous screen.<br>
+          If you are a driver of this SACCO, ask your manager to invite you by email.<br>
+          If you believe this is an error, contact us for support.
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button onclick="switchToPanel('login')"
+            style="flex:1;min-width:120px;padding:10px;background:var(--accent2);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font-d);font-size:.78rem;letter-spacing:1.5px;cursor:pointer">
+            🔑 LOG IN INSTEAD
+          </button>
+          <a href="mailto:datafrica@gmail.com?subject=SACCO%20Already%20Registered%20-%20${encodeURIComponent(saccoName.toUpperCase())}&body=Hello%20Datafrica%20Support%2C%0A%0AMy%20SACCO%20name%20%22${encodeURIComponent(saccoName.toUpperCase())}%22%20appears%20to%20already%20be%20registered%20on%20MatatuHub.%0A%0ARegistered%20by%3A%20${encodeURIComponent(ownerName)}%0A%0APlease%20assist.%0A%0AThank%20you."
+            style="flex:1;min-width:120px;padding:10px;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-sm);font-family:var(--font-d);font-size:.78rem;letter-spacing:1.5px;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:5px">
+            ✉️ CONTACT SUPPORT
+          </a>
+        </div>
+        <div style="font-family:var(--font-m);font-size:.70rem;color:var(--muted);text-align:center;margin-top:8px">
+          Support: <a href="mailto:datafrica@gmail.com" style="color:var(--accent)">datafrica@gmail.com</a>
+        </div>
+      `;
+      return;
+    }
+  } catch(e){
+    // Firestore unavailable — allow proceeding (offline mode)
+    console.warn('SACCO check failed (offline?):', e.message);
+  }
+
+  nextBtn.disabled = false;
+  nextBtn.innerHTML = 'NEXT — SET PASSWORD →';
+
   // Move to step 2
   document.getElementById('setupSection1').style.display='none';
   document.getElementById('setupSection2').style.display='block';
@@ -6643,6 +6737,7 @@ function setupNextStep(){
   document.getElementById('setupStep2').className='setup-step active';
   setTimeout(()=>document.getElementById('setupPass')?.focus(), 150);
 }
+
 
 /** Step 2 → Step 1 */
 function setupPrevStep(){
