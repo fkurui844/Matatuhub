@@ -882,23 +882,89 @@ main{padding:13px 13px 74px}
 .splash-dev-line{font-family:var(--font-m);font-size:.75rem;color:var(--muted);letter-spacing:1px;text-align:center}
 .splash-dev-line span{color:var(--accent2);font-weight:700}
 
-/* STEP 1 — Marketing hero */
-.splash-hero{padding:28px 22px 0;display:flex;flex-direction:column;align-items:stretch}
-.splash-logo-row{display:flex;align-items:center;gap:12px;margin-bottom:28px}
-.splash-logo-ico{font-size:2.8rem;filter:drop-shadow(0 3px 8px rgba(26,122,60,.3));animation:splashBounce .8s ease}
+/* STEP 1 — Guest Landing Page */
+.splash-hero{padding:0 0 0;display:flex;flex-direction:column;align-items:stretch}
+
+/* Sticky top bar inside splash */
+.splash-topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);background:var(--card);position:sticky;top:0;z-index:10;flex-shrink:0}
+.splash-logo-row{display:flex;align-items:center;gap:10px}
+.splash-logo-ico{font-size:1.8rem;filter:drop-shadow(0 2px 6px rgba(26,122,60,.3))}
 .splash-logo-text{}
-.splash-logo-name{font-family:var(--font-d);font-size:2rem;letter-spacing:4px;color:var(--accent);line-height:1;margin-bottom:2px}
+.splash-logo-name{font-family:var(--font-d);font-size:1.3rem;letter-spacing:3px;color:var(--accent);line-height:1}
 .splash-logo-name span{color:var(--accent2)}
-.splash-logo-sub{font-family:var(--font-m);font-size:.72rem;color:var(--muted);letter-spacing:2.5px}
-.splash-headline{font-family:var(--font-d);font-size:1.55rem;letter-spacing:1.5px;color:var(--text);line-height:1.25;margin-bottom:14px}
-.splash-headline span{color:var(--accent2)}
-.splash-desc{font-family:var(--font-m);font-size:.84rem;color:var(--muted);letter-spacing:.4px;line-height:1.9;margin-bottom:22px}
-.splash-features{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}
-.splash-feat{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--accent);padding:14px 12px;border-radius:var(--radius-sm);transition:var(--transition)}
-.splash-feat:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
-.splash-feat-ico{font-size:1.5rem;margin-bottom:6px}
-.splash-feat-title{font-family:var(--font-m);font-size:.79rem;font-weight:700;color:var(--text);letter-spacing:1px;margin-bottom:4px}
-.splash-feat-desc{font-family:var(--font-m);font-size:.74rem;color:var(--muted);letter-spacing:.3px;line-height:1.65}
+.splash-logo-sub{font-family:var(--font-m);font-size:.6rem;color:var(--muted);letter-spacing:2px}
+.splash-topbar-right{display:flex;align-items:center;gap:8px}
+
+/* Login circle button */
+.splash-login-circle{width:42px;height:42px;border-radius:50%;background:var(--accent);border:none;color:#fff;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(26,122,60,.4);transition:transform .2s,box-shadow .2s;flex-shrink:0;animation:splashBounce .6s ease .3s both}
+.splash-login-circle:hover{transform:scale(1.08);box-shadow:0 5px 20px rgba(26,122,60,.5)}
+.splash-login-label{font-family:var(--font-m);font-size:.62rem;color:var(--accent);letter-spacing:1.5px;text-align:center;margin-top:2px}
+
+/* Hero banner */
+.splash-banner{background:linear-gradient(135deg,var(--accent) 0%,#0d7a35 100%);padding:28px 20px 24px;text-align:center;position:relative;overflow:hidden}
+.splash-banner::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+.splash-banner-tag{display:inline-block;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:99px;padding:4px 14px;font-family:var(--font-m);font-size:.7rem;letter-spacing:2px;color:#fff;margin-bottom:14px}
+.splash-banner-h{font-family:var(--font-d);font-size:1.7rem;letter-spacing:2px;color:#fff;line-height:1.2;margin-bottom:10px}
+.splash-banner-h span{color:#ffd166}
+.splash-banner-sub{font-family:var(--font-m);font-size:.82rem;color:rgba(255,255,255,.85);letter-spacing:.5px;line-height:1.8;margin-bottom:20px}
+.splash-cta-btn{background:#fff;color:var(--accent);border:none;border-radius:99px;padding:13px 32px;font-family:var(--font-d);font-size:.95rem;letter-spacing:2px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:transform .2s,box-shadow .2s}
+.splash-cta-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.3)}
+.splash-cta-hint{font-family:var(--font-m);font-size:.7rem;color:rgba(255,255,255,.65);letter-spacing:1px;margin-top:10px}
+
+/* Live demo stats strip */
+.splash-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:1px solid var(--border)}
+.splash-stat-cell{padding:14px 8px;text-align:center;border-right:1px solid var(--border)}
+.splash-stat-cell:last-child{border-right:none}
+.splash-stat-val{font-family:var(--font-d);font-size:1.3rem;letter-spacing:1px;line-height:1;margin-bottom:4px}
+.splash-stat-lbl{font-family:var(--font-m);font-size:.62rem;color:var(--muted);letter-spacing:1px;line-height:1.4}
+
+/* Demo section */
+.splash-section{padding:18px 16px 0}
+.splash-section-title{font-family:var(--font-d);font-size:.85rem;letter-spacing:2.5px;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.splash-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* Demo vehicle cards */
+.demo-vehicle{background:var(--card);border:2px solid var(--border);margin-bottom:8px;overflow:hidden;border-radius:var(--radius-sm)}
+.demo-vehicle.driving{border-color:#22c55e}
+.demo-vehicle.arrived{border-color:#f59e0b}
+.demo-vehicle-row{display:grid;grid-template-columns:80px 1fr auto;align-items:stretch}
+.demo-plate{display:flex;align-items:center;justify-content:center;padding:10px 8px;font-family:var(--font-d);font-size:.85rem;letter-spacing:2px}
+.demo-vehicle.driving .demo-plate{background:#22c55e;color:#fff}
+.demo-vehicle.arrived .demo-plate{background:#f59e0b;color:#fff}
+.demo-vehicle.idle .demo-plate{background:var(--surface);color:var(--muted)}
+.demo-info{padding:8px 10px}
+.demo-driver{font-family:var(--font-m);font-size:.88rem;font-weight:700;color:var(--text);letter-spacing:1px}
+.demo-route{font-family:var(--font-m);font-size:.76rem;color:var(--muted);margin-top:2px}
+.demo-gps{font-family:var(--font-m);font-size:.72rem;color:#60a5fa;margin-top:4px;display:flex;align-items:center;gap:4px}
+.demo-rev{padding:8px 10px;text-align:right;border-left:1px solid var(--border);display:flex;flex-direction:column;justify-content:center}
+.demo-rev-val{font-family:var(--font-d);font-size:1rem;color:var(--accent)}
+.demo-rev-lbl{font-family:var(--font-m);font-size:.65rem;color:var(--muted);letter-spacing:1px}
+.demo-bar{height:3px}
+.demo-vehicle.driving .demo-bar{background:linear-gradient(90deg,#22c55e 60%,transparent)}
+.demo-vehicle.arrived .demo-bar{background:linear-gradient(90deg,#f59e0b 85%,transparent)}
+
+/* Demo trip feed */
+.demo-trip{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.demo-trip:last-child{border-bottom:none}
+.demo-trip-left{display:flex;align-items:center;gap:10px}
+.demo-trip-plate{background:var(--accent);color:#fff;font-family:var(--font-m);font-size:.72rem;padding:3px 8px;letter-spacing:1px;border-radius:2px}
+.demo-trip-route{font-family:var(--font-m);font-size:.8rem;color:var(--text)}
+.demo-trip-driver{font-family:var(--font-m);font-size:.7rem;color:var(--muted);margin-top:1px}
+.demo-trip-amt{font-family:var(--font-d);font-size:1rem;color:var(--accent)}
+.demo-trip-time{font-family:var(--font-m);font-size:.68rem;color:var(--muted);text-align:right;margin-top:2px}
+
+/* Feature pills */
+.splash-features{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:16px 16px}
+.splash-feat{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--accent);padding:13px 11px;border-radius:var(--radius-sm)}
+.splash-feat-ico{font-size:1.4rem;margin-bottom:5px}
+.splash-feat-title{font-family:var(--font-m);font-size:.76rem;font-weight:700;color:var(--text);letter-spacing:1px;margin-bottom:3px}
+.splash-feat-desc{font-family:var(--font-m);font-size:.72rem;color:var(--muted);letter-spacing:.3px;line-height:1.6}
+
+/* Pulse dot for live */
+@keyframes demoPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+.demo-live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#22c55e;animation:demoPulse 1.4s infinite;vertical-align:middle}
+@keyframes countUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.splash-stat-val{animation:countUp .6s ease both}
 
 /* STEP 2 — Who are you */
 .splash-step2{padding:24px 22px 8px;display:flex;flex-direction:column;align-items:stretch}
@@ -943,7 +1009,12 @@ main{padding:13px 13px 74px}
       <span class="session-bar" id="sessionBar"></span>
       <span class="offline-badge" id="offlineBadge">OFFLINE</span>
       <button class="hico" onclick="toggleDark()" id="darkBtn" title="Toggle dark mode">🌙</button>
-      <div class="dbadge" id="driverBadge" onclick="isAdminUser?null:goSetup()">— LOGIN —</div>
+      <div class="dbadge" id="driverBadge" onclick="isAdminUser?null:goSetup()" style="display:none">— LOGIN —</div>
+      <!-- Guest login circle — shown when not logged in -->
+      <div id="guestLoginBtn" style="display:flex;flex-direction:column;align-items:center;cursor:pointer" onclick="goSetup()" title="Sign in / Create account">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--accent);border:none;color:#fff;font-size:1rem;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(26,122,60,.4);transition:transform .2s,box-shadow .2s" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">👤</div>
+        <div style="font-family:var(--font-m);font-size:.55rem;color:var(--accent);letter-spacing:1.5px;margin-top:2px">SIGN IN</div>
+      </div>
       <!-- Avatar + dropdown wrapper -->
       <div id="avatarWrap" style="position:relative;display:none">
         <div class="driver-avatar" id="driverAvatar"
@@ -1014,27 +1085,55 @@ function goToSplashStep2(){
   try{
     var s1=document.getElementById('splashStep1'),s1btn=document.getElementById('splashStep1Btn');
     var s2=document.getElementById('splashStep2'),s2btn=document.getElementById('splashStep2Btn');
-    if(!s1||!s1btn||!s2||!s2btn) return;
-    s1.style.display='none'; s1btn.style.display='none';
+    if(!s1||!s2||!s2btn) return;
+    s1.style.display='none'; if(s1btn)s1btn.style.display='none';
     s2.style.display='flex'; s2btn.style.display='flex';
     s2.classList.remove('splash-anim-in'); void s2.offsetWidth;
     s2.classList.add('splash-anim-in'); s2.scrollTop=0;
-    var d1=document.getElementById('dot1'),d2=document.getElementById('dot2');
-    if(d1)d1.classList.remove('active'); if(d2)d2.classList.add('active');
   } catch(e){ console.error('Step2 error:',e); }
 }
 function goToSplashStep1(){
   try{
     var s2=document.getElementById('splashStep2'),s2btn=document.getElementById('splashStep2Btn');
     var s1=document.getElementById('splashStep1'),s1btn=document.getElementById('splashStep1Btn');
-    if(!s1||!s1btn||!s2||!s2btn) return;
+    if(!s1||!s2||!s2btn) return;
     s2.style.display='none'; s2btn.style.display='none';
-    s1.style.display='flex'; s1btn.style.display='flex';
+    s1.style.display='flex'; if(s1btn)s1btn.style.display='none';
     s1.classList.add('splash-anim-back'); s1.scrollTop=0;
-    var d1=document.getElementById('dot1'),d2=document.getElementById('dot2');
-    if(d2)d2.classList.remove('active'); if(d1)d1.classList.add('active');
   } catch(e){ console.error('Step1 error:',e); }
 }
+
+// ── Demo data animation ─────────────────────
+(function startDemoTicker(){
+  // Animate revenue counter slowly upward
+  var baseRev = 47200;
+  var trips   = 28;
+  var gpsLat1 = -1.2921, gpsLng1 = 36.8219;
+  var gpsLat2 = -1.2790, gpsLng2 = 36.7830;
+
+  function fmtRev(n){ return (n/1000).toFixed(1)+'K'; }
+  function fmtGps(lat,lng){ return lat.toFixed(4)+', '+lng.toFixed(4); }
+
+  setInterval(function(){
+    // Tick revenue up by a small random amount every 8s
+    baseRev += Math.floor(Math.random()*180+50);
+    trips   += Math.random()<0.4?1:0;
+    var el=document.getElementById('demoStatRev');
+    if(el){ el.textContent=fmtRev(baseRev); el.style.animation='none'; void el.offsetWidth; el.style.animation='countUp .5s ease both'; }
+    var tel=document.getElementById('demoStatTrips');
+    if(tel) tel.textContent=trips;
+
+    // Drift GPS coordinates slightly (vehicles moving)
+    gpsLat1 += (Math.random()-0.5)*0.0008;
+    gpsLng1 += (Math.random()-0.5)*0.0008;
+    gpsLat2 += (Math.random()-0.5)*0.0006;
+    gpsLng2 += (Math.random()-0.5)*0.0010;
+    var g1=document.getElementById('demoGps1');  if(g1) g1.textContent=fmtGps(gpsLat1,gpsLng1);
+    var g2=document.getElementById('demoGps2');  if(g2) g2.textContent=fmtGps(gpsLat2,gpsLng2);
+    var a1=document.getElementById('demoGpsAge1'); if(a1) a1.textContent='JUST NOW';
+    var a2=document.getElementById('demoGpsAge2'); if(a2) a2.textContent='JUST NOW';
+  }, 8000);
+})();
 function proceedAsRole(role){
   window._splashIntendedRole=role;
   document.querySelectorAll('.auth-role-card').forEach(function(c){c.style.outline='none';});
@@ -1081,83 +1180,249 @@ function proceedFromSplash(){
   <div id="splashStep1" class="splash-scroll-area">
     <div class="splash-hero">
 
-      <!-- Logo row -->
-      <div class="splash-logo-row" style="justify-content:space-between">
-        <div style="display:flex;align-items:center;gap:12px">
+      <!-- ── Sticky Top Bar ── -->
+      <div class="splash-topbar">
+        <div class="splash-logo-row">
           <div class="splash-logo-ico">🚌</div>
           <div class="splash-logo-text">
             <div class="splash-logo-name">Matatu<span>Hub</span></div>
-            <div class="splash-logo-sub">FLEET MANAGEMENT SYSTEM</div>
+            <div class="splash-logo-sub">FLEET MANAGEMENT</div>
           </div>
         </div>
-        <!-- Theme toggle on splash -->
-        <button id="splashThemeBtn" onclick="toggleDark()" title="Toggle dark / light mode"
-          style="background:var(--surface);border:1.5px solid var(--border);color:var(--text);
-                 width:40px;height:40px;border-radius:10px;font-size:1.1rem;cursor:pointer;
-                 display:flex;align-items:center;justify-content:center;flex-shrink:0;
-                 transition:all .22s cubic-bezier(.4,0,.2,1)">
-          🌙
-        </button>
+        <div class="splash-topbar-right">
+          <button id="splashThemeBtn" onclick="toggleDark()" title="Toggle theme"
+            style="background:var(--surface);border:1.5px solid var(--border);color:var(--text);
+                   width:36px;height:36px;border-radius:10px;font-size:1rem;cursor:pointer;
+                   display:flex;align-items:center;justify-content:center;flex-shrink:0">🌙</button>
+          <div style="display:flex;flex-direction:column;align-items:center">
+            <button class="splash-login-circle" onclick="goToSplashStep2()" title="Sign in / Register">
+              👤
+            </button>
+            <div class="splash-login-label">SIGN IN</div>
+          </div>
+        </div>
       </div>
 
-      <!-- Step dots -->
-      <div class="splash-step-dots">
-        <div class="splash-dot active" id="dot1"></div>
-        <div class="splash-dot" id="dot2"></div>
+      <!-- ── Hero Banner ── -->
+      <div class="splash-banner">
+        <div class="splash-banner-tag">🇰🇪 BUILT FOR KENYAN SACCOs</div>
+        <div class="splash-banner-h">KNOW YOUR FLEET.<br><span>GROW YOUR REVENUE.</span></div>
+        <div class="splash-banner-sub">Real-time GPS tracking, live revenue dashboards and driver management — all in one app. No spreadsheets. No guessing.</div>
+        <button class="splash-cta-btn" onclick="goToSplashStep2()">GET STARTED FREE &nbsp;›</button>
+        <div class="splash-cta-hint">👆 Or tap the circle at the top right to sign in</div>
       </div>
 
-      <!-- Headline — left-aligned, styled like the screenshot -->
-      <div class="splash-headline">
-        BUILT FOR KENYA'S<br>
-        <span>MATATU INDUSTRY.</span>
+      <!-- ── Live Demo Stats ── -->
+      <div class="splash-stats">
+        <div class="splash-stat-cell">
+          <div class="splash-stat-val" style="color:#22c55e" id="demoStatOnline">3</div>
+          <div class="splash-stat-lbl">VEHICLES<br>ONLINE</div>
+        </div>
+        <div class="splash-stat-cell">
+          <div class="splash-stat-val" style="color:var(--accent2)" id="demoStatRev">47.2K</div>
+          <div class="splash-stat-lbl">TODAY'S<br>REVENUE</div>
+        </div>
+        <div class="splash-stat-cell">
+          <div class="splash-stat-val" style="color:var(--accent)" id="demoStatTrips">28</div>
+          <div class="splash-stat-lbl">TRIPS<br>TODAY</div>
+        </div>
+        <div class="splash-stat-cell">
+          <div class="splash-stat-val" style="color:#8b5cf6" id="demoStatDrivers">6</div>
+          <div class="splash-stat-lbl">ACTIVE<br>DRIVERS</div>
+        </div>
       </div>
 
-      <!-- Description -->
-      <div class="splash-desc">
-        MatatuHub is a modern fleet management platform designed specifically for Kenyan SACCOs and PSV operators.
-        It gives SACCO managers full visibility of their fleet — tracking every trip, every fare, every driver —
-        all in real time from any device. No paperwork. No spreadsheets. No guessing.
+      <!-- ── Live Fleet Board (demo) ── -->
+      <div class="splash-section">
+        <div class="splash-section-title"><span class="demo-live-dot"></span> LIVE FLEET — SAMPLE DATA</div>
+
+        <div class="demo-vehicle driving">
+          <div class="demo-vehicle-row">
+            <div class="demo-plate">KCB 412T</div>
+            <div class="demo-info">
+              <div class="demo-driver">James Mwangi</div>
+              <div class="demo-route">🚌 CBD → Westlands</div>
+              <div class="demo-gps">📍 <span id="demoGps1">-1.2921, 36.8219</span> · <span id="demoGpsAge1">JUST NOW</span></div>
+            </div>
+            <div class="demo-rev">
+              <div class="demo-rev-val">8.4K</div>
+              <div class="demo-rev-lbl">KES TODAY</div>
+            </div>
+          </div>
+          <div class="demo-bar"></div>
+        </div>
+
+        <div class="demo-vehicle driving">
+          <div class="demo-vehicle-row">
+            <div class="demo-plate">KDD 089S</div>
+            <div class="demo-info">
+              <div class="demo-driver">Peter Odhiambo</div>
+              <div class="demo-route">🚌 Kikuyu → CBD</div>
+              <div class="demo-gps">📍 <span id="demoGps2">-1.2790, 36.7830</span> · <span id="demoGpsAge2">1 MIN AGO</span></div>
+            </div>
+            <div class="demo-rev">
+              <div class="demo-rev-val">6.1K</div>
+              <div class="demo-rev-lbl">KES TODAY</div>
+            </div>
+          </div>
+          <div class="demo-bar"></div>
+        </div>
+
+        <div class="demo-vehicle arrived">
+          <div class="demo-vehicle-row">
+            <div class="demo-plate">KCF 773M</div>
+            <div class="demo-info">
+              <div class="demo-driver">Samuel Njoroge</div>
+              <div class="demo-route">📍 ARRIVED — Rongai</div>
+              <div class="demo-gps" style="color:#f59e0b">🏁 Arrived 3 min ago</div>
+            </div>
+            <div class="demo-rev">
+              <div class="demo-rev-val">5.7K</div>
+              <div class="demo-rev-lbl">KES TODAY</div>
+            </div>
+          </div>
+          <div class="demo-bar"></div>
+        </div>
+
+        <div class="demo-vehicle idle">
+          <div class="demo-vehicle-row">
+            <div class="demo-plate" style="color:var(--muted)">KBZ 214K</div>
+            <div class="demo-info">
+              <div class="demo-driver" style="color:var(--muted)">Grace Wanjiku</div>
+              <div class="demo-route">⏸ IDLE — Shift not started</div>
+              <div class="demo-gps" style="color:var(--border)">📡 Awaiting GPS...</div>
+            </div>
+            <div class="demo-rev">
+              <div class="demo-rev-val" style="color:var(--muted)">0</div>
+              <div class="demo-rev-lbl">KES TODAY</div>
+            </div>
+          </div>
+          <div class="demo-bar" style="background:var(--border)"></div>
+        </div>
       </div>
 
-      <!-- 2×2 Feature cards — matching the screenshot -->
+      <!-- ── Live Trip Feed (demo) ── -->
+      <div class="splash-section" style="margin-top:8px">
+        <div class="splash-section-title"><span class="demo-live-dot" style="background:var(--accent2)"></span> RECENT TRIPS</div>
+        <div id="demoTripFeed">
+          <div class="demo-trip">
+            <div class="demo-trip-left">
+              <div>
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                  <div class="demo-trip-plate">KCB 412T</div>
+                  <div class="demo-trip-route">CBD → Westlands</div>
+                </div>
+                <div class="demo-trip-driver">👤 James Mwangi · 7.2 km</div>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div class="demo-trip-amt">KES 1,200</div>
+              <div class="demo-trip-time">2:47 PM</div>
+            </div>
+          </div>
+          <div class="demo-trip">
+            <div class="demo-trip-left">
+              <div>
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                  <div class="demo-trip-plate" style="background:#8b5cf6">KDD 089S</div>
+                  <div class="demo-trip-route">Kikuyu → CBD</div>
+                </div>
+                <div class="demo-trip-driver">👤 Peter Odhiambo · 14.3 km</div>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div class="demo-trip-amt">KES 1,800</div>
+              <div class="demo-trip-time">2:31 PM</div>
+            </div>
+          </div>
+          <div class="demo-trip">
+            <div class="demo-trip-left">
+              <div>
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                  <div class="demo-trip-plate" style="background:#f59e0b">KCF 773M</div>
+                  <div class="demo-trip-route">Rongai → CBD</div>
+                </div>
+                <div class="demo-trip-driver">👤 Samuel Njoroge · 21.5 km</div>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div class="demo-trip-amt">KES 2,500</div>
+              <div class="demo-trip-time">1:55 PM</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Revenue Bar Chart (demo) ── -->
+      <div class="splash-section" style="margin-top:8px">
+        <div class="splash-section-title">📊 THIS WEEK'S REVENUE</div>
+        <div style="display:flex;align-items:flex-end;gap:6px;height:70px;padding:0 2px 8px;border-bottom:1px solid var(--border)">
+          ${['Mon','Tue','Wed','Thu','Fri','Sat','Today'].map((d,i)=>{
+            const h=[55,70,45,80,65,90,100][i];
+            const rev=['38K','52K','31K','61K','48K','71K','47K'][i];
+            const isToday=i===6;
+            return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+              <div style="width:100%;background:${isToday?'var(--accent)':'var(--border)'};border-radius:3px 3px 0 0;height:${h}%" title="KES ${rev}"></div>
+              <div style="font-family:var(--font-m);font-size:.6rem;color:${isToday?'var(--accent)':'var(--muted)'};letter-spacing:.5px">${d}</div>
+            </div>`;
+          }).join('')}
+        </div>
+        <div style="font-family:var(--font-m);font-size:.72rem;color:var(--muted);letter-spacing:.5px;padding:8px 0 4px">
+          Weekly average: <strong style="color:var(--text)">KES 49,700</strong> &nbsp;·&nbsp; Best day: <strong style="color:var(--accent2)">Saturday — KES 71K</strong>
+        </div>
+      </div>
+
+      <!-- ── Features ── -->
       <div class="splash-features">
         <div class="splash-feat" style="border-left-color:var(--accent)">
-          <div class="splash-feat-ico">🚌</div>
-          <div class="splash-feat-title">REAL-TIME TRACKING</div>
-          <div class="splash-feat-desc">Monitor all vehicles and trips as they happen — live updates across your entire fleet</div>
+          <div class="splash-feat-ico">📍</div>
+          <div class="splash-feat-title">LIVE GPS</div>
+          <div class="splash-feat-desc">See every vehicle on the map — updated every 30 seconds in real time</div>
         </div>
         <div class="splash-feat" style="border-left-color:var(--accent2)">
           <div class="splash-feat-ico">💰</div>
-          <div class="splash-feat-title">REVENUE REPORTS</div>
-          <div class="splash-feat-desc">Daily, weekly and monthly earnings per car, per driver — export to PDF or Excel</div>
+          <div class="splash-feat-title">LIVE REVENUE</div>
+          <div class="splash-feat-desc">Watch daily collections grow trip by trip — exportable to PDF or Excel</div>
         </div>
         <div class="splash-feat" style="border-left-color:#8b5cf6">
           <div class="splash-feat-ico">👤</div>
-          <div class="splash-feat-title">DRIVER MANAGEMENT</div>
-          <div class="splash-feat-desc">Register drivers, set targets, track performance and send invitations by email</div>
+          <div class="splash-feat-title">DRIVER CONTROL</div>
+          <div class="splash-feat-desc">Invite, track and manage drivers — set daily revenue targets per car</div>
         </div>
         <div class="splash-feat" style="border-left-color:#0ea5e9">
           <div class="splash-feat-ico">⛽</div>
-          <div class="splash-feat-title">FUEL &amp; EFFICIENCY</div>
-          <div class="splash-feat-desc">Log refuels, track km/L efficiency and control operating costs per vehicle</div>
+          <div class="splash-feat-title">FUEL TRACKING</div>
+          <div class="splash-feat-desc">Log fuel costs, km/L efficiency and operating expenses per vehicle</div>
         </div>
       </div>
 
-      <!-- Security assurance — compact strip -->
-      <div style="background:var(--card);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:10px">
-        <div style="font-family:var(--font-m);font-size:.78rem;font-weight:700;color:var(--accent);letter-spacing:1.5px;margin-bottom:8px">🔒 YOUR DATA IS SAFE</div>
-        <div style="display:flex;flex-direction:column;gap:5px">
-          <div style="font-family:var(--font-m);font-size:.74rem;color:var(--muted);letter-spacing:.3px">✅ <strong style="color:var(--text)">Private &amp; encrypted</strong> — stored in a secure cloud database</div>
-          <div style="font-family:var(--font-m);font-size:.74rem;color:var(--muted);letter-spacing:.3px">✅ <strong style="color:var(--text)">Role-based access</strong> — drivers only see their own data</div>
-          <div style="font-family:var(--font-m);font-size:.74rem;color:var(--muted);letter-spacing:.3px">✅ <strong style="color:var(--text)">Works offline</strong> — trips sync automatically when back online</div>
+      <!-- ── Why sign up banner ── -->
+      <div style="margin:0 16px 20px;background:linear-gradient(135deg,rgba(26,122,60,.12),rgba(240,165,0,.08));border:1.5px solid var(--accent);border-radius:var(--radius-sm);padding:18px 16px;text-align:center">
+        <div style="font-family:var(--font-d);font-size:1rem;letter-spacing:2px;color:var(--accent);margin-bottom:8px">🚀 READY TO TAKE CONTROL?</div>
+        <div style="font-family:var(--font-m);font-size:.8rem;color:var(--muted);line-height:1.8;margin-bottom:16px">
+          Join SACCOs already using MatatuHub to track their fleet,<br>collect revenue data and manage drivers — all for free.
+        </div>
+        <button class="splash-cta-btn" style="background:var(--accent);color:#fff;font-size:.82rem;padding:11px 28px" onclick="goToSplashStep2()">CREATE FREE ACCOUNT &nbsp;›</button>
+        <div style="margin-top:10px;font-family:var(--font-m);font-size:.72rem;color:var(--muted)">
+          Already registered? <button onclick="goToSplashStep2()" style="background:none;border:none;color:var(--accent);cursor:pointer;font-family:var(--font-m);font-size:.72rem;text-decoration:underline;padding:0">LOG IN HERE</button>
+        </div>
+      </div>
+
+      <!-- Security strip -->
+      <div style="margin:0 16px 24px;background:var(--card);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:var(--radius-sm);padding:11px 13px">
+        <div style="font-family:var(--font-m);font-size:.76rem;font-weight:700;color:var(--accent);letter-spacing:1.5px;margin-bottom:7px">🔒 YOUR DATA IS SAFE</div>
+        <div style="font-family:var(--font-m);font-size:.72rem;color:var(--muted);line-height:1.9">
+          ✅ <strong style="color:var(--text)">Private & encrypted</strong> — stored in secure Firebase cloud<br>
+          ✅ <strong style="color:var(--text)">Role-based access</strong> — drivers only see their own data<br>
+          ✅ <strong style="color:var(--text)">Works offline</strong> — trips sync when back online
         </div>
       </div>
 
     </div>
   </div><!-- end #splashStep1 -->
 
-  <!-- Step 1 button area -->
-  <div class="splash-btn-area" id="splashStep1Btn">
+  <!-- Step 1 button area — hidden, CTAs are inline on landing page -->
+  <div class="splash-btn-area" id="splashStep1Btn" style="display:none">
     <button class="splash-proceed-btn ready" onclick="goToSplashStep2()">
       GET STARTED &nbsp;›
     </button>
@@ -5557,6 +5822,8 @@ async function adminResetDriverPassword(email, name){
   if(!email){ toast('⚠ NO EMAIL FOR THIS DRIVER'); return; }
   if(!confirm('SEND PASSWORD RESET EMAIL TO '+email.toUpperCase()+'?')) return;
   try{
+    if(!auth) initFirebase();
+    if(!auth){ toast('⚠ FIREBASE NOT INITIALISED — CHECK CONFIG'); return; }
     await auth.sendPasswordResetEmail(email);
     toast('✅ RESET EMAIL SENT TO '+name.split(' ')[0]);
   } catch(e){ toast('⚠ FAILED: '+e.message); }
@@ -7312,6 +7579,7 @@ function onDriverAuthenticated(user, profile){
     const initials = (profile.name||'AD').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
     const av=document.getElementById('driverAvatar'); if(av){av.textContent=initials;av.style.background='rgba(240,165,0,.3)';}
     const aw=document.getElementById('avatarWrap'); if(aw)aw.style.display='block';
+    const glb=document.getElementById('guestLoginBtn'); if(glb)glb.style.display='none';
     const dropUser=document.getElementById('avatarDropUser'); if(dropUser)dropUser.textContent=(profile.name||'MANAGER').toUpperCase();
     const gr=document.getElementById('headerGreeting'); if(gr){const h=new Date().getHours();gr.textContent=(h<12?'GOOD MORNING':h<17?'GOOD AFTERNOON':'GOOD EVENING')+', '+firstName;}
     const hSub=document.getElementById('headerSubText');
@@ -7341,6 +7609,7 @@ function onDriverAuthenticated(user, profile){
     const dInitials = tripState.driver.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
     const dAv=document.getElementById('driverAvatar'); if(dAv){dAv.textContent=dInitials;}
     const dAw=document.getElementById('avatarWrap'); if(dAw)dAw.style.display='block';
+    const dGlb=document.getElementById('guestLoginBtn'); if(dGlb)dGlb.style.display='none';
     const dDropUser=document.getElementById('avatarDropUser'); if(dDropUser)dDropUser.textContent=tripState.driver.toUpperCase();
     const dGr=document.getElementById('headerGreeting'); if(dGr){const h=new Date().getHours();dGr.textContent=(h<12?'GOOD MORNING':h<17?'GOOD AFTERNOON':'GOOD EVENING')+', '+firstName;}
     const hSub2=document.getElementById('headerSubText');
@@ -7610,6 +7879,7 @@ function startAuthListener(){
       save('fs_driver', null);
       document.getElementById('driverBadge').textContent = '— LOGIN —';
       const aw2=document.getElementById('avatarWrap'); if(aw2)aw2.style.display='none';
+      const glb2=document.getElementById('guestLoginBtn'); if(glb2)glb2.style.display='flex';
       closeAvatarMenu();
       const btn = document.getElementById('authLoginBtn');
       if(btn){ btn.disabled=false; btn.textContent='LOG IN'; btn.style.background=''; }
@@ -8396,6 +8666,7 @@ function renderNotesList(){
     save('fs_driver', null);
     document.getElementById('driverBadge').textContent = '— LOGIN —';
     const _aw3=document.getElementById('avatarWrap'); if(_aw3)_aw3.style.display='none';
+    const _glb3=document.getElementById('guestLoginBtn'); if(_glb3)_glb3.style.display='flex';
 
   updateOfflineBadge();
   startAutoSync();
