@@ -1080,7 +1080,7 @@ main{padding:13px 13px 74px}
                    font-family:var(--font-m);font-size:.78rem;letter-spacing:1px;color:var(--muted)">
           </div>
           <!-- Dashboard -->
-          <button onclick="closeAvatarMenu();switchPage('admin');renderAdmin()"
+          <button onclick="closeAvatarMenu();adminTab='dashboard';switchPage('admin');renderAdmin()"
             style="display:flex;align-items:center;gap:10px;width:100%;padding:12px 16px;
                    background:none;border:none;border-bottom:1px solid var(--border);
                    font-family:var(--font-m);font-size:.82rem;letter-spacing:1px;
@@ -1089,18 +1089,8 @@ main{padding:13px 13px 74px}
             onmouseout="this.style.background='none'">
             📊 <span>DASHBOARD</span>
           </button>
-          <!-- Reports -->
-          <button onclick="closeAvatarMenu();adminTab='reports';switchPage('admin');renderAdmin();setTimeout(renderReports,80)"
-            style="display:flex;align-items:center;gap:10px;width:100%;padding:12px 16px;
-                   background:none;border:none;border-bottom:1px solid var(--border);
-                   font-family:var(--font-m);font-size:.82rem;letter-spacing:1px;
-                   color:var(--text);cursor:pointer;text-align:left;transition:background .15s"
-            onmouseover="this.style.background='var(--surface)'"
-            onmouseout="this.style.background='none'">
-            📈 <span>REPORTS</span>
-          </button>
           <!-- Live Map -->
-          <button onclick="closeAvatarMenu();adminTab='reports';switchPage('admin');renderAdmin();setTimeout(function(){reportTab='live';renderReports();},100)"
+          <button onclick="closeAvatarMenu();adminTab='dashboard';switchPage('admin');setTimeout(function(){reportTab='live';renderReports();},100)"
             style="display:flex;align-items:center;gap:10px;width:100%;padding:12px 16px;
                    background:none;border:none;border-bottom:1px solid var(--border);
                    font-family:var(--font-m);font-size:.82rem;letter-spacing:1px;
@@ -2337,7 +2327,7 @@ if(sd){tripState.driver=sd.driver; tripState.carPlate=sd.carPlate; tripState.pha
 let currentPage        = 'log';
 let reportFilter       = 'all';
 let filterCar='', filterDriver='', filterFrom='', filterTo='';
-let adminTab           = 'shifts';
+let adminTab           = 'dashboard';
 let _prevAdminTab      = 'shifts';
 let reportTab          = 'overview';
 let adminUnlocked      = false;
@@ -2403,7 +2393,7 @@ function toggleDark(){
   document.getElementById('darkBtn').textContent=icon;
   const splashBtn = document.getElementById('splashThemeBtn');
   if(splashBtn) splashBtn.textContent=icon;
-  if(currentPage==='admin'&&adminTab==='reports'&&reportTab==='charts')setTimeout(renderCharts,100);
+  if(currentPage==='admin'&&reportTab==='charts')setTimeout(renderCharts,100);
   if(typeof updatePwaTheme==='function')updatePwaTheme();
 }
 
@@ -2510,9 +2500,9 @@ function switchPage(p){
   document.querySelectorAll('.topnav-links a').forEach(a=>a.classList.remove('tnav-active'));
   const tnav=document.getElementById('tnav-'+p);
   if(tnav) tnav.classList.add('tnav-active');
-  if(p==='reports'){ adminTab='reports'; p='admin'; currentPage='admin';
+  if(p==='reports'){ adminTab='dashboard'; p='admin'; currentPage='admin';
     const rEl=document.getElementById('page-admin'); if(rEl) rEl.classList.add('active');
-    renderAdmin(); setTimeout(renderReports,80); updateFloatingBack(); return; }
+    renderAdmin(); updateFloatingBack(); return; }
   if(p==='log')         renderLog();
   if(p==='admin')       renderAdmin();
   if(p==='home')        renderHomePage();
@@ -2717,7 +2707,7 @@ function startAutoSync(){
     if(syncCountdown<=0){
       syncCountdown=300;
       if(isOnline())flushQueue();
-      if(currentPage==='admin'&&adminTab==='reports'&&isOnline())loadFirebaseData(true);
+      if(currentPage==='admin'&&isOnline())loadFirebaseData(true);
     }
   },1000);
 }
@@ -3625,11 +3615,11 @@ async function loadFirebaseData(silent=false){
     const snap=await q.get();
     firestoreTrips=snap.docs.map(d=>({...d.data(),_fbId:d.id}));
     if(!silent)toast('✅ '+firestoreTrips.length+' RECORDS LOADED');
-    if(currentPage==='admin'&&adminTab==='reports')renderReports();
+    if(currentPage==='admin'&&adminTab==='dashboard')renderReports();
   }catch(e){
     if(!silent)toast('⚠ LOAD ERROR: '+e.message);
     reportError('LOAD_ERROR','Data load failed: '+e.message,e.stack||'','loadFirebaseData');
-    if(currentPage==='admin'&&adminTab==='reports')renderReports();
+    if(currentPage==='admin'&&adminTab==='dashboard')renderReports();
   }
 }
 
@@ -4748,24 +4738,6 @@ function renderAdmin(){
 
     </div>
 
-    <!-- ── ADMIN TABS ── -->
-    <div style="margin-top:24px">
-    <div class="atabs">
-      <button class="atab ${adminTab==='shifts'?'active':''}" onclick="adminTab='shifts';renderAdmin()">SHIFTS</button>
-      <button class="atab ${adminTab==='drivers'?'active':''}" onclick="adminTab='drivers';renderAdmin();setTimeout(loadRegisteredDrivers,100)">DRIVERS</button>
-      <button class="atab ${adminTab==='cars'?'active':''}" onclick="adminTab='cars';renderAdmin()">CARS</button>
-      <button class="atab ${adminTab==='stations'?'active':''}" onclick="adminTab='stations';renderAdmin()">STATIONS</button>
-      <button class="atab ${adminTab==='trips'?'active':''}" onclick="adminTab='trips';renderAdmin()">TRIPS</button>
-      <button class="atab ${adminTab==='reports'?'active':''}" onclick="adminTab='reports';renderAdmin();setTimeout(renderReports,80)">📈 REPORTS</button>
-      <button class="atab ${adminTab==='settings'?'active':''}" onclick="adminTab='settings';renderAdmin()">⚙ SETTINGS</button>
-    </div>
-    </div>
-
-    <!-- REPORTS -->
-    <div class="asect ${adminTab==='reports'?'active':''}">
-      <div id="page-reports"></div>
-    </div>
-
     <!-- SHIFTS -->
     <div class="asect ${adminTab==='shifts'?'active':''}">
       <div class="card">
@@ -5094,7 +5066,12 @@ function renderAdmin(){
       </div>
     </div>
 
+    <!-- ── REPORTS (visible only on dashboard view) ── -->
+    <div id="page-reports" style="margin-top:20px;${adminTab!=='dashboard'?'display:none':''}"></div>
+
     </div>`;
+  // Only render reports when on the main dashboard view
+  if(adminTab==='dashboard') setTimeout(renderReports, 80);
 }
 
 // ══════════════════════════════════════════════
@@ -6618,7 +6595,7 @@ async function loadPlatformStats(){
 function lockDev(){
   _devSessionToken = null;  // revoke token
   clearTimeout(window._devAutoLockTimer);
-  adminTab = 'shifts';
+  adminTab = 'dashboard';
   removeDevTabs();
   renderAdmin();
   toast('🔒 DEV ACCESS LOCKED');
@@ -8075,7 +8052,7 @@ function startSessionListener(){
           const s = {...doc.data(), _id: doc.id};
           liveSessions[s.carPlate] = s; // latest doc per plate
         });
-        if(currentPage==='admin'&&adminTab==='reports' && reportTab==='live') renderLiveTab();
+        if(currentPage==='admin'&&reportTab==='live') renderLiveTab();
       }, err=>{ console.warn('Session listener error:', err); });
   } catch(e){}
 }
@@ -8118,7 +8095,7 @@ function startLiveListener(){
         // Keep last 200
         if(liveTrips.length>200)liveTrips=liveTrips.slice(0,200);
         updateListenerStatus(true);
-        if(currentPage==='admin'&&adminTab==='reports'&&reportTab==='live')renderLiveTab();
+        if(currentPage==='admin'&&reportTab==='live')renderLiveTab();
       }, err=>{
         console.error('Live listener error:',err);
         updateListenerStatus(false);
@@ -8131,7 +8108,7 @@ function stopLiveListener(){
   liveTrips=[];
   stopSessionListener();
   updateListenerStatus(false);
-  if(currentPage==='admin'&&adminTab==='reports'&&reportTab==='live')renderLiveTab();
+  if(currentPage==='admin'&&reportTab==='live')renderLiveTab();
 }
 
 function updateListenerStatus(state){
@@ -8994,7 +8971,7 @@ function renderHomePage(){
         <div style="font-family:var(--font-m);font-size:.68rem;color:var(--muted);letter-spacing:1px;margin-top:3px">VEHICLES</div>
         <div style="font-family:var(--font-m);font-size:.62rem;color:var(--accent);margin-top:5px;letter-spacing:.5px">TAP TO MANAGE →</div>
       </div>
-      <div onclick="adminTab='reports';switchPage('admin');renderAdmin();setTimeout(function(){reportTab='live';renderReports();},100)"
+      <div onclick="adminTab='dashboard';switchPage('admin');setTimeout(function(){reportTab='live';renderReports();},100)"
         style="background:var(--card);border:1px solid var(--border);border-left:4px solid #22c55e;padding:15px 13px;border-radius:var(--radius-sm);cursor:pointer"
         onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''" onmouseleave="this.style.transform=''">
         <div style="display:flex;align-items:center;gap:7px">
@@ -9004,7 +8981,7 @@ function renderHomePage(){
         <div style="font-family:var(--font-m);font-size:.68rem;color:var(--muted);letter-spacing:1px;margin-top:3px">LIVE NOW</div>
         <div style="font-family:var(--font-m);font-size:.62rem;color:#22c55e;margin-top:5px;letter-spacing:.5px">${openCount} SHIFTS OPEN</div>
       </div>
-      <div onclick="adminTab='reports';switchPage('admin');renderAdmin();setTimeout(renderReports,80)"
+      <div onclick="adminTab='dashboard';switchPage('admin')"
         style="background:var(--card);border:1px solid var(--border);border-left:4px solid var(--accent2);padding:15px 13px;border-radius:var(--radius-sm);cursor:pointer"
         onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''" onmouseleave="this.style.transform=''">
         <div style="font-family:var(--font-d);font-size:${todayRev>=10000?'1.3':'1.6'}rem;color:var(--accent2);line-height:1">${todayRev?'KES '+(todayRev/1000).toFixed(1)+'K':'—'}</div>
@@ -9015,13 +8992,13 @@ function renderHomePage(){
     <div style="font-family:var(--font-d);font-size:.78rem;letter-spacing:2px;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
       <span>📡 LIVE VEHICLES ${liveVehicles.length?`<span style="background:#22c55e;color:#fff;font-size:.62rem;padding:2px 7px;border-radius:99px;letter-spacing:1px;margin-left:6px">${liveVehicles.length} ONLINE</span>`:''}
       </span>
-      <span style="font-size:.7rem;color:var(--accent);cursor:pointer" onclick="adminTab='reports';switchPage('admin');renderAdmin();setTimeout(function(){reportTab='live';renderReports();},100)">FULL MAP →</span>
+      <span style="font-size:.7rem;color:var(--accent);cursor:pointer" onclick="adminTab='dashboard';switchPage('admin');setTimeout(function(){reportTab='live';renderReports();},100)">FULL MAP →</span>
     </div>
     ${liveRows}
     ${revByVehicle.length?`
     <div style="font-family:var(--font-d);font-size:.78rem;letter-spacing:2px;color:var(--muted);margin-bottom:10px;margin-top:18px;display:flex;align-items:center;justify-content:space-between">
       <span>💰 REVENUE TODAY</span>
-      <span style="font-size:.7rem;color:var(--accent);cursor:pointer" onclick="adminTab='reports';switchPage('admin');renderAdmin();setTimeout(renderReports,80)">ALL REPORTS →</span>
+      <span style="font-size:.7rem;color:var(--accent);cursor:pointer" onclick="adminTab='dashboard';switchPage('admin')">ALL REPORTS →</span>
     </div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0 14px;margin-bottom:20px">
       ${revByVehicle.map((v,i)=>{
