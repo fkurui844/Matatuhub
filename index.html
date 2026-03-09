@@ -9359,6 +9359,16 @@ function renderHomePage(){
     }, 3000);
   }
 })();
+
+// ── Overwrite early stubs with the real implementations ──────────
+// The stub script block (loaded first) sets window.X to warn functions.
+// Now that the main script is fully parsed, point window to the real ones.
+window.authLogin          = authLogin;
+window.authForgotPassword = authForgotPassword;
+window.authSetupAdmin     = authSetupAdmin;
+window.acceptInvitation   = acceptInvitation;
+window.setupNextStep      = setupNextStep;
+window.setupPrevStep      = setupPrevStep;
 </script>
 
 <!-- ════════════════════════════════════════════
