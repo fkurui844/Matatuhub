@@ -1320,9 +1320,6 @@ function proceedAsRole(role){
   document.querySelectorAll('.auth-role-card').forEach(function(c){c.style.outline='none';});
   var card=document.querySelector(role==='create'?'.manager-role':'.driver-role');
   if(card) card.style.outline='2.5px solid var(--accent)';
-  // Enable step 3 proceed button once a role is picked
-  var btn=document.getElementById('splashStep3ProceedBtn');
-  if(btn) btn.classList.add('ready');
 }
 function toggleProceedBtn(){
   var cb=document.getElementById('termsCheckbox');
@@ -1332,31 +1329,17 @@ function toggleProceedBtn(){
   else btn.classList.remove('ready');
 }
 function proceedFromSplash(){
-  // Terms agreed — go to step 3 (role selection)
   var cb=document.getElementById('termsCheckbox');
   if(!cb||!cb.checked) return;
-  var s2=document.getElementById('splashStep2'),s2btn=document.getElementById('splashStep2Btn');
-  var s3=document.getElementById('splashStep3'),s3btn=document.getElementById('splashStep3Btn');
-  if(s2) s2.style.display='none';
-  if(s2btn) s2btn.style.display='none';
-  if(s3){ s3.style.display='flex'; s3.scrollTop=0; }
-  if(s3btn) s3btn.style.display='flex';
-  sessionStorage.setItem('_mh_splash_seen','1');
-}
-function proceedFromStep3(){
   var splash=document.getElementById('splashOverlay');
   if(!splash) return;
   splash.classList.add('hiding');
   setTimeout(function(){
     splash.style.display='none';
-    var role=window._splashIntendedRole||'landing';
     if(typeof showAuthOverlay==='function') showAuthOverlay();
-    if(typeof switchToPanel==='function'){
-      if(role==='create') switchToPanel('create');
-      else if(role==='login') switchToPanel('login');
-      else switchToPanel('landing');
-    }
+    if(typeof switchToPanel==='function') switchToPanel('landing');
   }, 500);
+  sessionStorage.setItem('_mh_splash_seen','1');
 }
 </script>
 <div id="splashOverlay" class="splash-overlay">
@@ -1569,63 +1552,6 @@ function proceedFromStep3(){
   <!-- ══════════════════════════════════════════
        STEP 3 — WHO ARE YOU? (Role Selection)
   ══════════════════════════════════════════ -->
-  <div id="splashStep3" class="splash-scroll-area" style="display:none">
-    <div class="splash-step2">
-
-      <!-- Step dots -->
-      <div class="splash-step-dots">
-        <div class="splash-dot" id="dot1c"></div>
-        <div class="splash-dot" id="dot2c"></div>
-        <div class="splash-dot active" id="dot3c"></div>
-      </div>
-
-      <!-- Heading -->
-      <div class="splash-step2-heading">WHO ARE YOU?</div>
-      <div class="splash-step2-sub">SELECT YOUR ROLE TO CONTINUE</div>
-
-      <!-- MANAGER card -->
-      <div class="auth-role-card manager-role" onclick="proceedAsRole('create')" style="margin-bottom:10px">
-        <div class="auth-role-left">
-          <div class="auth-role-ico" style="background:linear-gradient(135deg,#f0a500,#d48c00)">🏢</div>
-        </div>
-        <div class="auth-role-body">
-          <div class="auth-role-title" style="color:var(--accent2)">MANAGER / SACCO OWNER</div>
-          <div class="auth-role-sub">Own a SACCO or fleet? Create your free manager account to register drivers, manage vehicles and view revenue reports.</div>
-          <div class="auth-role-tag" style="background:rgba(240,165,0,.12);color:var(--accent2)">NEW ACCOUNT →</div>
-        </div>
-      </div>
-
-      <!-- DRIVER card -->
-      <div class="auth-role-card driver-role" onclick="proceedAsRole('login')" style="margin-bottom:16px">
-        <div class="auth-role-left">
-          <div class="auth-role-ico" style="background:var(--accent-grad)">🚌</div>
-        </div>
-        <div class="auth-role-body">
-          <div class="auth-role-title" style="color:var(--accent)">DRIVER</div>
-          <div class="auth-role-sub">Log trips, declare collections and track your daily performance. Your manager invites you by email.</div>
-          <div class="auth-role-tag" style="background:var(--alight);color:var(--accent)">LOG IN →</div>
-        </div>
-      </div>
-
-      <!-- Already have manager account -->
-      <div style="text-align:center;margin-bottom:20px">
-        <span style="font-family:var(--font-m);font-size:.80rem;color:var(--muted);letter-spacing:1px">Already have a manager account? </span>
-        <button onclick="proceedAsRole('login')" style="background:none;border:none;font-family:var(--font-m);font-size:.80rem;color:var(--accent);cursor:pointer;text-decoration:underline;letter-spacing:1px;padding:0">LOG IN HERE</button>
-      </div>
-
-    </div>
-  </div><!-- end #splashStep3 -->
-
-  <!-- Step 3 button area -->
-  <div class="splash-btn-area" id="splashStep3Btn" style="display:none">
-    <button class="splash-proceed-btn ready" id="splashStep3ProceedBtn" onclick="proceedFromStep3()">
-      CONTINUE &nbsp;›
-    </button>
-    <button onclick="goToSplashStep2()" style="background:none;border:1.5px solid var(--border);font-family:var(--font-m);font-size:.80rem;color:var(--muted);letter-spacing:1.5px;cursor:pointer;padding:11px 20px;border-radius:var(--radius-sm);width:100%;margin-top:8px;transition:var(--transition)" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='none'">
-      ‹ BACK
-    </button>
-    <div class="splash-dev-line">Developed by <span>DatAfrica</span> &nbsp;·&nbsp; v7.0 · 2025</div>
-  </div>
 
 </div><!-- end #splashOverlay -->
 
@@ -1701,6 +1627,17 @@ function proceedFromStep3(){
       </div>
 
 
+
+      <!-- BACK button -->
+      <button onclick="hideAuthOverlay();(function(){var s=document.getElementById('splashOverlay');if(s){s.classList.remove('hiding');s.style.display='flex';}})();goToSplashStep2()"
+        style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px 16px;
+               background:none;border:1.5px solid var(--border);border-radius:var(--radius-sm);
+               font-family:var(--font-m);font-size:.80rem;letter-spacing:1.5px;color:var(--muted);
+               cursor:pointer;margin-bottom:16px;transition:background .15s"
+        onmouseover="this.style.background='var(--surface)'"
+        onmouseout="this.style.background='none'">
+        ‹ BACK
+      </button>
 
       <!-- ABOUT SECTION -->
       <div class="about-section">
@@ -6804,13 +6741,9 @@ function goToSplashStep1(){
 
 function proceedAsRole(role){
   window._splashIntendedRole = role;
-  // Highlight the chosen card
   document.querySelectorAll('.auth-role-card').forEach(c=>c.style.outline='none');
   const card = document.querySelector(role==='create'?'.manager-role':'.driver-role');
   if(card) card.style.outline='2.5px solid var(--accent)';
-  // Enable step 3 proceed button
-  const btn = document.getElementById('splashStep3ProceedBtn');
-  if(btn) btn.classList.add('ready');
 }
 
 function toggleProceedBtn(){
@@ -6824,42 +6757,22 @@ function toggleProceedBtn(){
 function proceedFromSplash(){
   const cb = document.getElementById('termsCheckbox');
   if(!cb || !cb.checked){ 
-    const lbl = document.getElementById('termsCheckbox');
-    if(lbl) lbl.focus();
+    if(cb) cb.focus();
     return;
   }
-  // Go to step 3 — role selection
-  const s2=document.getElementById('splashStep2'),s2btn=document.getElementById('splashStep2Btn');
-  const s3=document.getElementById('splashStep3'),s3btn=document.getElementById('splashStep3Btn');
-  if(s2) s2.style.display='none';
-  if(s2btn) s2btn.style.display='none';
-  if(s3){ s3.style.removeProperty('display'); s3.style.display='flex'; s3.scrollTop=0; }
-  if(s3btn){ s3btn.style.removeProperty('display'); s3btn.style.display='flex'; }
-  sessionStorage.setItem('_mh_splash_seen', '1');
-}
-
-function proceedFromStep3(){
   const splash = document.getElementById('splashOverlay');
   if(!splash) return;
   splash.classList.add('hiding');
   setTimeout(()=>{
     splash.style.display = 'none';
-    const role = window._splashIntendedRole || 'landing';
     showAuthOverlay();
-    if(role === 'create'){
-      switchToPanel('create');
-    } else if(role === 'login'){
-      switchToPanel('login');
-    } else {
-      switchToPanel('landing');
-    }
+    switchToPanel('landing');
     const fbConfigured = !!(appConfig.apiKey && appConfig.projectId);
     if(!fbConfigured){
-      setTimeout(()=>{
-        toast('⚙ SYSTEM ERROR — Please contact support to resolve this issue.', 5000);
-      }, 600);
+      setTimeout(()=>{ toast('⚙ SYSTEM ERROR — Please contact support to resolve this issue.', 5000); }, 600);
     }
   }, 500);
+  sessionStorage.setItem('_mh_splash_seen', '1');
 }
 
 function initSplash(){
