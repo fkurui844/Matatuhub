@@ -6498,6 +6498,7 @@ async function loadPlatformStats(){
 
     // ── Saccos ──────────────────────────────────────────────────
     const admins = adminSnap.docs.map(d=>({...d.data(), _docId: d.id}));
+    const totalSaccos = admins.length;
     const newSaccos30 = admins.filter(a=>(a.createdAt||0) >= day30).length;
     const newSaccos7  = admins.filter(a=>(a.createdAt||0) >= day7).length;
 
