@@ -9590,25 +9590,55 @@ async function devSendMsg(){
 async function devToggleSuspend(docId, email, name, isSuspended){
   if(!isDevEmail()) return;
   const action = isSuspended ? 'REINSTATE' : 'SUSPEND';
-  const confirm = window.confirm(`${action} manager?\n\n${name}\n${email}\n\n${isSuspended?'They will be able to log in again.':'They will be locked out of their account.'}`);
+  const newState = !isSuspended;
+
+  const confirm = window.confirm(`${action} manager?\n\n${name}\n${email}\n\n${newState
+    ? 'This will suspend their account AND all their drivers and sessions.'
+    : 'This will reinstate their account and all their drivers.'}`);
   if(!confirm) return;
 
   try{
-    const newState = !isSuspended;
+    toast((newState ? '⏸ SUSPENDING ' : '✅ REINSTATING ') + name.toUpperCase() + '...');
+
+    // 1. Suspend/reinstate manager doc
     await db.collection('drivers').doc(docId).update({ suspended: newState });
 
-    // Update UI without full reload
+    // 2. Cascade to all drivers in this sacco
+    const driverSnap = await db.collection('drivers')
+      .where('saccoId','==', docId)
+      .where('role','==','driver')
+      .get();
+    if(driverSnap.size > 0){
+      const docs = driverSnap.docs;
+      for(let i=0; i<docs.length; i+=400){
+        const b = db.batch();
+        docs.slice(i,i+400).forEach(d => b.update(d.ref, { suspended: newState }));
+        await b.commit();
+      }
+    }
+
+    // 3. Kill/restore all sessions for this sacco
+    const sesSnap = await db.collection('sessions')
+      .where('saccoId','==', docId).get().catch(()=>({docs:[]}));
+    if(sesSnap.docs.length > 0){
+      const b = db.batch();
+      sesSnap.docs.forEach(d => b.update(d.ref, {
+        suspended: newState,
+        status: newState ? 'suspended' : 'offline'
+      }));
+      await b.commit();
+    }
+
+    // 4. Update UI
     const statusEl = document.getElementById('mgr-status-'+docId);
     if(statusEl){
       statusEl.textContent = newState ? 'SUSPENDED' : 'ACTIVE';
       statusEl.style.background = newState ? 'rgba(239,68,68,.15)' : 'rgba(26,122,60,.15)';
       statusEl.style.color = newState ? '#ef4444' : 'var(--accent)';
     }
-    // Update local cache
     const a = (window._devAdmins||[]).find(x=>x._docId===docId);
     if(a) a.suspended = newState;
 
-    // Refresh the row button
     const row = document.getElementById('mgr-row-'+docId);
     if(row){
       const suspendBtn = row.querySelectorAll('button')[1];
@@ -9621,50 +9651,94 @@ async function devToggleSuspend(docId, email, name, isSuspended){
       }
     }
 
-    toast((newState ? '⏸ SUSPENDED: ' : '✅ REINSTATED: ') + name.toUpperCase());
+    // 5. Log
+    db.collection('devAccessLog').add({
+      event: newState ? 'sacco_suspended' : 'sacco_reinstated',
+      targetEmail: email, saccoId: docId, driversAffected: driverSnap.size,
+      by: currentAuthUser?.email, ts: Date.now()
+    }).catch(()=>{});
+
+    toast(`${newState?'⏸ SUSPENDED':'✅ REINSTATED'}: ${name.toUpperCase()} + ${driverSnap.size} DRIVER${driverSnap.size===1?'':'S'}`);
+
   } catch(e){
     toast('⚠ FAILED: ' + e.message);
   }
 }
 
-// ── Delete Manager + all their data ─────────
+// ── Delete Manager + ALL sacco data ──────────
 async function devDeleteManager(docId, email, saccoName){
   if(!isDevEmail()) return;
-  const confirm1 = window.confirm(`⚠ DELETE MANAGER?\n\nEmail: ${email}\nSACCO: ${saccoName}\n\nThis will delete their manager profile from Firestore.\n\nType YES in the next prompt to confirm.`);
+  const confirm1 = window.confirm(`⚠ DELETE ENTIRE SACCO?\n\nEmail: ${email}\nSACCO: ${saccoName}\n\nThis will permanently delete:\n• Manager profile\n• All their drivers\n• All their trips\n• All sessions & invites\n\nType DELETE in the next prompt to confirm.`);
   if(!confirm1) return;
-  const confirm2 = window.prompt(`Type DELETE to confirm removing ${email}:`);
+  const confirm2 = window.prompt(`Type DELETE to permanently remove ${saccoName}:`);
   if((confirm2||'').trim().toUpperCase() !== 'DELETE'){
     toast('CANCELLED — did not type DELETE');
     return;
   }
 
   try{
-    // Delete manager driver doc
+    toast('🗑 DELETING SACCO DATA...');
+
+    // Fetch all related docs in parallel
+    const [driverSnap, tripSnap, sessionSnap, inviteSnap, noteSnap, msgSnap] = await Promise.all([
+      db.collection('drivers').where('saccoId','==',docId).get(),
+      db.collection('trips').where('saccoId','==',docId).get(),
+      db.collection('sessions').where('saccoId','==',docId).get().catch(()=>({docs:[]})),
+      db.collection('pendingInvites').where('saccoId','==',docId).get().catch(()=>({docs:[]})),
+      db.collection('driverNotes').where('saccoId','==',docId).get().catch(()=>({docs:[]})),
+      db.collection('devMessages').where('toDocId','==',docId).get().catch(()=>({docs:[]}))
+    ]);
+
+    const allDocs = [
+      ...driverSnap.docs,
+      ...tripSnap.docs,
+      ...sessionSnap.docs,
+      ...inviteSnap.docs,
+      ...noteSnap.docs,
+      ...msgSnap.docs
+    ];
+
+    // Delete in batches of 400
+    for(let i=0; i<allDocs.length; i+=400){
+      const b = db.batch();
+      allDocs.slice(i,i+400).forEach(d => b.delete(d.ref));
+      await b.commit();
+    }
+
+    // Delete manager doc itself
     await db.collection('drivers').doc(docId).delete();
+
+    // Delete billing records
+    const paySnap = await db.collection('devPayments')
+      .where('saccoId','==',docId).get().catch(()=>({docs:[]}));
+    if(paySnap.docs.length > 0){
+      const b = db.batch();
+      paySnap.docs.forEach(d => b.delete(d.ref));
+      await b.commit();
+    }
 
     // Remove row from UI
     const row = document.getElementById('mgr-row-'+docId);
-    if(row){
-      row.style.transition = 'opacity .3s';
-      row.style.opacity = '0';
-      setTimeout(()=>row.remove(), 300);
-    }
+    if(row){ row.style.transition='opacity .3s'; row.style.opacity='0'; setTimeout(()=>row.remove(),300); }
 
-    // Remove from local cache
-    if(window._devAdmins) window._devAdmins = window._devAdmins.filter(x=>x._docId!==docId);
-
-    toast('🗑 MANAGER DELETED: ' + email);
+    // Remove from local caches
+    if(window._devAdmins)  window._devAdmins  = window._devAdmins.filter(x=>x._docId!==docId);
+    if(window._devBilling) window._devBilling = window._devBilling.filter(x=>x._docId!==docId);
 
     // Log deletion
     db.collection('devAccessLog').add({
-      event: 'manager_deleted', targetEmail: email, saccoName,
+      event: 'sacco_deleted', targetEmail: email, saccoName, saccoId: docId,
+      driversDeleted: driverSnap.size, tripsDeleted: tripSnap.size,
       by: currentAuthUser?.email, ts: Date.now()
     }).catch(()=>{});
+
+    toast(`🗑 DELETED: ${saccoName} — ${driverSnap.size} drivers, ${tripSnap.size} trips removed`);
 
   } catch(e){
     toast('⚠ DELETE FAILED: ' + e.message);
   }
 }
+
 
 // ══════════════════════════════════════════════
 // BILLING ACTION FUNCTIONS
