@@ -6554,6 +6554,33 @@ async function loadPlatformStats(){
         </div>
       </div>
 
+      <!-- REGISTERED MANAGERS -->
+      <div class="plat-section" style="margin-bottom:10px">
+        <div class="plat-section-hd" style="color:#f59e0b">
+          👤 REGISTERED MANAGERS
+          <span style="font-size:.75rem;font-weight:400;color:var(--muted)">${totalSaccos} total</span>
+        </div>
+        ${admins.length ? [...admins].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).map((a,i)=>`
+          <div class="plat-row" style="border-bottom:1px solid var(--border);padding:10px 0">
+            <div style="width:34px;height:34px;border-radius:50%;background:rgba(245,158,11,.2);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:.8rem;color:#f59e0b;flex-shrink:0;margin-right:12px">
+              ${(a.name||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()}
+            </div>
+            <div style="flex:1;min-width:0">
+              <div class="plat-row-name">${a.name||'—'}</div>
+              <div style="font-size:.74rem;color:var(--muted);margin-top:1px;word-break:break-all">${a.email||'—'}</div>
+              <div style="font-size:.74rem;color:#f59e0b;margin-top:2px;letter-spacing:.5px">🏢 ${a.saccoName||'—'}</div>
+            </div>
+            <div class="plat-row-meta" style="text-align:right;flex-shrink:0">
+              <div style="font-size:.72rem;color:var(--muted)">JOINED</div>
+              <div style="font-size:.78rem;color:var(--text);margin-top:2px">${fmtDate(a.createdAt||0)}</div>
+              <div style="margin-top:4px">
+                <span style="font-family:var(--font-m);font-size:.65rem;padding:2px 7px;border-radius:99px;background:rgba(26,122,60,.15);color:var(--accent);letter-spacing:.5px">ACTIVE</span>
+              </div>
+            </div>
+          </div>`).join('') :
+          '<div class="plat-empty">NO MANAGERS REGISTERED YET</div>'}
+      </div>
+
       <!-- TRIP ACTIVITY — LAST 7 DAYS -->
       <div class="plat-section" style="margin-bottom:10px">
         <div class="plat-section-hd" style="color:var(--accent2)">
