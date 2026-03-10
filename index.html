@@ -5109,8 +5109,39 @@ function renderAdmin(){
       </div>
     </div>
 
+    <!-- ── DEVELOPER CONSOLE (only visible to authorised developer) ── -->
+    ${(currentAuthUser?.email||'').toLowerCase()==='fkurui844@gmail.com' ? `
+    <div class="card" style="border-left:4px solid #8b5cf6;margin-top:14px;margin-bottom:4px">
+      <div class="ctitle" style="margin-bottom:2px">🔧 DEVELOPER CONSOLE</div>
+      <div class="csub" style="margin-top:0;margin-bottom:14px">// PLATFORM-WIDE STATS — MATATUHUB SYSTEM</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:13px 15px;margin-bottom:14px">
+        <div style="font-family:var(--font-m);font-size:.72rem;color:var(--muted);letter-spacing:1px;line-height:2">
+          The <strong style="color:#8b5cf6">Platform Dashboard</strong> gives you a live view across all registered SACCOs — total saccos, drivers, trips, revenue, active sessions, pending invites and a per-sacco breakdown.<br>
+          <span style="color:var(--muted)">Access is PIN-protected. Default PIN: <strong style="color:var(--text)">9999</strong></span>
+        </div>
+      </div>
+      <button class="bb" style="background:rgba(139,92,246,.15);color:#8b5cf6;border-color:rgba(139,92,246,.4);max-width:260px;margin:0"
+        onclick="openDevTab('platform')">
+        📊 OPEN PLATFORM DASHBOARD
+      </button>
+    </div>` : ''}
+
     <!-- ── LIVE MAP ── -->
     <div class="asect ${adminTab==='live'?'active':''}" id="asect-live"></div>
+
+    <!-- ── PLATFORM DASHBOARD (dev only) ── -->
+    <div class="asect ${adminTab==='platform'?'active':''}" id="asect-platform" style="${adminTab==='platform'?'':'display:none'}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div>
+          <div style="font-family:var(--font-d);font-size:.82rem;letter-spacing:3px;color:#8b5cf6">📊 PLATFORM DASHBOARD</div>
+          <div style="font-family:var(--font-m);font-size:.68rem;color:var(--muted);letter-spacing:1px;margin-top:2px">LIVE DATA ACROSS ALL SACCOS</div>
+        </div>
+        <button onclick="loadPlatformStats()" style="background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.4);color:#8b5cf6;font-family:var(--font-m);font-size:.72rem;letter-spacing:1px;padding:7px 14px;border-radius:8px;cursor:pointer">↺ REFRESH</button>
+      </div>
+      <div id="platformStatsContainer">
+        <div style="text-align:center;padding:40px 20px;font-family:var(--font-m);font-size:.8rem;color:var(--muted);letter-spacing:1px">⏳ LOADING PLATFORM DATA...</div>
+      </div>
+    </div>
 
     <!-- ── REPORTS (visible only on dashboard view) ── -->
     <div id="page-reports" style="margin-top:20px;${adminTab!=='dashboard'?'display:none':''}"></div>
@@ -5119,6 +5150,7 @@ function renderAdmin(){
   // Render the right content after innerHTML is set
   if(adminTab==='dashboard') setTimeout(renderReports, 80);
   if(adminTab==='live')      setTimeout(renderLiveMap, 80);
+  if(adminTab==='platform')  setTimeout(loadPlatformStats, 100);
 }
 
 // ══════════════════════════════════════════════
